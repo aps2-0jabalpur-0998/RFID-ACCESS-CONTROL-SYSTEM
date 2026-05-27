@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Udaan Tech — RFID Access Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f5;
+    --muted: #6b6b80;
+    --accent: #e05a1e;
+    --accent2: #ff7a3d;
+    --granted: #22c55e;
+    --denied: #ef4444;
+    --granted-bg: rgba(34,197,94,0.08);
+    --denied-bg: rgba(239,68,68,0.08);
+    --glow-granted: rgba(34,197,94,0.15);
+    --glow-denied: rgba(239,68,68,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .logo sub {
+    font-size: 0.55rem;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    display: block;
+    font-family: 'Space Mono', monospace;
+    margin-top: 2px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .ws-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .ws-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--denied);
+    transition: background 0.3s;
+  }
+
+  .ws-dot.connected { background: var(--granted); animation: blink 2s infinite; }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Live scan card */
+  .live-section {
+    margin-bottom: 2rem;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  .live-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    transition: border-color 0.4s, box-shadow 0.4s;
+    min-height: 140px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .live-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+
+  .live-card.granted {
+    border-color: var(--granted);
+    box-shadow: 0 0 40px var(--glow-granted);
+  }
+
+  .live-card.granted::before {
+    background: var(--granted-bg);
+    opacity: 1;
+  }
+
+  .live-card.denied {
+    border-color: var(--denied);
+    box-shadow: 0 0 40px var(--glow-denied);
+  }
+
+  .live-card.denied::before {
+    background: var(--denied-bg);
+    opacity: 1;
+  }
+
+  .live-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 2rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    transition: background 0.4s, border-color 0.4s;
+    position: relative;
+    z-index: 1;
+  }
+
+  .live-card.granted .live-icon { background: var(--granted-bg); border-color: var(--granted); }
+  .live-card.denied .live-icon { background: var(--denied-bg); border-color: var(--denied); }
+
+  .live-info { flex: 1; position: relative; z-index: 1; }
+
+  .live-name {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 6px;
+    transition: color 0.4s;
+  }
+
+  .live-uid {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+
+  .access-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .badge-granted { background: var(--granted-bg); color: var(--granted); border: 1px solid var(--granted); }
+  .badge-denied { background: var(--denied-bg); color: var(--denied); border: 1px solid var(--denied); }
+
+  .live-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: right;
+    position: relative;
+    z-index: 1;
+    line-height: 1.8;
+  }
+
+  .waiting-text {
+    font-size: 1rem;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    animation: waitPulse 2s infinite;
+  }
+
+  @keyframes waitPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Stats row */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .stat-val {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .stat-val.green { color: var(--granted); }
+  .stat-val.red { color: var(--denied); }
+  .stat-val.orange { color: var(--accent2); }
+
+  /* Layout bottom */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+  }
+
+  /* History */
+  .history-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .card-head {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-head-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .clear-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .clear-btn:hover { border-color: var(--border2); color: var(--text); }
+
+  .history-list {
+    max-height: 420px;
+    overflow-y: auto;
+  }
+
+  .history-list::-webkit-scrollbar { width: 4px; }
+  .history-list::-webkit-scrollbar-track { background: transparent; }
+  .history-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 1.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .history-item:last-child { border-bottom: none; }
+  .history-item:hover { background: var(--surface2); }
+
+  .h-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .h-dot.granted { background: var(--granted); }
+  .h-dot.denied { background: var(--denied); }
+
+  .h-info { flex: 1; }
+
+  .h-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .h-uid {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .h-right { text-align: right; }
+
+  .h-access {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 3px;
+  }
+
+  .h-access.granted { color: var(--granted); }
+  .h-access.denied { color: var(--denied); }
+
+  .h-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+  }
+
+  .empty-state {
+    padding: 3rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Users panel */
+  .users-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .user-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .user-item:last-child { border-bottom: none; }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--accent2);
+    flex-shrink: 0;
+  }
+
+  .user-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .user-uid {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .user-count {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .user-count-val {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--accent2);
+  }
+
+  .user-count-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* Scan animation */
+  @keyframes scanFlash {
+    0% { opacity: 0; transform: scaleY(0); }
+    20% { opacity: 1; transform: scaleY(1); }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  .scan-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent2), transparent);
+    animation: scanFlash 0.8s ease forwards;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .bottom-grid { grid-template-columns: 1fr; }
+    .live-name { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <header>
+    <div class="logo">
+      UDAAN <span>TECH</span>
+      <sub>RFID ACCESS CONTROL SYSTEM</sub>
+    </div>
+    <div class="header-right">
+      <div class="ws-status">
+        <div class="ws-dot" id="wsDot"></div>
+        <span id="wsLabel">DISCONNECTED</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Scan -->
+  <div class="live-section">
+    <div class="section-label">▸ LIVE SCAN</div>
+    <div class="live-card" id="liveCard">
+      <div class="live-icon" id="liveIcon">🔖</div>
+      <div class="live-info">
+        <div class="waiting-text" id="waitText">Waiting for card scan...</div>
+        <div id="liveContent" style="display:none;">
+          <div class="live-name" id="liveName">—</div>
+          <div class="live-uid" id="liveUID">UID: —</div>
+          <div id="liveBadge"></div>
+        </div>
+      </div>
+      <div class="live-time" id="liveTime"></div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">TOTAL SCANS</div>
+      <div class="stat-val" id="totalScans">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">GRANTED</div>
+      <div class="stat-val green" id="totalGranted">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">DENIED</div>
+      <div class="stat-val red" id="totalDenied">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">LAST SCAN</div>
+      <div class="stat-val orange" style="font-size:1.1rem; padding-top:4px;" id="lastScanTime">—</div>
+    </div>
+  </div>
+
+  <!-- Bottom -->
+  <div class="bottom-grid">
+
+    <!-- History -->
+    <div class="history-card">
+      <div class="card-head">
+        <div class="card-head-title">Scan History</div>
+        <button class="clear-btn" onclick="clearHistory()">CLEAR</button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="empty-state">No scans yet...<br>Place a card on the reader</div>
+      </div>
+    </div>
+
+    <!-- Authorized Users -->
+    <div class="users-card">
+      <div class="card-head">
+        <div class="card-head-title">Authorized Users</div>
+      </div>
+      <div id="usersList"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const USERS = [
+    { name: "Gagan",     uid: "F3C996F5", initials: "GG" },
+    { name: "Priyanshu", uid: "B302 90FC", initials: "PR" },
+    { name: "Vaibhav",   uid: "3D94BCD",  initials: "VB" },
+    { name: "Ashwith",   uid: "E3A735CD", initials: "AS" },
+    { name: "Mayank",   uid: "F3C0C7DC", initials: "MY" },
+  ];
+
+  let stats = { total: 0, granted: 0, denied: 0 };
+  let history = [];
+  let userScanCounts = {};
+  USERS.forEach(u => userScanCounts[u.name] = 0);
+
+  // Render users panel
+  function renderUsers() {
+    const list = document.getElementById('usersList');
+    list.innerHTML = USERS.map(u => `
+      <div class="user-item">
+        <div class="user-avatar">${u.initials}</div>
+        <div>
+          <div class="user-name">${u.name}</div>
+          <div class="user-uid">${u.uid}</div>
+        </div>
+        <div class="user-count">
+          <div class="user-count-val" id="count-${u.name}">${userScanCounts[u.name]}</div>
+          <div class="user-count-label">SCANS</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  renderUsers();
+
+  function updateLiveCard(data) {
+    const card = document.getElementById('liveCard');
+    const icon = document.getElementById('liveIcon');
+    const waitText = document.getElementById('waitText');
+    const liveContent = document.getElementById('liveContent');
+    const liveName = document.getElementById('liveName');
+    const liveUID = document.getElementById('liveUID');
+    const liveBadge = document.getElementById('liveBadge');
+    const liveTime = document.getElementById('liveTime');
+
+    const isGranted = data.access === "GRANTED";
+
+    card.className = 'live-card ' + (isGranted ? 'granted' : 'denied');
+    icon.textContent = isGranted ? '✓' : '✕';
+
+    // Scan line animation
+    const line = document.createElement('div');
+    line.className = 'scan-line';
+    line.style.top = Math.random() * 100 + '%';
+    card.appendChild(line);
+    setTimeout(() => line.remove(), 800);
+
+    waitText.style.display = 'none';
+    liveContent.style.display = 'block';
+
+    liveName.textContent = data.name;
+    liveName.style.color = isGranted ? 'var(--granted)' : 'var(--denied)';
+    liveUID.textContent = 'UID: ' + data.uid;
+
+    liveBadge.innerHTML = `
+      <span class="access-badge ${isGranted ? 'badge-granted' : 'badge-denied'}">
+        ${isGranted ? '● ACCESS GRANTED' : '✕ ACCESS DENIED'}
+      </span>
+    `;
+
+    liveTime.innerHTML = `
+      <div>${data.date || ''}</div>
+      <div style="font-size:1.2rem; color:var(--text); font-weight:700;">${data.timestamp || ''}</div>
+    `;
+
+    // Auto reset after 5s
+    setTimeout(() => {
+      card.className = 'live-card';
+      icon.textContent = '🔖';
+      waitText.style.display = 'block';
+      liveContent.style.display = 'none';
+      liveTime.innerHTML = '';
+    }, 5000);
+  }
+
+  function addToHistory(data) {
+    history.unshift(data);
+    if (history.length > 50) history.pop();
+
+    const list = document.getElementById('historyList');
+    const isGranted = data.access === "GRANTED";
+
+    if (list.querySelector('.empty-state')) list.innerHTML = '';
+
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.style.animation = 'none';
+    item.innerHTML = `
+      <div class="h-dot ${isGranted ? 'granted' : 'denied'}"></div>
+      <div class="h-info">
+        <div class="h-name">${data.name}</div>
+        <div class="h-uid">${data.uid}</div>
+      </div>
+      <div class="h-right">
+        <div class="h-access ${isGranted ? 'granted' : 'denied'}">${data.access}</div>
+        <div class="h-time">${data.timestamp}</div>
+      </div>
+    `;
+
+    list.insertBefore(item, list.firstChild);
+    if (list.children.length > 20) list.removeChild(list.lastChild);
+  }
+
+  function updateStats(data) {
+    stats.total++;
+    if (data.access === "GRANTED") stats.granted++;
+    else stats.denied++;
+
+    document.getElementById('totalScans').textContent = stats.total;
+    document.getElementById('totalGranted').textContent = stats.granted;
+    document.getElementById('totalDenied').textContent = stats.denied;
+    document.getElementById('lastScanTime').textContent = data.timestamp;
+
+    if (userScanCounts[data.name] !== undefined) {
+      userScanCounts[data.name]++;
+      const el = document.getElementById('count-' + data.name);
+      if (el) el.textContent = userScanCounts[data.name];
+    }
+  }
+
+  function clearHistory() {
+    history = [];
+    document.getElementById('historyList').innerHTML = '<div class="empty-state">No scans yet...<br>Place a card on the reader</div>';
+    stats = { total: 0, granted: 0, denied: 0 };
+    USERS.forEach(u => userScanCounts[u.name] = 0);
+    document.getElementById('totalScans').textContent = '0';
+    document.getElementById('totalGranted').textContent = '0';
+    document.getElementById('totalDenied').textContent = '0';
+    document.getElementById('lastScanTime').textContent = '—';
+    renderUsers();
+  }
+
+  function handleScan(data) {
+    updateLiveCard(data);
+    addToHistory(data);
+    updateStats(data);
+  }
+
+  // WebSocket connection
+  function connect() {
+    const ws = new WebSocket('ws://localhost:8765');
+    const dot = document.getElementById('wsDot');
+    const label = document.getElementById('wsLabel');
+
+    ws.onopen = () => {
+      dot.className = 'ws-dot connected';
+      label.textContent = 'CONNECTED';
+    };
+
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'history') {
+        data.data.forEach(d => {
+          addToHistory(d);
+          updateStats(d);
+        });
+      } else if (data.uid) {
+        handleScan(data);
+      }
+    };
+
+    ws.onclose = () => {
+      dot.className = 'ws-dot';
+      label.textContent = 'DISCONNECTED — Retrying...';
+      setTimeout(connect, 3000);
+    };
+
+    ws.onerror = () => ws.close();
+  }
+
+  connect();
+</script>
+</body>
+</html>
