@@ -4,282 +4,752 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fire Protection System</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --surface2: #1a1a24;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
-    --text: #f0f0f5;
-    --muted: #6b6b80;
-    --accent: #e05a1e;
-    --granted: #22c55e;
-    --denied: #ef4444;
-    --granted-bg: rgba(34,197,94,0.08);
-    --denied-bg: rgba(239,68,68,0.08);
-    --glow-denied: rgba(239,68,68,0.2);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh; padding: 2rem 1.5rem; overflow-x: hidden;
-  }
-  body::before {
-    content:''; position:fixed; inset:0;
-    background-image: linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
-    background-size:40px 40px; pointer-events:none; z-index:0;
-  }
-  .wrapper { position:relative; z-index:1; max-width:1200px; margin:0 auto; }
 
-  header {
-    display:flex; align-items:center; justify-content:space-between;
-    margin-bottom:2.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border);
-  }
-  .logo { font-size:1.5rem; font-weight:800; letter-spacing:0.05em; }
-  .logo span { color:var(--accent); }
-  .logo sub {
-    font-size:0.55rem; font-weight:400; color:var(--muted);
-    letter-spacing:0.2em; display:block; font-family:'Space Mono',monospace; margin-top:2px;
-  }
+:root{
+--bg:#0a0a0f;
+--surface:#111118;
+--surface2:#1a1a24;
+--border:rgba(255,255,255,0.07);
+--border2:rgba(255,255,255,0.12);
 
-  .system-status {
-    display:flex; align-items:center; gap:10px;
-    padding:10px 22px; border-radius:30px;
-    font-family:'Space Mono',monospace; font-size:0.75rem; font-weight:700; letter-spacing:0.2em;
-    border:1px solid var(--granted); background:var(--granted-bg); color:var(--granted);
-    transition:all 0.4s;
-  }
-  .system-status.alert-mode {
-    border-color:var(--denied); background:var(--denied-bg); color:var(--denied);
-    box-shadow:0 0 30px var(--glow-denied); animation:statusPulse 1s infinite;
-  }
-  @keyframes statusPulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
-  .status-dot { width:8px; height:8px; border-radius:50%; background:var(--granted); transition:background 0.4s; }
-  .system-status.alert-mode .status-dot { background:var(--denied); animation:statusPulse 0.6s infinite; }
+--text:#f0f0f5;
+--muted:#6b6b80;
 
-  .ws-bar {
-    display:flex; align-items:center; gap:10px; padding:10px 14px;
-    background:var(--surface); border:1px solid var(--border); border-radius:10px;
-    margin-bottom:2rem; font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--muted); letter-spacing:0.08em;
-  }
-  .ws-dot { width:7px; height:7px; border-radius:50%; background:var(--denied); transition:background 0.3s; }
-  .ws-dot.connected { background:var(--granted); animation:blink 2s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+--accent:#e05a1e;
 
-  .section-label {
-    font-family:'Space Mono',monospace; font-size:0.65rem;
-    letter-spacing:0.25em; color:var(--muted); margin-bottom:1rem;
-  }
+--granted:#22c55e;
+--denied:#ef4444;
 
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:2rem; }
+--granted-bg:rgba(34,197,94,0.08);
+--denied-bg:rgba(239,68,68,0.08);
 
-  .zone-card {
-    background:var(--surface); border:1px solid var(--border); border-radius:16px;
-    padding:1.25rem; transition:border-color 0.4s,box-shadow 0.4s,background 0.4s;
-    position:relative; overflow:hidden;
-  }
-  .zone-card.alert {
-    border-color:var(--denied); box-shadow:0 0 30px var(--glow-denied);
-    background:#1a0f0f; animation:cardPulse 1s infinite;
-  }
-  @keyframes cardPulse { 0%,100%{opacity:1} 50%{opacity:0.85} }
-  .zone-label { font-family:'Space Mono',monospace; font-size:0.6rem; letter-spacing:0.2em; color:var(--muted); margin-bottom:10px; }
-  .zone-name { font-size:1rem; font-weight:700; margin-bottom:14px; color:var(--text); }
+--glow-denied:rgba(239,68,68,0.2);
+}
 
-  .sensor-status {
-    display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px;
-    background:var(--surface2); border-left:3px solid var(--granted);
-    font-family:'Space Mono',monospace; font-size:0.7rem; color:var(--granted);
-    transition:all 0.4s; letter-spacing:0.05em;
-  }
-  .sensor-status.alert { border-left-color:var(--denied); color:var(--denied); background:rgba(239,68,68,0.08); }
-  .sensor-dot { width:6px; height:6px; border-radius:50%; background:var(--granted); flex-shrink:0; transition:background 0.4s; }
-  .sensor-status.alert .sensor-dot { background:var(--denied); animation:blink 0.6s infinite; }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
-  .history-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
-  .card-head { padding:1rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-  .card-head-title { font-size:0.9rem; font-weight:700; letter-spacing:0.05em; }
+body{
+background:var(--bg);
+color:var(--text);
+font-family:'Syne',sans-serif;
+min-height:100vh;
+padding:2rem 1.5rem;
+overflow-x:hidden;
+}
 
-  table { width:100%; border-collapse:collapse; }
-  th {
-    padding:12px 1.5rem; text-align:left; font-family:'Space Mono',monospace;
-    font-size:0.6rem; letter-spacing:0.2em; color:var(--muted);
-    background:var(--surface2); font-weight:400; border-bottom:1px solid var(--border);
-  }
-  td { padding:14px 1.5rem; border-bottom:1px solid var(--border); font-size:0.85rem; font-family:'Space Mono',monospace; }
-  tr:last-child td { border-bottom:none; }
-  tr:hover td { background:var(--surface2); }
+body::before{
+content:'';
+position:fixed;
+inset:0;
 
-  .alertText { color:var(--denied); font-weight:700; font-size:0.75rem; }
-  .zone-badge {
-    display:inline-block; padding:3px 10px; border-radius:20px;
-    font-size:0.65rem; letter-spacing:0.1em;
-    background:var(--denied-bg); color:var(--denied); border:1px solid var(--denied);
-  }
-  .time-text { color:var(--muted); font-size:0.7rem; }
-  .empty-state { padding:3rem; text-align:center; color:var(--muted); font-family:'Space Mono',monospace; font-size:0.75rem; letter-spacing:0.1em; }
+background-image:
+linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
 
-  @media(max-width:600px) { .grid{grid-template-columns:1fr 1fr} header{flex-direction:column;gap:1rem;align-items:flex-start} }
+background-size:40px 40px;
+
+pointer-events:none;
+z-index:0;
+}
+
+.wrapper{
+position:relative;
+z-index:1;
+max-width:1200px;
+margin:0 auto;
+}
+
+/* HEADER */
+
+header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+margin-bottom:2.5rem;
+
+padding-bottom:1.5rem;
+
+border-bottom:1px solid var(--border);
+}
+
+.logo{
+font-size:1.5rem;
+font-weight:800;
+letter-spacing:0.05em;
+}
+
+.logo span{
+color:var(--accent);
+}
+
+.logo sub{
+font-size:0.55rem;
+font-weight:400;
+color:var(--muted);
+
+letter-spacing:0.2em;
+
+display:block;
+
+font-family:'Space Mono',monospace;
+
+margin-top:2px;
+}
+
+/* STATUS */
+
+.system-status{
+display:flex;
+align-items:center;
+gap:10px;
+
+padding:10px 22px;
+
+border-radius:30px;
+
+font-family:'Space Mono',monospace;
+font-size:0.75rem;
+font-weight:700;
+letter-spacing:0.2em;
+
+border:1px solid var(--granted);
+
+background:var(--granted-bg);
+
+color:var(--granted);
+
+transition:all 0.4s;
+}
+
+.system-status.alert-mode{
+border-color:var(--denied);
+
+background:var(--denied-bg);
+
+color:var(--denied);
+
+box-shadow:0 0 30px var(--glow-denied);
+
+animation:statusPulse 1s infinite;
+}
+
+@keyframes statusPulse{
+0%,100%{opacity:1}
+50%{opacity:0.7}
+}
+
+.status-dot{
+width:8px;
+height:8px;
+
+border-radius:50%;
+
+background:var(--granted);
+
+transition:background 0.4s;
+}
+
+.system-status.alert-mode .status-dot{
+background:var(--denied);
+
+animation:statusPulse 0.6s infinite;
+}
+
+/* WEBSOCKET */
+
+.ws-bar{
+display:flex;
+align-items:center;
+gap:10px;
+
+padding:10px 14px;
+
+background:var(--surface);
+
+border:1px solid var(--border);
+
+border-radius:10px;
+
+margin-bottom:2rem;
+
+font-family:'Space Mono',monospace;
+font-size:0.65rem;
+
+color:var(--muted);
+
+letter-spacing:0.08em;
+}
+
+.ws-dot{
+width:7px;
+height:7px;
+
+border-radius:50%;
+
+background:var(--denied);
+
+transition:background 0.3s;
+}
+
+.ws-dot.connected{
+background:var(--granted);
+
+animation:blink 2s infinite;
+}
+
+@keyframes blink{
+0%,100%{opacity:1}
+50%{opacity:0.4}
+}
+
+/* LABEL */
+
+.section-label{
+font-family:'Space Mono',monospace;
+font-size:0.65rem;
+
+letter-spacing:0.25em;
+
+color:var(--muted);
+
+margin-bottom:1rem;
+}
+
+/* GRID */
+
+.grid{
+display:grid;
+
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+
+gap:12px;
+
+margin-bottom:2rem;
+}
+
+.zone-card{
+background:var(--surface);
+
+border:1px solid var(--border);
+
+border-radius:16px;
+
+padding:1.25rem;
+
+transition:border-color 0.4s,box-shadow 0.4s,background 0.4s;
+
+position:relative;
+overflow:hidden;
+}
+
+.zone-card.alert{
+border-color:var(--denied);
+
+box-shadow:0 0 30px var(--glow-denied);
+
+background:#1a0f0f;
+
+animation:cardPulse 1s infinite;
+}
+
+@keyframes cardPulse{
+0%,100%{opacity:1}
+50%{opacity:0.85}
+}
+
+.zone-label{
+font-family:'Space Mono',monospace;
+font-size:0.6rem;
+
+letter-spacing:0.2em;
+
+color:var(--muted);
+
+margin-bottom:10px;
+}
+
+.zone-name{
+font-size:1rem;
+font-weight:700;
+
+margin-bottom:14px;
+
+color:var(--text);
+}
+
+.sensor-status{
+display:flex;
+align-items:center;
+gap:8px;
+
+padding:10px 12px;
+
+border-radius:10px;
+
+background:var(--surface2);
+
+border-left:3px solid var(--granted);
+
+font-family:'Space Mono',monospace;
+font-size:0.7rem;
+
+color:var(--granted);
+
+transition:all 0.4s;
+
+letter-spacing:0.05em;
+}
+
+.sensor-status.alert{
+border-left-color:var(--denied);
+
+color:var(--denied);
+
+background:rgba(239,68,68,0.08);
+}
+
+.sensor-dot{
+width:6px;
+height:6px;
+
+border-radius:50%;
+
+background:var(--granted);
+
+flex-shrink:0;
+
+transition:background 0.4s;
+}
+
+.sensor-status.alert .sensor-dot{
+background:var(--denied);
+
+animation:blink 0.6s infinite;
+}
+
+/* HISTORY */
+
+.history-card{
+background:var(--surface);
+
+border:1px solid var(--border);
+
+border-radius:16px;
+
+overflow:hidden;
+}
+
+.card-head{
+padding:1rem 1.5rem;
+
+border-bottom:1px solid var(--border);
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+.card-head-title{
+font-size:0.9rem;
+font-weight:700;
+
+letter-spacing:0.05em;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+padding:12px 1.5rem;
+text-align:left;
+
+font-family:'Space Mono',monospace;
+font-size:0.6rem;
+
+letter-spacing:0.2em;
+
+color:var(--muted);
+
+background:var(--surface2);
+
+font-weight:400;
+
+border-bottom:1px solid var(--border);
+}
+
+td{
+padding:14px 1.5rem;
+
+border-bottom:1px solid var(--border);
+
+font-size:0.85rem;
+
+font-family:'Space Mono',monospace;
+}
+
+tr:last-child td{
+border-bottom:none;
+}
+
+tr:hover td{
+background:var(--surface2);
+}
+
+.alertText{
+color:var(--denied);
+font-weight:700;
+font-size:0.75rem;
+}
+
+.zone-badge{
+display:inline-block;
+
+padding:3px 10px;
+
+border-radius:20px;
+
+font-size:0.65rem;
+
+letter-spacing:0.1em;
+
+background:var(--denied-bg);
+
+color:var(--denied);
+
+border:1px solid var(--denied);
+}
+
+.time-text{
+color:var(--muted);
+font-size:0.7rem;
+}
+
+.empty-state{
+padding:3rem;
+
+text-align:center;
+
+color:var(--muted);
+
+font-family:'Space Mono',monospace;
+font-size:0.75rem;
+
+letter-spacing:0.1em;
+}
+
+@media(max-width:600px){
+
+.grid{
+grid-template-columns:1fr 1fr;
+}
+
+header{
+flex-direction:column;
+gap:1rem;
+align-items:flex-start;
+}
+
+}
+
 </style>
 </head>
+
 <body>
+
 <div class="wrapper">
-  <header>
-    <div class="logo">UDAAN <span>TECH</span><sub>FIRE PROTECTION SYSTEM</sub></div>
-    <div class="system-status" id="systemStatus">
-      <div class="status-dot"></div>
-      <span id="statusText">ALL SYSTEMS SAFE</span>
-    </div>
-  </header>
 
-  <div class="ws-bar">
-    <div class="ws-dot" id="wsDot"></div>
-    <span id="wsLabel">DISCONNECTED — ws://localhost:8766</span>
-  </div>
+<header>
 
-  <div class="section-label">▸ ZONE STATUS</div>
-  <div class="grid">
-    <div class="zone-card" id="cardA">
-      <div class="zone-label">ZONE A</div>
-      <div class="zone-name">IR Sensor 1</div>
-      <div class="sensor-status" id="zoneA"><div class="sensor-dot"></div><span>SAFE — No Detection</span></div>
-    </div>
-    <div class="zone-card" id="cardB">
-      <div class="zone-label">ZONE B</div>
-      <div class="zone-name">IR Sensor 2</div>
-      <div class="sensor-status" id="zoneB"><div class="sensor-dot"></div><span>SAFE — No Detection</span></div>
-    </div>
-    <div class="zone-card" id="cardC">
-      <div class="zone-label">ZONE C</div>
-      <div class="zone-name">Flame Sensor 1</div>
-      <div class="sensor-status" id="zoneC"><div class="sensor-dot"></div><span>SAFE — No Detection</span></div>
-    </div>
-    <div class="zone-card" id="cardD">
-      <div class="zone-label">ZONE D</div>
-      <div class="zone-name">Flame Sensor 2</div>
-      <div class="sensor-status" id="zoneD"><div class="sensor-dot"></div><span>SAFE — No Detection</span></div>
-    </div>
-    <div class="zone-card" id="cardE">
-      <div class="zone-label">ZONE E</div>
-      <div class="zone-name">MQ2 Gas Sensor</div>
-      <div class="sensor-status" id="zoneE"><div class="sensor-dot"></div><span>SAFE — No Detection</span></div>
-    </div>
-  </div>
+<div class="logo">
+UDAAN <span>TECH</span>
+<sub>FIRE PROTECTION SYSTEM</sub>
+</div>
 
-  <div class="section-label">▸ DETECTION HISTORY</div>
-  <div class="history-card">
-    <div class="card-head"><div class="card-head-title">Alert Log</div></div>
-    <table>
-      <thead><tr><th>SENSOR</th><th>ZONE</th><th>TIME</th><th>DATE</th></tr></thead>
-      <tbody id="historyBody">
-        <tr><td colspan="4"><div class="empty-state">No alerts yet — system nominal</div></td></tr>
-      </tbody>
-    </table>
-  </div>
+<div class="system-status" id="systemStatus">
+
+<div class="status-dot"></div>
+
+<span id="statusText">
+ALL SYSTEMS SAFE
+</span>
+
+</div>
+
+</header>
+
+<div class="ws-bar">
+
+<div class="ws-dot" id="wsDot"></div>
+
+<span id="wsLabel">
+DISCONNECTED
+</span>
+
+</div>
+
+<div class="section-label">
+▸ ZONE STATUS
+</div>
+
+<div class="grid">
+
+<div class="zone-card" id="cardA">
+<div class="zone-label">ZONE A</div>
+<div class="zone-name">IR Sensor 1</div>
+<div class="sensor-status" id="zoneA">
+<div class="sensor-dot"></div>
+<span>SAFE — No Detection</span>
+</div>
+</div>
+
+<div class="zone-card" id="cardB">
+<div class="zone-label">ZONE B</div>
+<div class="zone-name">IR Sensor 2</div>
+<div class="sensor-status" id="zoneB">
+<div class="sensor-dot"></div>
+<span>SAFE — No Detection</span>
+</div>
+</div>
+
+<div class="zone-card" id="cardC">
+<div class="zone-label">ZONE C</div>
+<div class="zone-name">Flame Sensor 1</div>
+<div class="sensor-status" id="zoneC">
+<div class="sensor-dot"></div>
+<span>SAFE — No Detection</span>
+</div>
+</div>
+
+<div class="zone-card" id="cardD">
+<div class="zone-label">ZONE D</div>
+<div class="zone-name">Flame Sensor 2</div>
+<div class="sensor-status" id="zoneD">
+<div class="sensor-dot"></div>
+<span>SAFE — No Detection</span>
+</div>
+</div>
+
+<div class="zone-card" id="cardE">
+<div class="zone-label">ZONE E</div>
+<div class="zone-name">MQ2 Gas Sensor</div>
+<div class="sensor-status" id="zoneE">
+<div class="sensor-dot"></div>
+<span>SAFE — No Detection</span>
+</div>
+</div>
+
+</div>
+
+<div class="section-label">
+▸ DETECTION HISTORY
+</div>
+
+<div class="history-card">
+
+<div class="card-head">
+<div class="card-head-title">
+Alert Log
+</div>
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th>SENSOR</th>
+<th>ZONE</th>
+<th>TIME</th>
+<th>DATE</th>
+</tr>
+</thead>
+
+<tbody id="historyBody">
+
+<tr>
+<td colspan="4">
+<div class="empty-state">
+No alerts yet — system nominal
+</div>
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
 </div>
 
 <script>
-  const historyBody = document.getElementById("historyBody");
-  let hasHistory = false;
 
-  function setSafe() {
-    document.getElementById("systemStatus").className = "system-status";
-    document.getElementById("statusText").textContent = "ALL SYSTEMS SAFE";
-    ["A","B","C","D","E"].forEach(z => {
-      document.getElementById("card"+z).classList.remove("alert");
-      const el = document.getElementById("zone"+z);
-      el.className = "sensor-status";
-      el.innerHTML = '<div class="sensor-dot"></div><span>SAFE — No Detection</span>';
-    });
-  }
+const historyBody = document.getElementById("historyBody");
 
-  function triggerAlert(sensor, zone) {
-    document.getElementById("systemStatus").className = "system-status alert-mode";
-    document.getElementById("statusText").textContent = "⚠ ALERT DETECTED";
-    const card = document.getElementById("card" + zone);
-    const el = document.getElementById("zone" + zone);
-    if (card) card.classList.add("alert");
-    if (el) {
-      el.className = "sensor-status alert";
-      el.innerHTML = `<div class="sensor-dot"></div><span>DETECTED — ${sensor}</span>`;
-    }
-  }
+let hasHistory = false;
 
-  function addHistory(sensor, zone, time, date) {
-    if (!hasHistory) { historyBody.innerHTML = ""; hasHistory = true; }
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td class="alertText">${sensor}</td>
-      <td><span class="zone-badge">ZONE ${zone}</span></td>
-      <td class="time-text">${time}</td>
-      <td class="time-text">${date}</td>
-    `;
-    historyBody.prepend(row);
-  }
+function setSafe(){
 
-  function connect() {
-    const ws = new WebSocket("wss://nacho-plunder-oblivion.ngrok-free.dev");;
+document.getElementById("systemStatus").className =
+"system-status";
 
-    ws.onopen = () => {
-      document.getElementById("wsDot").className = "ws-dot connected";
-      document.getElementById("wsLabel").textContent = "CONNECTED — ws://localhost:8766";
-    };
+document.getElementById("statusText").textContent =
+"ALL SYSTEMS SAFE";
 
-    ws.onclose = () => {
-      document.getElementById("wsDot").className = "ws-dot";
-      document.getElementById("wsLabel").textContent = "DISCONNECTED — Retrying in 3s...";
-      setTimeout(connect, 3000);
-    };
+["A","B","C","D","E"].forEach(z=>{
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+document.getElementById("card"+z)
+.classList.remove("alert");
 
-      // SAFE state
-      if (data.type === "safe") {
-        setSafe();
-      }
+const el = document.getElementById("zone"+z);
 
-      // Live alert from Arduino
-      if (data.type === "alert" && data.alerts) {
-        data.alerts.forEach(a => {
-          triggerAlert(a.sensor, a.zone);
-          addHistory(a.sensor, a.zone, a.time, a.date);
-        });
-      }
+el.className = "sensor-status";
 
-      // On connect — restore state
-      if (data.type === "state" && data.data) {
-        const s = data.data;
-        if (!s.anyAlert) {
-          setSafe();
-        } else {
-          const zoneMap = {
-            zoneA: {zone:"A", sensor:"IR Sensor 1"},
-            zoneB: {zone:"B", sensor:"IR Sensor 2"},
-            zoneC: {zone:"C", sensor:"Flame Sensor 1"},
-            zoneD: {zone:"D", sensor:"Flame Sensor 2"},
-            zoneE: {zone:"E", sensor:"MQ2 Gas Sensor"},
-          };
-          Object.entries(zoneMap).forEach(([key, val]) => {
-            if (s[key] === "ALERT") triggerAlert(val.sensor, val.zone);
-          });
-        }
-      }
+el.innerHTML =
+'<div class="sensor-dot"></div><span>SAFE — No Detection</span>';
 
-      // History on connect
-      if (data.type === "history" && data.data) {
-        data.data.forEach(h => {
-          addHistory(h.sensor, h.zone, h.time, h.date);
-        });
-      }
-    };
-  }
+});
 
-  connect();
+}
+
+function triggerAlert(sensor){
+
+document.getElementById("systemStatus").className =
+"system-status alert-mode";
+
+document.getElementById("statusText").textContent =
+"⚠ FIRE / GAS DETECTED";
+
+["A","B","C","D","E"].forEach(z=>{
+
+const card = document.getElementById("card"+z);
+
+const el = document.getElementById("zone"+z);
+
+card.classList.add("alert");
+
+el.className = "sensor-status alert";
+
+el.innerHTML =
+`<div class="sensor-dot"></div>
+<span>${sensor}</span>`;
+
+});
+
+}
+
+function addHistory(sensor,zone,time,date){
+
+if(!hasHistory){
+
+historyBody.innerHTML = "";
+
+hasHistory = true;
+
+}
+
+const row = document.createElement("tr");
+
+row.innerHTML = `
+<td class="alertText">${sensor}</td>
+<td><span class="zone-badge">${zone}</span></td>
+<td class="time-text">${time}</td>
+<td class="time-text">${date}</td>
+`;
+
+historyBody.prepend(row);
+
+}
+
+function connect(){
+
+const ws =
+new WebSocket("wss://nacho-plunder-oblivion.ngrok-free.dev");
+
+ws.onopen = ()=>{
+
+document.getElementById("wsDot").className =
+"ws-dot connected";
+
+document.getElementById("wsLabel").textContent =
+"CONNECTED — LIVE SERVER";
+
+};
+
+ws.onclose = ()=>{
+
+document.getElementById("wsDot").className =
+"ws-dot";
+
+document.getElementById("wsLabel").textContent =
+"DISCONNECTED — RETRYING...";
+
+setTimeout(connect,3000);
+
+};
+
+ws.onmessage = (event)=>{
+
+const data = JSON.parse(event.data);
+
+console.log(data);
+
+if(data.type === "safe"){
+
+setSafe();
+
+}
+
+if(data.type === "alert" && data.alerts){
+
+data.alerts.forEach(a=>{
+
+triggerAlert(a.sensor);
+
+addHistory(
+a.sensor,
+a.zone,
+a.time,
+a.date
+);
+
+});
+
+}
+
+if(data.type === "history" && data.data){
+
+data.data.forEach(h=>{
+
+addHistory(
+h.sensor,
+h.zone,
+h.time,
+h.date
+);
+
+});
+
+}
+
+};
+
+}
+
+connect();
+
 </script>
+
 </body>
 </html>
