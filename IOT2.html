@@ -222,7 +222,7 @@
   }
 
   function connect() {
-    const ws = new WebSocket("ws://localhost:8766");
+    const ws = new WebSocket("wss://nacho-plunder-oblivion.ngrok-free.dev");;
 
     ws.onopen = () => {
       document.getElementById("wsDot").className = "ws-dot connected";
