@@ -678,16 +678,27 @@ function connect(){
 }
 // Also poll HTTP as backup
 async function pollHTTP(){
-  try{
-    const res = await fetch('https://nacho-plunder-oblivion.ngrok-free.dev/data');
-    const data = await res.json();
-    if(data.length) processUsers(data);
-  }catch(e){}
-}
 
-connect();
-setInterval(pollHTTP, 3000);
-pollHTTP();
+  try{
+
+    const res =
+      await fetch(
+        'https://nacho-plunder-oblivion.ngrok-free.dev/data'
+      );
+
+    const data = await res.json();
+
+    if(Array.isArray(data)){
+      processUsers(data);
+    }
+    else if(data.users){
+      processUsers(data.users);
+    }
+
+  }catch(err){
+    console.log(err);
+  }
+}
 </script>
 </body>
 </html>
