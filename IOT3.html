@@ -432,6 +432,8 @@ tr:hover td { background:rgba(34,197,94,0.03); }
 let allUsers = [];
 let scanLog = [];
 let hasLog = false;
+  const API_URL =
+"https://nacho-plunder-oblivion.ngrok-free.dev/data";
 
 // ── Helpers ──────────────────────────────────────────────────
 function initials(name){ return (name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
@@ -661,7 +663,7 @@ function connect(){
 // Also poll HTTP as backup
 async function pollHTTP(){
   try{
-    const res = await fetch('http://localhost:8080/data');
+    const res = await fetch(API_URL);
     const data = await res.json();
     if(data.length) processUsers(data);
   }catch(e){}
