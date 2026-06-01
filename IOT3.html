@@ -372,7 +372,7 @@ function renderLeaderboard(filter){
   let users = [...allUsers].sort((a,b)=>b.points-a.points);
   async function loadUsers() {
 
-    const response = await fetch("/data");
+    const response = await fetch("http://localhost:8080/data");
 
     allUsers = await response.json();
 
