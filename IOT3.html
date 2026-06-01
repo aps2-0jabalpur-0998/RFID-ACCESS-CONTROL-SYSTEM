@@ -1,0 +1,486 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Syne:wght@700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --eco-green:#1D9E75;--eco-dark:#085041;--eco-light:#E1F5EE;
+    --eco-amber:#EF9F27;--eco-coral:#D85A30;--eco-purple:#534AB7;
+    --bg:#0a0f0a;--surface:#111a12;--surface2:#162018;--border:rgba(29,158,117,0.18);
+    --text:#e8f5e8;--muted:#7a9e85;--card-r:16px;
+  }
+  body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow-x:hidden;}
+  .noise{position:fixed;inset:0;pointer-events:none;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");z-index:0;}
+  .wrap{position:relative;z-index:1;padding:24px;max-width:1200px;margin:0 auto;}
+
+  /* HEADER */
+  .hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+  .hdr-left{display:flex;align-items:center;gap:14px;}
+  .logo{width:44px;height:44px;background:linear-gradient(135deg,var(--eco-green),var(--eco-dark));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .brand h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--eco-green);}
+  .brand p{font-size:12px;color:var(--muted);}
+  .live-pill{display:flex;align-items:center;gap:6px;background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.3);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:500;color:var(--eco-green);}
+  .live-dot{width:7px;height:7px;background:var(--eco-green);border-radius:50%;animation:pulse 1.5s ease infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
+
+  /* TABS */
+  .tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px;width:fit-content;}
+  .tab{padding:8px 20px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s;}
+  .tab.active{background:var(--eco-green);color:#fff;}
+
+  /* STAT CARDS */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-r);padding:18px 20px;position:relative;overflow:hidden;transition:border-color .2s;}
+  .stat-card:hover{border-color:rgba(29,158,117,0.4);}
+  .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--eco-green));border-radius:var(--card-r) var(--card-r) 0 0;}
+  .stat-icon{font-size:20px;margin-bottom:10px;opacity:.8;}
+  .stat-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--text);line-height:1;}
+  .stat-label{font-size:11px;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:.8px;}
+  .stat-badge{position:absolute;top:16px;right:16px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px;background:rgba(29,158,117,0.15);color:var(--eco-green);}
+
+  /* USER BOARDS */
+  .boards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+  @media(max-width:700px){.boards{grid-template-columns:1fr;}}
+  .board{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;}
+  .board-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .board-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .board-count{font-size:11px;padding:3px 10px;border-radius:10px;font-weight:600;}
+  .active-count{background:rgba(29,158,117,0.2);color:var(--eco-green);}
+  .inactive-count{background:rgba(215,90,48,0.2);color:var(--eco-coral);}
+  .board-list{max-height:260px;overflow-y:auto;}
+  .board-list::-webkit-scrollbar{width:4px;}
+  .board-list::-webkit-scrollbar-track{background:transparent;}
+  .board-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+  .user-row{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid rgba(29,158,117,0.06);cursor:pointer;transition:background .15s;}
+  .user-row:hover{background:rgba(29,158,117,0.06);}
+  .user-row:last-child{border-bottom:none;}
+  .avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+  .av-green{background:rgba(29,158,117,0.2);color:var(--eco-green);}
+  .av-muted{background:rgba(122,158,133,0.15);color:var(--muted);}
+  .user-info{flex:1;min-width:0;}
+  .user-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .user-email{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .user-pts{font-size:13px;font-weight:700;color:var(--eco-green);}
+  .user-pts-inactive{color:var(--muted);}
+  .status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .dot-green{background:var(--eco-green);}
+  .dot-gray{background:#3a4a3a;}
+
+  /* LEADERBOARD */
+  .lb-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-r);margin-bottom:24px;overflow:hidden;}
+  .lb-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .lb-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;}
+  .lb-row{display:grid;grid-template-columns:40px 1fr 100px 100px 80px;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid rgba(29,158,117,0.06);cursor:pointer;transition:background .15s;}
+  .lb-row:hover{background:rgba(29,158,117,0.07);}
+  .lb-row:last-child{border-bottom:none;}
+  .lb-head{padding:10px 20px;display:grid;grid-template-columns:40px 1fr 100px 100px 80px;gap:12px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);}
+  .rank{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--muted);text-align:center;}
+  .rank.gold{color:#EF9F27;}
+  .rank.silver{color:#b0b0b8;}
+  .rank.bronze{color:#CD7F32;}
+  .pts-bar-wrap{width:100%;background:rgba(29,158,117,0.1);border-radius:4px;height:5px;}
+  .pts-bar{height:5px;background:var(--eco-green);border-radius:4px;transition:width .8s ease;}
+  .badge-pill{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;display:inline-block;}
+  .badge-legend{background:rgba(239,159,39,0.2);color:var(--eco-amber);}
+  .badge-champ{background:rgba(29,158,117,0.2);color:var(--eco-green);}
+  .badge-star{background:rgba(83,74,183,0.2);color:#9b94e8;}
+  .badge-new{background:rgba(122,158,133,0.15);color:var(--muted);}
+
+  /* CHARTS */
+  .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+  @media(max-width:700px){.charts-row{grid-template-columns:1fr;}}
+  .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-r);padding:20px;}
+  .chart-card h3{font-size:13px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
+
+  /* UPLOAD */
+  .upload-zone{border:2px dashed rgba(29,158,117,0.3);border-radius:var(--card-r);padding:28px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(29,158,117,0.02);margin-bottom:24px;}
+  .upload-zone:hover{border-color:var(--eco-green);background:rgba(29,158,117,0.05);}
+  .upload-zone input{display:none;}
+  .upload-icon{font-size:32px;margin-bottom:8px;}
+  .upload-text{font-size:13px;color:var(--muted);}
+  .upload-text span{color:var(--eco-green);font-weight:600;}
+
+  /* MODAL */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);}
+  .modal{background:#111a12;border:1px solid rgba(29,158,117,0.3);border-radius:20px;padding:28px;width:380px;max-width:90vw;position:relative;}
+  .modal-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;}
+  .modal-av{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;margin:0 auto 14px;background:rgba(29,158,117,0.2);color:var(--eco-green);}
+  .modal-name{text-align:center;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px;}
+  .modal-email{text-align:center;font-size:12px;color:var(--muted);margin-bottom:18px;}
+  .modal-stat{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--border);}
+  .modal-stat-label{font-size:12px;color:var(--muted);}
+  .modal-stat-val{font-size:13px;font-weight:600;}
+  .pts-ring{margin:16px auto;width:80px;height:80px;position:relative;}
+  .pts-ring svg{transform:rotate(-90deg);}
+  .pts-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .pts-num{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--eco-green);line-height:1;}
+  .pts-txt{font-size:9px;color:var(--muted);}
+
+  /* SECTION TITLE */
+  .section-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:12px;color:var(--text);}
+
+  /* FILE INFO */
+  .file-info{font-size:11px;color:var(--eco-green);margin-top:6px;text-align:center;}
+
+  .view-toggle{display:flex;gap:6px;}
+  .vt-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s;}
+  .vt-btn.active{background:rgba(29,158,117,0.15);border-color:var(--eco-green);color:var(--eco-green);}
+</style>
+
+<div class="noise"></div>
+<div class="wrap">
+  <h2 class="sr-only" style="position:absolute;left:-9999px">Eco Guardian AI Smart Dustbin Dashboard — User activity, points, and garbage stats</h2>
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="logo">🌿</div>
+      <div class="brand">
+        <h1>EcoGuardian AI</h1>
+        <p>Smart Dustbin Rewards Dashboard</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div class="live-pill"><span class="live-dot"></span>System Live</div>
+      <label class="upload-zone" style="margin:0;padding:8px 16px;border-width:1px;display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--eco-green);font-weight:600;" id="uploadLabel">
+        <i class="ti ti-upload" aria-hidden="true"></i> Upload CSV
+        <input type="file" accept=".csv" id="csvInput">
+      </label>
+    </div>
+  </div>
+
+  <div id="fileInfo" class="file-info" style="display:none;margin-bottom:16px;"></div>
+
+  <!-- NO DATA STATE -->
+  <div id="noDataState">
+    <div class="upload-zone" onclick="document.getElementById('csvInput').click()">
+      <div class="upload-icon">📂</div>
+      <div class="upload-text"><span>Click to upload</span> your user CSV file</div>
+      <div class="upload-text" style="margin-top:6px;font-size:11px;">Format: name, email, phone, uid, points, scans, last_scan</div>
+    </div>
+    <div style="text-align:center;padding:16px;">
+      <button onclick="loadDemoData()" style="background:rgba(29,158,117,0.15);border:1px solid rgba(29,158,117,0.4);color:var(--eco-green);padding:10px 28px;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600;font-family:inherit;">✨ Load Demo Data</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD (hidden until data loaded) -->
+  <div id="dashContent" style="display:none;">
+
+    <!-- STAT CARDS -->
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('boards',this)">User Boards</button>
+      <button class="tab" onclick="showTab('leaderboard',this)">Leaderboard</button>
+      <button class="tab" onclick="showTab('charts',this)">Analytics</button>
+    </div>
+
+    <!-- BOARDS TAB -->
+    <div id="tab-boards">
+      <div class="boards">
+        <div class="board">
+          <div class="board-hdr">
+            <div class="board-title"><span class="status-dot dot-green"></span> Active Users</div>
+            <span class="board-count active-count" id="activeCount">0</span>
+          </div>
+          <div class="board-list" id="activeList"></div>
+        </div>
+        <div class="board">
+          <div class="board-hdr">
+            <div class="board-title"><span class="status-dot dot-gray"></span> Inactive Users</div>
+            <span class="board-count inactive-count" id="inactiveCount">0</span>
+          </div>
+          <div class="board-list" id="inactiveList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD TAB -->
+    <div id="tab-leaderboard" style="display:none;">
+      <div class="lb-section">
+        <div class="lb-hdr">
+          <div class="lb-title">🏆 Points Leaderboard</div>
+          <div class="view-toggle">
+            <button class="vt-btn active" onclick="filterLB('all',this)">All</button>
+            <button class="vt-btn" onclick="filterLB('legend',this)">Legends</button>
+            <button class="vt-btn" onclick="filterLB('active',this)">Active</button>
+          </div>
+        </div>
+        <div class="lb-head"><span>Rank</span><span>User</span><span>Points</span><span>Progress</span><span>Badge</span></div>
+        <div id="lbBody"></div>
+      </div>
+    </div>
+
+    <!-- CHARTS TAB -->
+    <div id="tab-charts" style="display:none;">
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Points Distribution</h3>
+          <div style="position:relative;height:220px;"><canvas id="ptsDist" role="img" aria-label="Bar chart of points distribution across users"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Active vs Inactive</h3>
+          <div style="position:relative;height:220px;"><canvas id="statusPie" role="img" aria-label="Pie chart of active vs inactive users"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-bottom:24px;">
+        <h3>Garbage Collected Per User (kg)</h3>
+        <div style="position:relative;" id="garbageChartWrap"><canvas id="garbageBar" role="img" aria-label="Bar chart of garbage collected per user in kilograms"></canvas></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal" style="display:none;" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <button class="modal-close" onclick="document.getElementById('modal').style.display='none'">✕</button>
+    <div class="modal-av" id="mAv"></div>
+    <div class="modal-name" id="mName"></div>
+    <div class="modal-email" id="mEmail"></div>
+    <div class="pts-ring">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(29,158,117,0.15)" stroke-width="8"/>
+        <circle cx="40" cy="40" r="34" fill="none" stroke="#1D9E75" stroke-width="8" stroke-linecap="round"
+          stroke-dasharray="213.6" id="ringCircle" stroke-dashoffset="213.6"/>
+      </svg>
+      <div class="pts-center"><span class="pts-num" id="mPts">0</span><span class="pts-txt">PTS</span></div>
+    </div>
+    <div id="mBadge" style="text-align:center;margin-bottom:12px;"></div>
+    <div class="modal-stat"><span class="modal-stat-label">📱 Phone</span><span class="modal-stat-val" id="mPhone"></span></div>
+    <div class="modal-stat"><span class="modal-stat-label">🔄 Total Scans</span><span class="modal-stat-val" id="mScans"></span></div>
+    <div class="modal-stat"><span class="modal-stat-label">⚖️ Garbage</span><span class="modal-stat-val" id="mGarbage"></span></div>
+    <div class="modal-stat"><span class="modal-stat-label">📅 Last Scan</span><span class="modal-stat-val" id="mLast"></span></div>
+    <div class="modal-stat"><span class="modal-stat-label">🔑 UID</span><span class="modal-stat-val" id="mUID" style="font-family:monospace;font-size:11px;"></span></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let allUsers = [];
+let lbFilter = 'all';
+let chartsInit = false;
+let chartInstances = {};
+
+function getInitials(name){return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+function getBadge(pts){
+  if(pts>=1000) return {label:'🏆 Legend',cls:'badge-legend'};
+  if(pts>=750) return {label:'⭐ Champion',cls:'badge-champ'};
+  if(pts>=400) return {label:'💫 Star',cls:'badge-star'};
+  return {label:'🌱 Seedling',cls:'badge-new'};
+}
+function isActive(user){
+  if(!user.last_scan) return false;
+  const d = new Date(user.last_scan);
+  const diff = (Date.now()-d.getTime())/(1000*60*60*24);
+  return diff<=30;
+}
+
+function parseCSV(text){
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/\s+/g,'_'));
+  return lines.slice(1).map(line=>{
+    const vals = line.split(',').map(v=>v.trim());
+    const obj={};
+    headers.forEach((h,i)=>{obj[h]=vals[i]||'';});
+    obj.points = parseInt(obj.points)||0;
+    obj.scans = parseInt(obj.scans)||0;
+    obj.garbage = parseFloat(obj.garbage)||(obj.scans*0.3);
+    return obj;
+  }).filter(u=>u.name);
+}
+
+function loadDemoData(){allUsers=DEMO_USERS;renderAll();}
+
+document.getElementById('csvInput').addEventListener('change',function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      allUsers = parseCSV(ev.target.result);
+      document.getElementById('fileInfo').style.display='block';
+      document.getElementById('fileInfo').textContent='✅ Loaded: '+file.name+' — '+allUsers.length+' users found';
+      renderAll();
+    }catch(err){alert('CSV parse error. Check format!');}
+  };
+  reader.readAsText(file);
+});
+
+function renderAll(){
+  document.getElementById('noDataState').style.display='none';
+  document.getElementById('dashContent').style.display='block';
+  renderStats();
+  renderBoards();
+  renderLeaderboard();
+}
+
+function renderStats(){
+  const total = allUsers.length;
+  const active = allUsers.filter(isActive).length;
+  const inactive = total - active;
+  const totalPts = allUsers.reduce((s,u)=>s+u.points,0);
+  const totalGarbage = allUsers.reduce((s,u)=>s+(u.garbage||0),0);
+  const legends = allUsers.filter(u=>u.points>=1000).length;
+
+  const cards = [
+    {label:'Registered Users',val:total,icon:'👥',accent:'var(--eco-green)',badge:'Total'},
+    {label:'Active Users',val:active,icon:'🟢',accent:'#1D9E75',badge:'Last 30d'},
+    {label:'Inactive Users',val:inactive,icon:'😴',accent:'var(--eco-coral)',badge:'Dormant'},
+    {label:'Total Points Given',val:totalPts.toLocaleString(),icon:'⚡',accent:'var(--eco-amber)',badge:'Rewards'},
+    {label:'Garbage Collected',val:totalGarbage.toFixed(1)+' kg',icon:'♻️',accent:'#534AB7',badge:'Eco Impact'},
+    {label:'Legend Users',val:legends,icon:'🏆',accent:'#EF9F27',badge:'1000+ pts'},
+  ];
+
+  document.getElementById('statsGrid').innerHTML = cards.map(c=>`
+    <div class="stat-card" style="--accent:${c.accent}">
+      <div class="stat-icon">${c.icon}</div>
+      <div class="stat-val">${c.val}</div>
+      <div class="stat-label">${c.label}</div>
+      <span class="stat-badge">${c.badge}</span>
+    </div>
+  `).join('');
+}
+
+function renderBoards(){
+  const active = allUsers.filter(isActive).sort((a,b)=>b.points-a.points);
+  const inactive = allUsers.filter(u=>!isActive(u)).sort((a,b)=>b.points-a.points);
+  document.getElementById('activeCount').textContent = active.length;
+  document.getElementById('inactiveCount').textContent = inactive.length;
+
+  function userRow(u, act){
+    const b = getBadge(u.points);
+    return `<div class="user-row" onclick="openModal(${JSON.stringify(u).replace(/"/g,'&quot;')})">
+      <div class="avatar ${act?'av-green':'av-muted'}">${getInitials(u.name)}</div>
+      <div class="user-info">
+        <div class="user-name">${u.name}</div>
+        <div class="user-email">${u.email||u.uid}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="${act?'user-pts':'user-pts user-pts-inactive'}">${u.points} pts</div>
+        <span class="badge-pill ${b.cls}" style="font-size:9px">${b.label}</span>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('activeList').innerHTML = active.length ? active.map(u=>userRow(u,true)).join('') : '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">No active users</div>';
+  document.getElementById('inactiveList').innerHTML = inactive.length ? inactive.map(u=>userRow(u,false)).join('') : '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">No inactive users 🎉</div>';
+}
+
+function renderLeaderboard(filter){
+  filter = filter||lbFilter;
+  let users = [...allUsers].sort((a,b)=>b.points-a.points);
+  async function loadUsers() {
+
+    const response = await fetch("/data");
+
+    allUsers = await response.json();
+
+    renderAll();
+}
+
+setInterval(loadUsers, 2000);
+
+loadUsers();
+  if(filter==='legend') users=users.filter(u=>u.points>=1000);
+  if(filter==='active') users=users.filter(isActive);
+  const maxPts = users[0]?.points||1;
+
+  document.getElementById('lbBody').innerHTML = users.map((u,i)=>{
+    const b = getBadge(u.points);
+    const rCls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const pct = Math.round((u.points/1000)*100);
+    const barW = Math.round((u.points/maxPts)*100);
+    return `<div class="lb-row" onclick="openModal(${JSON.stringify(u).replace(/"/g,'&quot;')})">
+      <div class="rank ${rCls}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="avatar av-green" style="width:28px;height:28px;font-size:10px">${getInitials(u.name)}</div>
+        <div><div style="font-size:13px;font-weight:500">${u.name}</div><div style="font-size:11px;color:var(--muted)">${u.email}</div></div>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;color:var(--eco-green)">${u.points.toLocaleString()}</div>
+      <div style="display:flex;flex-direction:column;gap:4px;justify-content:center">
+        <div class="pts-bar-wrap"><div class="pts-bar" style="width:${barW}%"></div></div>
+        <div style="font-size:10px;color:var(--muted)">${pct}% to Legend</div>
+      </div>
+      <div><span class="badge-pill ${b.cls}">${b.label}</span></div>
+    </div>`;
+  }).join('') || '<div style="padding:20px;text-align:center;color:var(--muted)">No users match this filter</div>';
+}
+
+function filterLB(f,btn){
+  lbFilter=f;
+  document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLeaderboard(f);
+}
+
+function initCharts(){
+  if(chartsInit) return;
+  chartsInit=true;
+
+  const sorted = [...allUsers].sort((a,b)=>b.points-a.points).slice(0,10);
+  const active = allUsers.filter(isActive).length;
+  const inactive = allUsers.length - active;
+
+  const ptsBuckets = {'0-199':0,'200-499':0,'500-749':0,'750-999':0,'1000+':0};
+  allUsers.forEach(u=>{
+    if(u.points<200) ptsBuckets['0-199']++;
+    else if(u.points<500) ptsBuckets['200-499']++;
+    else if(u.points<750) ptsBuckets['500-749']++;
+    else if(u.points<1000) ptsBuckets['750-999']++;
+    else ptsBuckets['1000+']++;
+  });
+
+  chartInstances.pts = new Chart(document.getElementById('ptsDist'),{
+    type:'bar',
+    data:{labels:Object.keys(ptsBuckets),datasets:[{label:'Users',data:Object.values(ptsBuckets),backgroundColor:'rgba(29,158,117,0.6)',borderColor:'#1D9E75',borderWidth:1,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7a9e85'},grid:{color:'rgba(29,158,117,0.08)'}},y:{ticks:{color:'#7a9e85'},grid:{color:'rgba(29,158,117,0.08)'}}}}
+  });
+
+  chartInstances.pie = new Chart(document.getElementById('statusPie'),{
+    type:'doughnut',
+    data:{labels:['Active','Inactive'],datasets:[{data:[active,inactive],backgroundColor:['rgba(29,158,117,0.8)','rgba(215,90,48,0.6)'],borderColor:['#1D9E75','#D85A30'],borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'65%'}
+  });
+
+  const gWrap = document.getElementById('garbageChartWrap');
+  gWrap.style.height = Math.max(200, sorted.length*42+60)+'px';
+  chartInstances.garbage = new Chart(document.getElementById('garbageBar'),{
+    type:'bar',
+    data:{labels:sorted.map(u=>u.name.split(' ')[0]),datasets:[{label:'kg',data:sorted.map(u=>parseFloat((u.garbage||0).toFixed(1))),backgroundColor:'rgba(83,74,183,0.6)',borderColor:'#534AB7',borderWidth:1,borderRadius:6}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7a9e85'},grid:{color:'rgba(29,158,117,0.08)'}},y:{ticks:{color:'#7a9e85'},grid:{color:'rgba(29,158,117,0.08)'}}}}
+  });
+}
+
+function showTab(t,btn){
+  ['boards','leaderboard','charts'].forEach(id=>{
+    document.getElementById('tab-'+id).style.display = id===t?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(t==='charts') initCharts();
+}
+
+function openModal(u){
+  if(typeof u === 'string') u = JSON.parse(u);
+  document.getElementById('mAv').textContent = getInitials(u.name);
+  document.getElementById('mName').textContent = u.name;
+  document.getElementById('mEmail').textContent = u.email;
+  document.getElementById('mPhone').textContent = u.phone||'—';
+  document.getElementById('mScans').textContent = (u.scans||0)+' times';
+  document.getElementById('mGarbage').textContent = (u.garbage||0).toFixed(1)+' kg';
+  document.getElementById('mLast').textContent = u.last_scan||'Never';
+  document.getElementById('mUID').textContent = u.uid||'—';
+  document.getElementById('mPts').textContent = u.points;
+  const b = getBadge(u.points);
+  document.getElementById('mBadge').innerHTML = `<span class="badge-pill ${b.cls}" style="font-size:13px;padding:5px 14px">${b.label}</span>`;
+  const pct = Math.min(u.points/1000,1);
+  const circ = 213.6;
+  document.getElementById('ringCircle').style.strokeDashoffset = circ-(circ*pct);
+  document.getElementById('modal').style.display='flex';
+}
+
+function closeModal(e){
+  if(e.target.id==='modal') document.getElementById('modal').style.display='none';
+}
+</script>
