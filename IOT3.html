@@ -633,31 +633,49 @@ function processUsers(data){
 
 // ── WebSocket Connection ──────────────────────────────────────
 function connect(){
-  const ws = new WebSocket('wss://nacho-plunder-oblivion.ngrok-free.dev');
+
   const dot = document.getElementById('wsDot');
   const lbl = document.getElementById('wsLabel');
 
-  ws.onopen = ()=>{
-    dot.className = 'ws-dot on';
-    lbl.textContent = 'LIVE — ws://localhost:8767';
-  };
+  try{
 
-  ws.onmessage = (e)=>{
-    const data = JSON.parse(e.data);
-    if(data.type === 'users' && data.data){
-      processUsers(data.data);
-    }
-  };
+    const ws = new WebSocket('wss://nacho-plunder-oblivion.ngrok-free.dev');
 
-  ws.onclose = ()=>{
-    dot.className = 'ws-dot';
-    lbl.textContent = 'DISCONNECTED — Retrying...';
-    setTimeout(connect, 3000);
-  };
+    ws.onopen = ()=>{
+      dot.className = 'ws-dot on';
+      lbl.textContent = 'LIVE CONNECTED';
+    };
 
-  ws.onerror = ()=> ws.close();
+    ws.onmessage = (e)=>{
+      try{
+        const data = JSON.parse(e.data);
+
+        if(data.type === 'users'){
+          processUsers(data.data);
+        }
+        else if(Array.isArray(data)){
+          processUsers(data);
+        }
+
+      }catch(err){
+        console.log(err);
+      }
+    };
+
+    ws.onclose = ()=>{
+      dot.className = 'ws-dot';
+      lbl.textContent = 'RECONNECTING...';
+      setTimeout(connect,3000);
+    };
+
+    ws.onerror = ()=>{
+      ws.close();
+    };
+
+  }catch(err){
+    setTimeout(connect,3000);
+  }
 }
-
 // Also poll HTTP as backup
 async function pollHTTP(){
   try{
