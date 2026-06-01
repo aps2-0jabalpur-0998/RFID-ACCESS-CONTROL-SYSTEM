@@ -633,72 +633,43 @@ function processUsers(data){
 
 // ── WebSocket Connection ──────────────────────────────────────
 function connect(){
-
+  const ws = new WebSocket('ws://localhost:8767');
   const dot = document.getElementById('wsDot');
   const lbl = document.getElementById('wsLabel');
 
-  try{
+  ws.onopen = ()=>{
+    dot.className = 'ws-dot on';
+    lbl.textContent = 'LIVE — ws://localhost:8767';
+  };
 
-    const ws = new WebSocket('wss://nacho-plunder-oblivion.ngrok-free.dev');
+  ws.onmessage = (e)=>{
+    const data = JSON.parse(e.data);
+    if(data.type === 'users' && data.data){
+      processUsers(data.data);
+    }
+  };
 
-    ws.onopen = ()=>{
-      dot.className = 'ws-dot on';
-      lbl.textContent = 'LIVE CONNECTED';
-    };
+  ws.onclose = ()=>{
+    dot.className = 'ws-dot';
+    lbl.textContent = 'DISCONNECTED — Retrying...';
+    setTimeout(connect, 3000);
+  };
 
-    ws.onmessage = (e)=>{
-      try{
-        const data = JSON.parse(e.data);
-
-        if(data.type === 'users'){
-          processUsers(data.data);
-        }
-        else if(Array.isArray(data)){
-          processUsers(data);
-        }
-
-      }catch(err){
-        console.log(err);
-      }
-    };
-
-    ws.onclose = ()=>{
-      dot.className = 'ws-dot';
-      lbl.textContent = 'RECONNECTING...';
-      setTimeout(connect,3000);
-    };
-
-    ws.onerror = ()=>{
-      ws.close();
-    };
-
-  }catch(err){
-    setTimeout(connect,3000);
-  }
+  ws.onerror = ()=> ws.close();
 }
+
 // Also poll HTTP as backup
 async function pollHTTP(){
-
   try{
-
-    const res =
-      await fetch(
-        'https://nacho-plunder-oblivion.ngrok-free.dev/data'
-      );
-
+    const res = await fetch('http://localhost:8080/data');
     const data = await res.json();
-
-    if(Array.isArray(data)){
-      processUsers(data);
-    }
-    else if(data.users){
-      processUsers(data.users);
-    }
-
-  }catch(err){
-    console.log(err);
-  }
+    if(data.length) processUsers(data);
+  }catch(e){}
 }
+
+connect();
+setInterval(pollHTTP, 3000);
+pollHTTP();
 </script>
 </body>
 </html>
