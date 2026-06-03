@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GuardianAI — Surveillance Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Cabinet+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080a0f;
+  --s1: #0d1117;
+  --s2: #111827;
+  --s3: #1a2234;
+  --border: rgba(99,179,237,0.08);
+  --border2: rgba(99,179,237,0.18);
+  --text: #e2e8f0;
+  --muted: #4a6080;
+  --blue: #63b3ed;
+  --green: #48bb78;
+  --red: #fc8181;
+  --amber: #f6ad55;
+  --purple: #b794f4;
+  --r: 14px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Cabinet Grotesk',sans-serif; min-height:100vh; overflow-x:hidden; }
+body::before {
+  content:''; position:fixed; inset:0;
+  background-image: linear-gradient(rgba(99,179,237,0.02) 1px,transparent 1px), linear-gradient(90deg,rgba(99,179,237,0.02) 1px,transparent 1px);
+  background-size:32px 32px; pointer-events:none; z-index:0;
+}
+.wrap { position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:1.5rem; }
+
+/* HEADER */
+header { display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; padding-bottom:1.25rem; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:1rem; }
+.logo-group { display:flex; align-items:center; gap:12px; }
+.logo-icon { width:46px; height:46px; border-radius:12px; background:linear-gradient(135deg,#1a3a5c,#0d1117); display:flex; align-items:center; justify-content:center; font-size:22px; border:1px solid var(--border2); }
+.logo-text h1 { font-size:1.4rem; font-weight:900; letter-spacing:-0.03em; color:var(--blue); }
+.logo-text p { font-size:0.65rem; color:var(--muted); letter-spacing:0.1em; font-family:'DM Mono',monospace; margin-top:2px; }
+.header-right { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.ws-pill { display:flex; align-items:center; gap:7px; padding:7px 16px; border-radius:20px; border:1px solid var(--border2); background:rgba(99,179,237,0.05); font-family:'DM Mono',monospace; font-size:0.65rem; color:var(--muted); letter-spacing:0.08em; }
+.ws-dot { width:7px; height:7px; border-radius:50%; background:var(--red); transition:background 0.3s; }
+.ws-dot.on { background:var(--green); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ALERT BANNER */
+.alert-banner {
+  border-radius:var(--r); padding:1.5rem 2rem;
+  display:flex; align-items:center; gap:1.5rem;
+  margin-bottom:1.5rem; min-height:110px;
+  border:1px solid var(--border);
+  background:var(--s1);
+  transition:all 0.4s; position:relative; overflow:hidden;
+}
+.alert-banner.danger  { border-color:var(--red);    box-shadow:0 0 50px rgba(252,129,129,0.15); background:#110a0a; }
+.alert-banner.help    { border-color:var(--purple);  box-shadow:0 0 50px rgba(183,148,244,0.15); background:#0e0a14; }
+.alert-banner.emergency { border-color:var(--amber); box-shadow:0 0 50px rgba(246,173,85,0.18); background:#120e05; }
+.alert-banner.safe    { border-color:var(--green);   box-shadow:0 0 30px rgba(72,187,120,0.08); }
+
+.alert-icon { width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; flex-shrink:0; background:var(--s2); border:1px solid var(--border2); transition:all 0.4s; }
+.alert-banner.danger   .alert-icon { background:rgba(252,129,129,0.1); border-color:var(--red); }
+.alert-banner.help     .alert-icon { background:rgba(183,148,244,0.1); border-color:var(--purple); }
+.alert-banner.emergency .alert-icon { background:rgba(246,173,85,0.1); border-color:var(--amber); }
+.alert-banner.safe     .alert-icon { background:rgba(72,187,120,0.08); border-color:var(--green); }
+
+.alert-info { flex:1; }
+.alert-status { font-size:2rem; font-weight:900; letter-spacing:-0.04em; margin-bottom:4px; transition:color 0.4s; }
+.alert-banner.safe      .alert-status { color:var(--green); }
+.alert-banner.danger    .alert-status { color:var(--red);    animation:statusPulse 1s infinite; }
+.alert-banner.help      .alert-status { color:var(--purple); animation:statusPulse 0.8s infinite; }
+.alert-banner.emergency .alert-status { color:var(--amber);  animation:statusPulse 0.6s infinite; }
+@keyframes statusPulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+.alert-sub { font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--muted); margin-bottom:8px; }
+.alert-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 14px; border-radius:20px; font-family:'DM Mono',monospace; font-size:0.7rem; }
+.badge-safe      { background:rgba(72,187,120,0.1);  color:var(--green);  border:1px solid rgba(72,187,120,0.3); }
+.badge-danger    { background:rgba(252,129,129,0.1); color:var(--red);    border:1px solid rgba(252,129,129,0.3); }
+.badge-help      { background:rgba(183,148,244,0.1); color:var(--purple); border:1px solid rgba(183,148,244,0.3); }
+.badge-emergency { background:rgba(246,173,85,0.1);  color:var(--amber);  border:1px solid rgba(246,173,85,0.3); }
+.alert-time { font-family:'DM Mono',monospace; font-size:0.65rem; color:var(--muted); text-align:right; line-height:2; }
+
+/* STATS */
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:1.5rem; }
+.stat { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); padding:1.1rem 1.25rem; position:relative; overflow:hidden; }
+.stat::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--c,var(--blue)); border-radius:var(--r) var(--r) 0 0; }
+.stat-icon { font-size:1.2rem; margin-bottom:8px; }
+.stat-val { font-size:2rem; font-weight:900; letter-spacing:-0.04em; line-height:1; color:var(--c,var(--blue)); }
+.stat-label { font-size:0.6rem; color:var(--muted); margin-top:5px; letter-spacing:0.1em; font-family:'DM Mono',monospace; text-transform:uppercase; }
+
+/* SECTION */
+.sec-label { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.2em; color:var(--muted); margin-bottom:0.75rem; }
+
+/* MAIN GRID */
+.main-grid { display:grid; grid-template-columns:1fr 320px; gap:1.25rem; margin-bottom:1.5rem; }
+@media(max-width:900px){ .main-grid{grid-template-columns:1fr;} }
+
+/* EVIDENCE GRID */
+.evidence-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
+.ev-card { background:var(--s1); border:1px solid var(--border); border-radius:10px; overflow:hidden; cursor:pointer; transition:all 0.2s; }
+.ev-card:hover { border-color:var(--border2); transform:translateY(-2px); }
+.ev-thumb { width:100%; height:120px; object-fit:cover; background:var(--s2); display:block; }
+.ev-thumb-placeholder { width:100%; height:120px; background:var(--s2); display:flex; align-items:center; justify-content:center; font-size:2rem; }
+.ev-info { padding:8px 10px; }
+.ev-type { font-size:0.65rem; font-weight:700; font-family:'DM Mono',monospace; letter-spacing:0.1em; margin-bottom:2px; }
+.ev-type.intruder  { color:var(--red); }
+.ev-type.help      { color:var(--purple); }
+.ev-type.emergency { color:var(--amber); }
+.ev-time { font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--muted); }
+
+/* EVENT LOG */
+.log-card { background:var(--s1); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; }
+.card-head { padding:0.9rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.card-head-title { font-size:0.85rem; font-weight:800; }
+.log-scroll { max-height:480px; overflow-y:auto; }
+.log-scroll::-webkit-scrollbar { width:3px; }
+.log-scroll::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+.log-item { display:flex; align-items:flex-start; gap:10px; padding:10px 1.25rem; border-bottom:1px solid rgba(99,179,237,0.04); transition:background 0.15s; }
+.log-item:last-child { border-bottom:none; }
+.log-item:hover { background:rgba(99,179,237,0.03); }
+.log-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+.dot-intruder  { background:var(--red); }
+.dot-help      { background:var(--purple); }
+.dot-emergency { background:var(--amber); }
+.dot-safe      { background:var(--green); }
+.log-msg { font-size:0.8rem; font-weight:700; margin-bottom:2px; }
+.log-time { font-family:'DM Mono',monospace; font-size:0.6rem; color:var(--muted); }
+.log-empty { padding:2rem; text-align:center; color:var(--muted); font-size:0.75rem; font-family:'DM Mono',monospace; letter-spacing:0.1em; }
+
+/* FILTER TABS */
+.filter-tabs { display:flex; gap:4px; margin-bottom:1rem; flex-wrap:wrap; }
+.ftab { padding:5px 14px; border-radius:8px; font-size:0.7rem; font-weight:700; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--muted); font-family:'DM Mono',monospace; letter-spacing:0.08em; transition:all 0.2s; }
+.ftab.active-all       { background:rgba(99,179,237,0.12); border-color:var(--blue);   color:var(--blue); }
+.ftab.active-intruder  { background:rgba(252,129,129,0.1); border-color:var(--red);    color:var(--red); }
+.ftab.active-help      { background:rgba(183,148,244,0.1); border-color:var(--purple); color:var(--purple); }
+.ftab.active-emergency { background:rgba(246,173,85,0.1);  border-color:var(--amber);  color:var(--amber); }
+
+/* LIGHTBOX */
+.lightbox { position:fixed; inset:0; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:200; backdrop-filter:blur(8px); }
+.lb-inner { position:relative; max-width:90vw; max-height:90vh; }
+.lb-img { max-width:100%; max-height:85vh; border-radius:10px; border:1px solid var(--border2); display:block; }
+.lb-close { position:absolute; top:-40px; right:0; background:none; border:none; color:var(--text); font-size:1.5rem; cursor:pointer; }
+.lb-info { text-align:center; margin-top:10px; font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--muted); }
+
+@media(max-width:600px){ .stats{grid-template-columns:repeat(2,1fr);} header{flex-direction:column;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo-group">
+      <div class="logo-icon">👁️</div>
+      <div class="logo-text">
+        <h1>GuardianAI</h1>
+        <p>INTELLIGENT SURVEILLANCE SYSTEM</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div id="lastUpdate" style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);">—</div>
+      <div class="ws-pill">
+        <div class="ws-dot" id="wsDot"></div>
+        <span id="wsLabel">CONNECTING...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ALERT BANNER -->
+  <div class="sec-label">▸ LIVE STATUS</div>
+  <div class="alert-banner safe" id="alertBanner">
+    <div class="alert-icon" id="alertIcon">🛡️</div>
+    <div class="alert-info">
+      <div class="alert-status" id="alertStatus">ALL CLEAR</div>
+      <div class="alert-sub" id="alertSub">System monitoring — no threats detected</div>
+      <div id="alertBadge"><span class="alert-badge badge-safe">● SYSTEM SAFE</span></div>
+    </div>
+    <div class="alert-time" id="alertTime"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="sec-label">▸ DETECTION STATS</div>
+  <div class="stats">
+    <div class="stat" style="--c:var(--red)">
+      <div class="stat-icon">🚨</div>
+      <div class="stat-val" id="sIntruder">0</div>
+      <div class="stat-label">INTRUDER ALERTS</div>
+    </div>
+    <div class="stat" style="--c:var(--purple)">
+      <div class="stat-icon">🙋</div>
+      <div class="stat-val" id="sHelp">0</div>
+      <div class="stat-label">HELP GESTURES</div>
+    </div>
+    <div class="stat" style="--c:var(--amber)">
+      <div class="stat-icon">🆘</div>
+      <div class="stat-val" id="sEmergency">0</div>
+      <div class="stat-label">EMERGENCIES</div>
+    </div>
+    <div class="stat" style="--c:var(--blue)">
+      <div class="stat-icon">📁</div>
+      <div class="stat-val" id="sTotal">0</div>
+      <div class="stat-label">TOTAL EVIDENCE</div>
+    </div>
+    <div class="stat" style="--c:var(--green)">
+      <div class="stat-icon">📅</div>
+      <div class="stat-val" id="sToday">0</div>
+      <div class="stat-label">TODAY</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- EVIDENCE -->
+    <div>
+      <div class="sec-label">▸ EVIDENCE CAPTURES</div>
+      <div class="filter-tabs">
+        <button class="ftab active-all" onclick="filterEv('all',this)">ALL</button>
+        <button class="ftab" onclick="filterEv('intruder',this)">🚨 INTRUDER</button>
+        <button class="ftab" onclick="filterEv('help',this)">🙋 HELP</button>
+        <button class="ftab" onclick="filterEv('emergency',this)">🆘 EMERGENCY</button>
+      </div>
+      <div class="evidence-grid" id="evidenceGrid">
+        <div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:0.75rem;">No evidence yet</div>
+      </div>
+    </div>
+
+    <!-- EVENT LOG -->
+    <div>
+      <div class="sec-label">▸ EVENT LOG</div>
+      <div class="log-card">
+        <div class="card-head">
+          <div class="card-head-title">Live Events</div>
+          <button onclick="clearLog()" style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;cursor:pointer;">CLEAR</button>
+        </div>
+        <div class="log-scroll" id="eventLog">
+          <div class="log-empty">No events yet</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" style="display:none;" onclick="if(event.target===this)closeLB()">
+  <div class="lb-inner">
+    <button class="lb-close" onclick="closeLB()">✕</button>
+    <img class="lb-img" id="lbImg" src="" alt="Evidence">
+    <div class="lb-info" id="lbInfo"></div>
+  </div>
+</div>
+
+<script>
+const HTTP_BASE = 'http://localhost:8081';
+let allEvidence = [];
+let eventLog = [];
+let currentFilter = 'all';
+let hasLog = false;
+
+// ── Helpers ──────────────────────────────────────────────────
+function typeIcon(t){ return t==='intruder'?'🚨':t==='help'?'🙋':t==='emergency'?'🆘':'📷'; }
+function typeColor(t){ return t==='intruder'?'var(--red)':t==='help'?'var(--purple)':t==='emergency'?'var(--amber)':'var(--blue)'; }
+function now(){ return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function todayCount(files){
+  const today = new Date().toDateString();
+  return files.filter(f=>new Date(f.unix*1000).toDateString()===today).length;
+}
+
+// ── Update Alert Banner ───────────────────────────────────────
+function updateBanner(state){
+  const banner = document.getElementById('alertBanner');
+  const icon   = document.getElementById('alertIcon');
+  const status = document.getElementById('alertStatus');
+  const sub    = document.getElementById('alertSub');
+  const badge  = document.getElementById('alertBadge');
+  const time   = document.getElementById('alertTime');
+
+  const s = state.status?.toLowerCase() || 'safe';
+  banner.className = 'alert-banner ' + s;
+
+  if(s === 'danger'){
+    icon.textContent = '⚠️';
+    status.textContent = 'INTRUDER DETECTED';
+    sub.textContent = 'Unknown face detected — alert triggered';
+    badge.innerHTML = '<span class="alert-badge badge-danger">⚠ DANGER ALERT</span>';
+  } else if(s === 'help'){
+    icon.textContent = '🙋';
+    status.textContent = 'HELP GESTURE';
+    sub.textContent = 'Help gesture detected — Telegram alert sent';
+    badge.innerHTML = '<span class="alert-badge badge-help">🙋 HELP DETECTED</span>';
+  } else if(s === 'emergency'){
+    icon.textContent = '🆘';
+    status.textContent = 'EMERGENCY!';
+    sub.textContent = 'Emergency button triggered — immediate alert sent';
+    badge.innerHTML = '<span class="alert-badge badge-emergency">🆘 EMERGENCY</span>';
+  } else {
+    icon.textContent = '🛡️';
+    status.textContent = 'ALL CLEAR';
+    sub.textContent = 'System monitoring — no threats detected';
+    badge.innerHTML = '<span class="alert-badge badge-safe">● SYSTEM SAFE</span>';
+  }
+
+  if(state.last_event_time){
+    time.innerHTML = `<div>Last event</div><div style="font-size:0.85rem;color:var(--text);font-weight:700">${state.last_event_time}</div>`;
+  }
+}
+
+// ── Update Stats ──────────────────────────────────────────────
+function updateStats(state, files){
+  document.getElementById('sIntruder').textContent  = state.total_intruder  || 0;
+  document.getElementById('sHelp').textContent      = state.total_help      || 0;
+  document.getElementById('sEmergency').textContent = state.total_emergency || 0;
+  document.getElementById('sTotal').textContent     = (files||[]).length;
+  document.getElementById('sToday').textContent     = todayCount(files||[]);
+  document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
+}
+
+// ── Render Evidence Grid ──────────────────────────────────────
+function renderEvidence(){
+  const filtered = currentFilter === 'all' ? allEvidence : allEvidence.filter(f=>f.type===currentFilter);
+  const grid = document.getElementById('evidenceGrid');
+
+  if(!filtered.length){
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:0.75rem;">No ${currentFilter} evidence</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(f=>`
+    <div class="ev-card" onclick="openLB('${f.filename}','${f.type}','${f.timestamp}')">
+      <img class="ev-thumb" src="${HTTP_BASE}/evidence/${f.filename}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+           loading="lazy">
+      <div class="ev-thumb-placeholder" style="display:none">${typeIcon(f.type)}</div>
+      <div class="ev-info">
+        <div class="ev-type ${f.type}">${f.type.toUpperCase()}</div>
+        <div class="ev-time">${f.time}</div>
+        <div class="ev-time">${f.date}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterEv(type, btn){
+  currentFilter = type;
+  document.querySelectorAll('.ftab').forEach(b=>{
+    b.className = 'ftab';
+  });
+  btn.className = `ftab active-${type}`;
+  renderEvidence();
+}
+
+// ── Event Log ─────────────────────────────────────────────────
+function addLog(type, msg, time){
+  const logEl = document.getElementById('eventLog');
+  if(logEl.querySelector('.log-empty')) logEl.innerHTML = '';
+  const item = document.createElement('div');
+  item.className = 'log-item';
+  item.innerHTML = `
+    <div class="log-dot dot-${type}"></div>
+    <div>
+      <div class="log-msg">${msg}</div>
+      <div class="log-time">${time}</div>
+    </div>
+  `;
+  logEl.insertBefore(item, logEl.firstChild);
+  if(logEl.children.length > 50) logEl.removeChild(logEl.lastChild);
+}
+
+function clearLog(){
+  document.getElementById('eventLog').innerHTML = '<div class="log-empty">No events yet</div>';
+}
+
+// ── Lightbox ──────────────────────────────────────────────────
+function openLB(filename, type, timestamp){
+  document.getElementById('lbImg').src = `${HTTP_BASE}/evidence/${filename}`;
+  document.getElementById('lbInfo').textContent = `${type.toUpperCase()} — ${timestamp}`;
+  document.getElementById('lightbox').style.display = 'flex';
+}
+function closeLB(){ document.getElementById('lightbox').style.display = 'none'; }
+
+// ── Process data ──────────────────────────────────────────────
+function processData(state, evidence, newFiles){
+  updateBanner(state);
+  updateStats(state, evidence);
+  allEvidence = evidence || [];
+  renderEvidence();
+
+  // Log new events
+  if(newFiles && newFiles.length){
+    newFiles.forEach(f=>{
+      const msg = f.type==='intruder'?'Unknown face detected!':f.type==='help'?'Help gesture detected!':'Emergency triggered!';
+      addLog(f.type, msg, f.timestamp);
+    });
+  }
+}
+
+// ── WebSocket ─────────────────────────────────────────────────
+function connect(){
+  const ws = new WebSocket('ws://localhost:8768');
+  const dot = document.getElementById('wsDot');
+  const lbl = document.getElementById('wsLabel');
+
+  ws.onopen = ()=>{
+    dot.className = 'ws-dot on';
+    lbl.textContent = 'LIVE — ws://localhost:8768';
+    addLog('safe','System connected','Live');
+  };
+
+  ws.onmessage = (e)=>{
+    const data = JSON.parse(e.data);
+    if(data.type === 'init' || data.type === 'update'){
+      processData(data.state, data.evidence, data.new || []);
+    }
+  };
+
+  ws.onclose = ()=>{
+    dot.className = 'ws-dot';
+    lbl.textContent = 'DISCONNECTED — Retrying...';
+    setTimeout(connect, 3000);
+  };
+
+  ws.onerror = ()=> ws.close();
+}
+
+// HTTP fallback poll
+async function pollHTTP(){
+  try{
+    const res = await fetch(`${HTTP_BASE}/state`);
+    const data = await res.json();
+    processData(data.state, data.evidence, []);
+  }catch(e){}
+}
+
+connect();
+setInterval(pollHTTP, 3000);
+pollHTTP();
+</script>
+</body>
+</html>
+HTMLEOF
+echo "done"
