@@ -270,12 +270,25 @@ document.getElementById("zone"+z).innerText="SAFE — No Detection";
 }
 
 function triggerAlert(sensor,zone){
+
 document.getElementById("systemStatus").className="system-status alert-mode";
 document.getElementById("statusText").innerText="⚠ FIRE DETECTED";
 
-document.getElementById("card"+zone).classList.add("alert");
-document.getElementById("zone"+zone).className="sensor-status alert";
-document.getElementById("zone"+zone).innerText=sensor;
+zone = zone.toString().trim().toUpperCase();
+
+const card = document.getElementById("card"+zone);
+const sensorBox = document.getElementById("zone"+zone);
+
+if(card){
+    card.classList.add("alert");
+}
+
+if(sensorBox){
+    sensorBox.className="sensor-status alert";
+    sensorBox.innerText=sensor + " ACTIVE";
+}
+
+console.log("LIVE ALERT:", zone, sensor);
 }
 
 function addHistory(sensor,zone,time,date){
