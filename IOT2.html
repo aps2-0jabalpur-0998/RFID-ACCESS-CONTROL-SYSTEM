@@ -619,16 +619,8 @@ function triggerAlert(sensor, zone){
 
 setSafe();
 
-document.getElementById("systemStatus").className =
-"system-status alert-mode";
-
-document.getElementById("statusText").textContent =
-"⚠ FIRE DETECTED";
-
-const zoneLetter = zone.replace("zone","").toUpperCase();
-
-const card = document.getElementById("card" + zoneLetter);
-const el = document.getElementById(zone);
+const card = document.getElementById("card"+zone);
+const el = document.getElementById("zone"+zone);
 
 card.classList.add("alert");
 el.className = "sensor-status alert";
