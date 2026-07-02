@@ -619,19 +619,21 @@ el.innerHTML =
 
 }
 
-function triggerAlert(sensor){
+function triggerAlert(sensor, zone){
+
+setSafe();
 
 document.getElementById("systemStatus").className =
 "system-status alert-mode";
 
 document.getElementById("statusText").textContent =
-"⚠ FIRE / GAS DETECTED";
+"⚠ FIRE DETECTED";
 
-["A","B","C","D","E"].forEach(z=>{
+const card = document.getElementById(
+"card" + zone.replace("zone","").toUpperCase()
+);
 
-const card = document.getElementById("card"+z);
-
-const el = document.getElementById("zone"+z);
+const el = document.getElementById(zone);
 
 card.classList.add("alert");
 
@@ -640,9 +642,6 @@ el.className = "sensor-status alert";
 el.innerHTML =
 `<div class="sensor-dot"></div>
 <span>${sensor}</span>`;
-
-});
-
 }
 
 function addHistory(sensor,zone,time,date){
