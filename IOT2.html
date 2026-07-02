@@ -585,156 +585,104 @@ No alerts yet — system nominal
 
 </div>
 
-<script>
-
 const historyBody = document.getElementById("historyBody");
-
 let hasHistory = false;
 
-function setSafe(){
+function setSafe() {
+    document.getElementById("systemStatus").className = "system-status";
+    document.getElementById("statusText").textContent = "ALL SYSTEMS SAFE";
 
-document.getElementById("systemStatus").className =
-"system-status";
+    ["A","B","C","D"].forEach(z => {
+        document.getElementById("card"+z).classList.remove("alert");
 
-document.getElementById("statusText").textContent =
-"ALL SYSTEMS SAFE";
-
-["A","B","C","D","E"].forEach(z=>{
-
-document.getElementById("card"+z)
-.classList.remove("alert");
-
-const el = document.getElementById("zone"+z);
-
-el.className = "sensor-status";
-
-el.innerHTML =
-'<div class="sensor-dot"></div><span>SAFE — No Detection</span>';
-
-});
-
+        const el = document.getElementById("zone"+z);
+        el.className = "sensor-status";
+        el.innerHTML =
+        '<div class="sensor-dot"></div><span>SAFE — No Detection</span>';
+    });
 }
 
-function triggerAlert(sensor, zone){
+function triggerAlert(sensor, zone) {
+    document.getElementById("systemStatus").className =
+    "system-status alert-mode";
 
-document.getElementById("systemStatus").className =
-"system-status alert-mode";
+    document.getElementById("statusText").textContent =
+    "⚠ FIRE DETECTED";
 
-document.getElementById("statusText").textContent =
-"⚠ FIRE DETECTED";
+    const card = document.getElementById("card"+zone);
+    const el = document.getElementById("zone"+zone);
 
-const zoneLetter = zone.replace("zone","").toUpperCase();
-
-const card = document.getElementById("card" + zoneLetter);
-const el = document.getElementById("zone" + zoneLetter);
-
-if(card && el){
-    card.classList.add("alert");
-    el.className = "sensor-status alert";
-    el.innerHTML =
-    `<div class="sensor-dot"></div><span>${sensor}</span>`;
-}
-}
-function addHistory(sensor,zone,time,date){
-
-if(!hasHistory){
-
-historyBody.innerHTML = "";
-
-hasHistory = true;
-
+    if(card && el){
+        card.classList.add("alert");
+        el.className = "sensor-status alert";
+        el.innerHTML =
+        `<div class="sensor-dot"></div><span>${sensor}</span>`;
+    }
 }
 
-const row = document.createElement("tr");
+function addHistory(sensor, zone, time, date) {
+    if(!hasHistory){
+        historyBody.innerHTML = "";
+        hasHistory = true;
+    }
 
-row.innerHTML = `
-<td class="alertText">${sensor}</td>
-<td><span class="zone-badge">${zone}</span></td>
-<td class="time-text">${time}</td>
-<td class="time-text">${date}</td>
-`;
+    const row = document.createElement("tr");
 
-historyBody.prepend(row);
+    row.innerHTML = `
+    <td class="alertText">${sensor}</td>
+    <td><span class="zone-badge">ZONE ${zone}</span></td>
+    <td class="time-text">${time}</td>
+    <td class="time-text">${date}</td>
+    `;
 
+    historyBody.prepend(row);
 }
 
-function connect(){
+function connect() {
+    const ws =
+    new WebSocket("wss://nacho-plunder-oblivion.ngrok-free.dev");
 
-const ws =
-new WebSocket("wss://nacho-plunder-oblivion.ngrok-free.dev");
+    ws.onopen = () => {
+        document.getElementById("wsDot").className =
+        "ws-dot connected";
 
-ws.onopen = ()=>{
+        document.getElementById("wsLabel").textContent =
+        "CONNECTED — LIVE SERVER";
+    };
 
-document.getElementById("wsDot").className =
-"ws-dot connected";
+    ws.onclose = () => {
+        document.getElementById("wsDot").className =
+        "ws-dot";
 
-document.getElementById("wsLabel").textContent =
-"CONNECTED — LIVE SERVER";
+        document.getElementById("wsLabel").textContent =
+        "DISCONNECTED — RETRYING...";
 
-};
+        setTimeout(connect, 3000);
+    };
 
-ws.onclose = ()=>{
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
 
-document.getElementById("wsDot").className =
-"ws-dot";
+        if(data.type === "safe"){
+            setSafe();
+        }
 
-document.getElementById("wsLabel").textContent =
-"DISCONNECTED — RETRYING...";
+        if(data.type === "alert" && data.alerts){
+            data.alerts.forEach(a => {
+                triggerAlert(a.sensor, a.zone);
+                addHistory(a.sensor, a.zone, a.time, a.date);
+            });
+        }
 
-setTimeout(connect,3000);
-
-};
-
-ws.onmessage = (event)=>{
-
-const data = JSON.parse(event.data);
-
-console.log(data);
-
-if(data.type === "safe"){
-
-setSafe();
-
-}
-
-if(data.type === "alert" && data.alerts){
-
-data.alerts.forEach(a=>{
-
-triggerAlert(a.sensor, a.zone);
-
-addHistory(
-a.sensor,
-a.zone,
-a.time,
-a.date
-);
-
-});
-
-}
-
-if(data.type === "history" && data.project==="fire" && data.data){
-
-data.data.forEach(h=>{
-
-addHistory(
-h.sensor,
-h.zone,
-h.time,
-h.date
-);
-
-});
-
-}
-
-};
-
+        if(data.type === "history" && data.project === "fire"){
+            data.data.forEach(h => {
+                addHistory(h.sensor, h.zone, h.time, h.date);
+            });
+        }
+    };
 }
 
 connect();
-</script>
 
 <script src='https://www.noupe.com/embed/01980cc4a3ab788f92fbee0c70a738e54d73.js'></script>
 
