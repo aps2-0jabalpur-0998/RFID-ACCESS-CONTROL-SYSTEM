@@ -510,6 +510,9 @@ DISCONNECTED
 <div class="zone-name">IR Sensor 1</div>
 <div class="sensor-status" id="zoneA">
 <div class="sensor-dot"></div>
+<span>SAFE — No Detection</span>
+</div>
+</div>
 
 
 <div class="zone-card" id="cardB">
@@ -540,6 +543,11 @@ DISCONNECTED
 </div>
 
 
+<div class="zone-card" id="cardE">
+<div class="zone-label">ZONE E</div>
+<div class="zone-name">MQ2 Gas Sensor</div>
+<div class="sensor-status" id="zoneE">
+<div class="sensor-dot"></div>
 <span>SAFE — No Detection</span>
 </div>
 </div>
@@ -627,21 +635,17 @@ document.getElementById("systemStatus").className =
 document.getElementById("statusText").textContent =
 "⚠ FIRE DETECTED";
 
-const card = document.getElementById(
-"card" + zone.replace("zone","").toUpperCase()
-);
+const zoneLetter = zone.replace("zone","").toUpperCase();
 
+const card = document.getElementById("card" + zoneLetter);
 const el = document.getElementById(zone);
 
 card.classList.add("alert");
-
 el.className = "sensor-status alert";
 
 el.innerHTML =
-`<div class="sensor-dot"></div>
-<span>${sensor}</span>`;
+`<div class="sensor-dot"></div><span>${sensor}</span>`;
 }
-
 function addHistory(sensor,zone,time,date){
 
 if(!hasHistory){
@@ -708,7 +712,7 @@ if(data.type === "alert" && data.alerts){
 
 data.alerts.forEach(a=>{
 
-triggerAlert(a.sensor);
+triggerAlert(a.sensor, a.zone);
 
 addHistory(
 a.sensor,
