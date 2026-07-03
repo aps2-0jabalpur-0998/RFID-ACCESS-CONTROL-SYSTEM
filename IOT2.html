@@ -253,14 +253,25 @@ const historyBody = document.getElementById("historyBody");
 let hasHistory = false;
 
 function setSafe(){
+
 document.getElementById("systemStatus").className="system-status";
 document.getElementById("statusText").innerText="ALL SYSTEMS SAFE";
 
 ["A","B","C"].forEach(z=>{
-document.getElementById("card"+z).classList.remove("alert");
-document.getElementById("zone"+z).className="sensor-status";
-document.getElementById("zone"+z).innerText="SAFE — No Detection";
+
+    const card=document.getElementById("card"+z);
+    const sensor=document.getElementById("zone"+z);
+
+    if(card)
+        card.classList.remove("alert");
+
+    if(sensor){
+        sensor.className="sensor-status";
+        sensor.innerHTML="SAFE — No Detection";
+    }
+
 });
+
 }
 
 function triggerAlert(sensor,zone){
@@ -337,7 +348,7 @@ ws.onclose=()=>{
 document.getElementById("wsLabel").innerText="DISCONNECTED — RETRYING...";
 setTimeout(connect,3000);
 };
-
+console.log(data);
 ws.onmessage=(event)=>{
 const data=JSON.parse(event.data);
 
