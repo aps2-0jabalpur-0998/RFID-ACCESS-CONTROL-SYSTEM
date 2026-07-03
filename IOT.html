@@ -725,17 +725,15 @@
       label.textContent = 'CONNECTED';
     };
 
-    ws.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data.type === 'history') {
-        data.data.forEach(d => {
-          addToHistory(d);
-          updateStats(d);
-        });
-      } else if (data.uid) {
-        handleScan(data);
-      }
-    };
+ws.onmessage = (e) => {
+  const data = JSON.parse(e.data);
+
+  if (data.type === "users") return;
+
+  if (data.project === "rfid") {
+    handleScan(data);
+  }
+};
 
     ws.onclose = () => {
       dot.className = 'ws-dot';
