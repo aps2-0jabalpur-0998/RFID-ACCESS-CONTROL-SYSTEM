@@ -730,7 +730,7 @@ ws.onmessage = (e) => {
 
   if (data.type === "users") return;
 
-  if (data.project === "rfid") {
+ if (data.project === "rfid") handleScan(data);
     handleScan(data);
   }
 };
