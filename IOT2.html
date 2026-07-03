@@ -348,7 +348,6 @@ ws.onclose=()=>{
 document.getElementById("wsLabel").innerText="DISCONNECTED — RETRYING...";
 setTimeout(connect,3000);
 };
-console.log(data);
 ws.onmessage=(event)=>{
 const data=JSON.parse(event.data);
 
