@@ -201,13 +201,13 @@ DISCONNECTED
 <div class="sensor-status" id="zoneA">SAFE — No Detection</div>
 </div>
 
-<div class="zone-card" id="cardC">
+<div class="zone-card" id="cardB">
 <div class="zone-label">ZONE B</div>
 <div class="zone-name">Flame Sensor 1</div>
 <div class="sensor-status" id="zoneC">SAFE — No Detection</div>
 </div>
 
-<div class="zone-card" id="cardD">
+<div class="zone-card" id="cardC">
 <div class="zone-label">ZONE C</div>
 <div class="zone-name">Flame Sensor 2</div>
 <div class="sensor-status" id="zoneD">SAFE — No Detection</div>
@@ -347,11 +347,20 @@ if(data.type==="safe"){
 setSafe();
 }
 
-if(data.type==="alert"){
-data.alerts.forEach(a=>{
-triggerAlert(a.sensor,a.zone);
-addHistory(a.sensor,a.zone,a.time,a.date);
-});
+if(data.project==="fire" && data.type==="alert"){
+
+    triggerAlert(
+        data.sensor,
+        data.zone
+    );
+
+    addHistory(
+        data.sensor,
+        data.zone,
+        data.time,
+        data.date
+    );
+
 }
 
 if(data.type==="history"){
