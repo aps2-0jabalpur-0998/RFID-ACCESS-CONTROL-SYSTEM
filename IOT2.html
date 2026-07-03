@@ -202,13 +202,13 @@ DISCONNECTED
 </div>
 
 <div class="zone-card" id="cardC">
-<div class="zone-label">ZONE C</div>
+<div class="zone-label">ZONE B</div>
 <div class="zone-name">Flame Sensor 1</div>
 <div class="sensor-status" id="zoneC">SAFE — No Detection</div>
 </div>
 
 <div class="zone-card" id="cardD">
-<div class="zone-label">ZONE D</div>
+<div class="zone-label">ZONE C</div>
 <div class="zone-name">Flame Sensor 2</div>
 <div class="sensor-status" id="zoneD">SAFE — No Detection</div>
 </div>
@@ -256,7 +256,7 @@ function setSafe(){
 document.getElementById("systemStatus").className="system-status";
 document.getElementById("statusText").innerText="ALL SYSTEMS SAFE";
 
-["A","B","C","D"].forEach(z=>{
+["A","B","C"].forEach(z=>{
 document.getElementById("card"+z).classList.remove("alert");
 document.getElementById("zone"+z).className="sensor-status";
 document.getElementById("zone"+z).innerText="SAFE — No Detection";
