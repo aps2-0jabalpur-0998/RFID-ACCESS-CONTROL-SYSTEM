@@ -5,387 +5,1338 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Eco Guardian AI Dashboard</title>
+<title>EcoGuardian AI — IoT Control Center</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 
 :root{
---bg:#0a0a0f;
---surface:#111118;
---surface2:#1a1a24;
---border:rgba(255,255,255,0.07);
---border2:rgba(255,255,255,0.12);
 
---text:#f0f0f5;
---muted:#6b6b80;
+    --bg:#07090d;
+    --panel:#0d1117;
+    --panel2:#111720;
 
---accent:#ff7a3d;
+    --border:rgba(255,255,255,.08);
+    --border-hover:rgba(255,255,255,.18);
 
---green:#22c55e;
---red:#ef4444;
---blue:#3b82f6;
+    --text:#f4f7fb;
+    --muted:#788392;
+
+    --accent:#ff7a3d;
+    --accent-soft:rgba(255,122,61,.12);
+
+    --green:#22c55e;
+    --green-soft:rgba(34,197,94,.1);
+
+    --blue:#3b82f6;
+    --blue-soft:rgba(59,130,246,.1);
+
+    --red:#ef4444;
+    --red-soft:rgba(239,68,68,.1);
+
+    --yellow:#eab308;
+    --yellow-soft:rgba(234,179,8,.1);
+
+    --shadow:0 20px 60px rgba(0,0,0,.35);
 }
 
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
 }
 
 body{
-background:var(--bg);
-color:var(--text);
-font-family:'Syne',sans-serif;
-overflow-x:hidden;
+
+    min-height:100vh;
+
+    background:
+        radial-gradient(circle at 10% 10%,rgba(255,122,61,.08),transparent 30%),
+        radial-gradient(circle at 90% 20%,rgba(59,130,246,.07),transparent 30%),
+        var(--bg);
+
+    color:var(--text);
+
+    font-family:'Inter',sans-serif;
+
+    overflow-x:hidden;
 }
+
+
+/* =========================
+   BACKGROUND
+========================= */
 
 body::before{
-content:'';
-position:fixed;
-inset:0;
 
-background-image:
-linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    content:"";
 
-background-size:40px 40px;
+    position:fixed;
+    inset:0;
 
-pointer-events:none;
-z-index:0;
+    background-image:
+        linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+
+    background-size:45px 45px;
+
+    pointer-events:none;
+
+    mask-image:linear-gradient(to bottom,black,transparent);
 }
+
+body::after{
+
+    content:"";
+
+    position:fixed;
+
+    width:400px;
+    height:400px;
+
+    background:var(--accent);
+
+    opacity:.035;
+
+    filter:blur(120px);
+
+    top:30%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    pointer-events:none;
+}
+
+
+/* =========================
+   LAYOUT
+========================= */
 
 .wrapper{
-position:relative;
-z-index:1;
-max-width:1400px;
-margin:auto;
-padding:2rem;
+
+    width:min(1450px,94%);
+
+    margin:auto;
+
+    position:relative;
+
+    z-index:2;
+
+    padding:28px 0 40px;
 }
 
-/* HEADER */
+
+/* =========================
+   HEADER
+========================= */
 
 header{
-display:flex;
-justify-content:space-between;
-align-items:center;
 
-margin-bottom:2rem;
-padding-bottom:1rem;
+    display:flex;
 
-border-bottom:1px solid var(--border);
+    justify-content:space-between;
+    align-items:center;
+
+    gap:20px;
+
+    padding:18px 22px;
+
+    background:rgba(13,17,23,.78);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid var(--border);
+
+    border-radius:20px;
+
+    box-shadow:var(--shadow);
+
+    position:sticky;
+
+    top:15px;
+
+    z-index:20;
+}
+
+.logo-area{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:13px;
+}
+
+.logo-mark{
+
+    width:48px;
+    height:48px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:15px;
+
+    font-size:23px;
+
+    background:linear-gradient(
+        135deg,
+        var(--accent),
+        #ff4d4d
+    );
+
+    box-shadow:
+        0 0 25px rgba(255,122,61,.25);
 }
 
 .logo{
-font-size:2rem;
-font-weight:800;
+
+    font-size:20px;
+
+    font-weight:800;
+
+    letter-spacing:-.5px;
 }
 
 .logo span{
-color:var(--accent);
+
+    color:var(--accent);
 }
 
-.logo sub{
-display:block;
-font-size:0.65rem;
-margin-top:4px;
+.logo-sub{
 
-font-family:'Space Mono', monospace;
-letter-spacing:0.2em;
+    font-family:'Space Mono',monospace;
 
-color:var(--muted);
+    color:var(--muted);
+
+    font-size:9px;
+
+    letter-spacing:2px;
+
+    margin-top:3px;
 }
+
+
+/* =========================
+   NAV
+========================= */
 
 .nav{
-display:flex;
-gap:12px;
+
+    display:flex;
+
+    gap:7px;
+
+    align-items:center;
 }
 
 .nav button{
-padding:12px 20px;
-border:none;
-outline:none;
 
-border-radius:12px;
+    border:1px solid transparent;
 
-background:var(--surface);
-color:white;
+    background:transparent;
 
-cursor:pointer;
+    color:var(--muted);
 
-font-weight:700;
+    padding:10px 15px;
 
-transition:0.3s;
+    border-radius:11px;
 
-border:1px solid var(--border);
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    font-family:inherit;
 }
 
 .nav button:hover{
-transform:translateY(-2px);
-background:var(--surface2);
+
+    color:white;
+
+    background:rgba(255,255,255,.05);
 }
 
 .nav button.active{
-background:var(--accent);
-color:black;
+
+    background:var(--accent-soft);
+
+    color:var(--accent);
+
+    border-color:rgba(255,122,61,.2);
 }
 
-/* HERO */
+
+/* =========================
+   HERO
+========================= */
 
 .hero{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
 
-margin-bottom:2rem;
+    margin-top:28px;
+
+    display:grid;
+
+    grid-template-columns:1.5fr 1fr;
+
+    gap:18px;
 }
 
-.hero-card{
-background:var(--surface);
+.hero-main{
 
-border:1px solid var(--border);
+    min-height:310px;
 
-border-radius:20px;
+    position:relative;
 
-padding:2rem;
+    overflow:hidden;
 
-position:relative;
-overflow:hidden;
+    padding:38px;
+
+    border-radius:25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,122,61,.13),
+            rgba(255,255,255,.025)
+        ),
+        var(--panel);
+
+    border:1px solid rgba(255,255,255,.09);
+
+    box-shadow:var(--shadow);
 }
 
-.hero-card::before{
-content:'';
-position:absolute;
-inset:0;
+.hero-main::after{
 
-background:linear-gradient(135deg,rgba(255,255,255,0.03),transparent);
+    content:"";
 
-pointer-events:none;
+    position:absolute;
+
+    width:280px;
+    height:280px;
+
+    border-radius:50%;
+
+    border:1px solid rgba(255,122,61,.12);
+
+    right:-100px;
+    bottom:-130px;
+
+    box-shadow:
+        0 0 0 35px rgba(255,122,61,.025),
+        0 0 0 70px rgba(255,122,61,.015);
+}
+
+.eyebrow{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-family:'Space Mono',monospace;
+
+    font-size:11px;
+
+    color:var(--accent);
+
+    letter-spacing:1.5px;
+
+    margin-bottom:20px;
+}
+
+.pulse{
+
+    width:7px;
+    height:7px;
+
+    background:var(--green);
+
+    border-radius:50%;
+
+    box-shadow:0 0 0 0 rgba(34,197,94,.6);
+
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+
+    0%{
+        box-shadow:0 0 0 0 rgba(34,197,94,.5);
+    }
+
+    70%{
+        box-shadow:0 0 0 9px rgba(34,197,94,0);
+    }
+
+    100%{
+        box-shadow:0 0 0 0 rgba(34,197,94,0);
+    }
 }
 
 .hero-title{
-font-size:1.6rem;
-font-weight:800;
-margin-bottom:12px;
+
+    max-width:700px;
+
+    font-size:clamp(2rem,4vw,4rem);
+
+    line-height:1.02;
+
+    letter-spacing:-2px;
+
+    font-weight:800;
+}
+
+.hero-title span{
+
+    color:var(--accent);
 }
 
 .hero-desc{
-color:var(--muted);
-line-height:1.7;
-font-size:0.95rem;
+
+    max-width:650px;
+
+    margin-top:20px;
+
+    color:var(--muted);
+
+    line-height:1.75;
+
+    font-size:14px;
 }
 
-.badge{
-display:inline-flex;
-align-items:center;
-gap:6px;
+.hero-actions{
 
-padding:8px 14px;
-border-radius:20px;
+    display:flex;
 
-margin-top:18px;
+    gap:12px;
 
-font-size:0.75rem;
-font-family:'Space Mono', monospace;
-
-font-weight:700;
+    margin-top:28px;
 }
 
-.green{
-background:rgba(34,197,94,0.08);
-border:1px solid rgba(34,197,94,0.3);
-color:var(--green);
+.primary-btn,
+.secondary-btn{
+
+    padding:13px 18px;
+
+    border-radius:12px;
+
+    font-family:inherit;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.25s;
 }
 
-.blue{
-background:rgba(59,130,246,0.08);
-border:1px solid rgba(59,130,246,0.3);
-color:var(--blue);
+.primary-btn{
+
+    border:0;
+
+    background:var(--accent);
+
+    color:#080808;
+
+    box-shadow:0 10px 25px rgba(255,122,61,.18);
 }
 
-/* PROJECTS */
+.primary-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 14px 35px rgba(255,122,61,.28);
+}
+
+.secondary-btn{
+
+    color:white;
+
+    background:rgba(255,255,255,.04);
+
+    border:1px solid var(--border);
+}
+
+.secondary-btn:hover{
+
+    background:rgba(255,255,255,.08);
+
+    border-color:var(--border-hover);
+}
+
+
+/* =========================
+   LIVE PANEL
+========================= */
+
+.live-panel{
+
+    background:var(--panel);
+
+    border:1px solid var(--border);
+
+    border-radius:25px;
+
+    padding:26px;
+
+    box-shadow:var(--shadow);
+}
+
+.panel-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+}
+
+.panel-title{
+
+    font-size:14px;
+
+    font-weight:800;
+}
+
+.live{
+
+    color:var(--green);
+
+    font-family:'Space Mono',monospace;
+
+    font-size:10px;
+}
+
+.system-ring{
+
+    width:125px;
+    height:125px;
+
+    margin:15px auto 25px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    background:
+        radial-gradient(
+            circle,
+            var(--panel) 55%,
+            transparent 56%
+        );
+
+    border:1px solid rgba(34,197,94,.3);
+
+    box-shadow:
+        0 0 35px rgba(34,197,94,.08),
+        inset 0 0 30px rgba(34,197,94,.04);
+
+    position:relative;
+}
+
+.system-ring::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:8px;
+
+    border-radius:50%;
+
+    border:1px dashed rgba(34,197,94,.3);
+
+    animation:rotate 15s linear infinite;
+}
+
+@keyframes rotate{
+
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+.ring-content{
+
+    text-align:center;
+}
+
+.ring-value{
+
+    font-size:28px;
+
+    font-weight:800;
+
+    color:var(--green);
+}
+
+.ring-label{
+
+    font-family:'Space Mono',monospace;
+
+    color:var(--muted);
+
+    font-size:8px;
+}
+
+.system-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+}
+
+.system-row{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:11px 13px;
+
+    border-radius:11px;
+
+    background:rgba(255,255,255,.025);
+
+    border:1px solid rgba(255,255,255,.045);
+
+    font-size:12px;
+}
+
+.system-name{
+
+    color:#c7cdd5;
+}
+
+.system-state{
+
+    font-family:'Space Mono',monospace;
+
+    font-size:9px;
+
+    color:var(--green);
+}
+
+
+/* =========================
+   STATS
+========================= */
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:15px;
+
+    margin-top:18px;
+}
+
+.stat{
+
+    padding:20px;
+
+    border-radius:18px;
+
+    background:var(--panel);
+
+    border:1px solid var(--border);
+
+    transition:.3s;
+}
+
+.stat:hover{
+
+    transform:translateY(-4px);
+
+    border-color:var(--border-hover);
+}
+
+.stat-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    color:var(--muted);
+
+    font-size:11px;
+}
+
+.stat-icon{
+
+    width:30px;
+    height:30px;
+
+    border-radius:9px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    background:var(--accent-soft);
+}
+
+.stat-value{
+
+    margin-top:13px;
+
+    font-size:26px;
+
+    font-weight:800;
+}
+
+.stat-label{
+
+    margin-top:3px;
+
+    color:var(--muted);
+
+    font-size:11px;
+}
+
+
+/* =========================
+   SECTION
+========================= */
+
+.section{
+
+    margin-top:40px;
+}
+
+.section-head{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:end;
+
+    margin-bottom:17px;
+}
 
 .section-title{
-font-size:1.3rem;
-font-weight:800;
 
-margin-bottom:1.4rem;
+    font-size:20px;
+
+    font-weight:800;
+
+    letter-spacing:-.5px;
 }
 
+.section-sub{
+
+    color:var(--muted);
+
+    font-size:11px;
+
+    font-family:'Space Mono',monospace;
+}
+
+
+/* =========================
+   PROJECT GRID
+========================= */
+
 .projects{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-gap:20px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(280px,1fr));
+
+    gap:16px;
 }
 
 .project-card{
-background:var(--surface);
 
-border:1px solid var(--border);
+    position:relative;
 
-border-radius:22px;
+    overflow:hidden;
 
-padding:1.6rem;
+    padding:22px;
 
-transition:0.35s;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.035),
+            transparent
+        ),
+        var(--panel);
 
-position:relative;
-overflow:hidden;
+    border:1px solid var(--border);
+
+    border-radius:20px;
+
+    transition:.35s;
+
+    box-shadow:0 10px 35px rgba(0,0,0,.15);
+}
+
+.project-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:140px;
+    height:140px;
+
+    border-radius:50%;
+
+    background:var(--accent);
+
+    opacity:0;
+
+    filter:blur(70px);
+
+    top:-50px;
+    right:-50px;
+
+    transition:.35s;
 }
 
 .project-card:hover{
-transform:translateY(-6px);
-border-color:rgba(255,255,255,0.18);
+
+    transform:translateY(-7px);
+
+    border-color:var(--border-hover);
+
+    box-shadow:0 25px 50px rgba(0,0,0,.3);
+}
+
+.project-card:hover::before{
+
+    opacity:.13;
 }
 
 .project-top{
-display:flex;
-justify-content:space-between;
-align-items:center;
 
-margin-bottom:1rem;
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:18px;
 }
 
 .project-icon{
-width:60px;
-height:60px;
 
-border-radius:18px;
+    width:54px;
+    height:54px;
 
-display:flex;
-align-items:center;
-justify-content:center;
+    display:flex;
 
-font-size:1.7rem;
+    align-items:center;
+    justify-content:center;
 
-background:var(--surface2);
+    border-radius:15px;
 
-border:1px solid var(--border2);
+    font-size:22px;
+
+    background:var(--panel2);
+
+    border:1px solid var(--border);
 }
 
-.project-status{
-font-size:0.75rem;
-font-family:'Space Mono', monospace;
+.status{
 
-padding:6px 12px;
-border-radius:16px;
+    display:flex;
 
-background:rgba(34,197,94,0.08);
-color:var(--green);
+    align-items:center;
 
-border:1px solid rgba(34,197,94,0.25);
+    gap:6px;
+
+    padding:6px 9px;
+
+    border-radius:20px;
+
+    font-family:'Space Mono',monospace;
+
+    font-size:8px;
+
+    color:var(--green);
+
+    background:var(--green-soft);
+
+    border:1px solid rgba(34,197,94,.2);
+}
+
+.status-dot{
+
+    width:5px;
+    height:5px;
+
+    border-radius:50%;
+
+    background:currentColor;
 }
 
 .project-name{
-font-size:1.4rem;
-font-weight:800;
 
-margin-bottom:10px;
+    font-size:17px;
+
+    font-weight:800;
+
+    margin-bottom:9px;
 }
 
 .project-desc{
-color:var(--muted);
-line-height:1.7;
-font-size:0.92rem;
 
-margin-bottom:1.4rem;
+    min-height:75px;
+
+    color:var(--muted);
+
+    line-height:1.65;
+
+    font-size:12px;
 }
 
 .tech-stack{
-display:flex;
-flex-wrap:wrap;
-gap:8px;
 
-margin-bottom:1.4rem;
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:6px;
+
+    margin:18px 0;
 }
 
 .tech{
-padding:7px 12px;
 
-border-radius:14px;
+    padding:6px 9px;
 
-background:var(--surface2);
+    border-radius:8px;
 
-border:1px solid var(--border);
+    background:rgba(255,255,255,.035);
 
-font-size:0.72rem;
+    border:1px solid var(--border);
 
-font-family:'Space Mono', monospace;
+    color:#aeb7c2;
+
+    font-family:'Space Mono',monospace;
+
+    font-size:8px;
 }
 
 .open-btn{
-width:100%;
 
-padding:14px;
+    width:100%;
 
-border:none;
-outline:none;
+    padding:12px;
 
-border-radius:14px;
+    border:1px solid rgba(255,122,61,.2);
 
-background:var(--accent);
+    border-radius:11px;
 
-font-weight:800;
-font-size:0.95rem;
+    background:var(--accent-soft);
 
-cursor:pointer;
+    color:var(--accent);
 
-transition:0.3s;
+    font-family:inherit;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:.25s;
 }
 
 .open-btn:hover{
-transform:scale(1.02);
+
+    background:var(--accent);
+
+    color:#080808;
+
+    transform:translateY(-2px);
 }
 
-/* ABOUT */
+
+/* =========================
+   ACTIVITY
+========================= */
+
+.activity-layout{
+
+    display:grid;
+
+    grid-template-columns:1.4fr .8fr;
+
+    gap:16px;
+}
+
+.activity-panel{
+
+    padding:23px;
+
+    border-radius:20px;
+
+    background:var(--panel);
+
+    border:1px solid var(--border);
+}
+
+.activity-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    margin-top:10px;
+}
+
+.activity{
+
+    display:flex;
+
+    gap:13px;
+
+    padding:15px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.05);
+
+    animation:fadeIn .4s ease;
+}
+
+.activity:last-child{
+
+    border-bottom:0;
+}
+
+.activity-icon{
+
+    width:35px;
+    height:35px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:10px;
+
+    background:var(--green-soft);
+}
+
+.activity-text{
+
+    flex:1;
+}
+
+.activity-title{
+
+    font-size:11px;
+
+    font-weight:700;
+}
+
+.activity-time{
+
+    margin-top:4px;
+
+    font-family:'Space Mono',monospace;
+
+    font-size:8px;
+
+    color:var(--muted);
+}
+
+@keyframes fadeIn{
+
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+
+/* =========================
+   QUICK CONTROL
+========================= */
+
+.quick-controls{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+
+    margin-top:16px;
+}
+
+.control{
+
+    padding:15px;
+
+    border-radius:13px;
+
+    background:rgba(255,255,255,.025);
+
+    border:1px solid var(--border);
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+.control:hover{
+
+    background:rgba(255,255,255,.06);
+
+    transform:translateY(-2px);
+}
+
+.control-icon{
+
+    font-size:18px;
+
+    margin-bottom:8px;
+}
+
+.control-name{
+
+    font-size:10px;
+
+    font-weight:700;
+}
+
+.control-status{
+
+    margin-top:3px;
+
+    color:var(--green);
+
+    font-family:'Space Mono',monospace;
+
+    font-size:7px;
+}
+
+
+/* =========================
+   ABOUT
+========================= */
 
 .about{
-margin-top:2.5rem;
 
-background:var(--surface);
+    margin-top:40px;
 
-border:1px solid var(--border);
+    padding:28px;
 
-border-radius:22px;
+    border-radius:22px;
 
-padding:2rem;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,122,61,.05),
+            rgba(59,130,246,.025)
+        ),
+        var(--panel);
+
+    border:1px solid var(--border);
 }
 
-.about p{
-color:var(--muted);
-line-height:1.8;
-margin-top:12px;
+.about-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:25px;
+
+    margin-top:20px;
 }
 
-/* FOOTER */
+.about-item{
+
+    padding:18px;
+
+    border-left:2px solid var(--accent);
+
+    background:rgba(255,255,255,.02);
+}
+
+.about-item h3{
+
+    font-size:12px;
+
+    margin-bottom:8px;
+}
+
+.about-item p{
+
+    color:var(--muted);
+
+    line-height:1.7;
+
+    font-size:11px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
 
 .footer{
-margin-top:2rem;
-text-align:center;
 
-color:var(--muted);
+    display:flex;
 
-font-size:0.8rem;
+    justify-content:space-between;
 
-font-family:'Space Mono', monospace;
+    align-items:center;
+
+    margin-top:35px;
+
+    padding-top:20px;
+
+    border-top:1px solid var(--border);
+
+    color:var(--muted);
+
+    font-family:'Space Mono',monospace;
+
+    font-size:8px;
+
+    letter-spacing:1px;
 }
 
-/* RESPONSIVE */
+.footer-live{
 
-@media(max-width:900px){
+    display:flex;
 
-.hero{
-grid-template-columns:1fr;
+    align-items:center;
+
+    gap:7px;
+
+    color:var(--green);
 }
 
-header{
-flex-direction:column;
-gap:1rem;
-align-items:flex-start;
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1050px){
+
+    .hero{
+
+        grid-template-columns:1fr;
+    }
+
+    .activity-layout{
+
+        grid-template-columns:1fr;
+    }
 }
 
+@media(max-width:800px){
+
+    header{
+
+        position:relative;
+
+        flex-direction:column;
+
+        align-items:flex-start;
+    }
+
+    .nav{
+
+        width:100%;
+
+        overflow-x:auto;
+    }
+
+    .nav button{
+
+        white-space:nowrap;
+    }
+
+    .stats{
+
+        grid-template-columns:1fr 1fr;
+    }
+
+    .about-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .footer{
+
+        flex-direction:column;
+
+        gap:10px;
+
+        align-items:flex-start;
+    }
+}
+
+@media(max-width:500px){
+
+    .wrapper{
+
+        width:92%;
+    }
+
+    .hero-main{
+
+        padding:25px;
+    }
+
+    .hero-title{
+
+        font-size:2rem;
+
+        letter-spacing:-1px;
+    }
+
+    .stats{
+
+        grid-template-columns:1fr;
+    }
+
+    .hero-actions{
+
+        flex-direction:column;
+    }
 }
 
 </style>
@@ -396,296 +1347,966 @@ align-items:flex-start;
 
 <div class="wrapper">
 
+
+<!-- =========================
+     HEADER
+========================= -->
+
 <header>
 
-<div class="logo">
-ECOGUARDIAN <span>AI</span>
-<sub>IOT CONTROL CENTER</sub>
-</div>
+    <div class="logo-area">
 
-<div class="nav">
-<button class="active">Dashboard</button>
-<button onclick="openRFID()">RFID</button>
-<button onclick="openFire()">Fire System</button>
-</div>
+        <div class="logo-mark">
+            🛡️
+        </div>
+
+        <div>
+
+            <div class="logo">
+                ECOGUARDIAN <span>AI</span>
+            </div>
+
+            <div class="logo-sub">
+                IOT CONTROL CENTER
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <nav class="nav">
+
+        <button class="active">
+            Dashboard
+        </button>
+
+        <button onclick="openRFID()">
+            RFID
+        </button>
+
+        <button onclick="openFire()">
+            Fire System
+        </button>
+
+        <button onclick="openDust()">
+            Smart Dustbin
+        </button>
+
+        <button onclick="openIntruder()">
+            Intruder
+        </button>
+
+    </nav>
 
 </header>
 
-<!-- HERO -->
 
-<div class="hero">
+<!-- =========================
+     HERO
+========================= -->
 
-<div class="hero-card">
+<section class="hero">
 
-<div class="hero-title">
-🔥 Fire Protection System
+    <div class="hero-main">
+
+        <div class="eyebrow">
+
+            <span class="pulse"></span>
+
+            SYSTEM OPERATIONAL
+
+        </div>
+
+        <h1 class="hero-title">
+
+            Intelligent
+            <span>Protection.</span>
+
+            Real-Time
+            <span>Control.</span>
+
+        </h1>
+
+        <p class="hero-desc">
+
+            EcoGuardian AI connects embedded IoT hardware,
+            sensors, cameras and intelligent monitoring systems
+            into one centralized real-time control center.
+
+        </p>
+
+        <div class="hero-actions">
+
+            <button class="primary-btn" onclick="openRFID()">
+                OPEN CONTROL CENTER →
+            </button>
+
+            <button class="secondary-btn" onclick="scrollToProjects()">
+                VIEW SYSTEMS
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- LIVE SYSTEM -->
+
+    <div class="live-panel">
+
+        <div class="panel-header">
+
+            <div class="panel-title">
+                SYSTEM HEALTH
+            </div>
+
+            <div class="live">
+                ● LIVE
+            </div>
+
+        </div>
+
+
+        <div class="system-ring">
+
+            <div class="ring-content">
+
+                <div class="ring-value">
+                    98%
+                </div>
+
+                <div class="ring-label">
+                    HEALTH
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="system-list">
+
+            <div class="system-row">
+
+                <span class="system-name">
+                    RFID Network
+                </span>
+
+                <span class="system-state">
+                    ONLINE
+                </span>
+
+            </div>
+
+            <div class="system-row">
+
+                <span class="system-name">
+                    Fire Sensors
+                </span>
+
+                <span class="system-state">
+                    MONITORING
+                </span>
+
+            </div>
+
+            <div class="system-row">
+
+                <span class="system-name">
+                    Camera System
+                </span>
+
+                <span class="system-state">
+                    ACTIVE
+                </span>
+
+            </div>
+
+            <div class="system-row">
+
+                <span class="system-name">
+                    QR Dustbin
+                </span>
+
+                <span class="system-state">
+                    READY
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     STATS
+========================= -->
+
+<section class="stats">
+
+    <div class="stat">
+
+        <div class="stat-top">
+
+            <span>CONNECTED DEVICES</span>
+
+            <div class="stat-icon">
+                📡
+            </div>
+
+        </div>
+
+        <div class="stat-value" id="devices">
+            12
+        </div>
+
+        <div class="stat-label">
+            IoT devices online
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-top">
+
+            <span>SECURITY EVENTS</span>
+
+            <div class="stat-icon">
+                🛡️
+            </div>
+
+        </div>
+
+        <div class="stat-value">
+            247
+        </div>
+
+        <div class="stat-label">
+            Events processed
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-top">
+
+            <span>ACCESS SCANS</span>
+
+            <div class="stat-icon">
+                🪪
+            </div>
+
+        </div>
+
+        <div class="stat-value" id="scans">
+            1,284
+        </div>
+
+        <div class="stat-label">
+            RFID scans
+        </div>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="stat-top">
+
+            <span>UPTIME</span>
+
+            <div class="stat-icon">
+                ⚡
+            </div>
+
+        </div>
+
+        <div class="stat-value">
+            99.9%
+        </div>
+
+        <div class="stat-label">
+            System reliability
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     PROJECTS
+========================= -->
+
+<section class="section" id="projects">
+
+    <div class="section-head">
+
+        <div>
+
+            <div class="section-title">
+                Active Systems
+            </div>
+
+            <div class="section-sub">
+                ECOSYSTEM / IOT MODULES
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="projects">
+
+
+        <!-- RFID -->
+
+        <div class="project-card">
+
+            <div class="project-top">
+
+                <div class="project-icon">
+                    🪪
+                </div>
+
+                <div class="status">
+
+                    <span class="status-dot"></span>
+
+                    ONLINE
+
+                </div>
+
+            </div>
+
+            <div class="project-name">
+                RFID Smart Access
+            </div>
+
+            <div class="project-desc">
+
+                Real-time RFID authentication system
+                using RC522 with access verification,
+                user logs and live monitoring.
+
+            </div>
+
+            <div class="tech-stack">
+
+                <span class="tech">Arduino UNO</span>
+                <span class="tech">RC522</span>
+                <span class="tech">Python</span>
+                <span class="tech">WebSocket</span>
+
+            </div>
+
+            <button class="open-btn" onclick="openRFID()">
+                OPEN RFID DASHBOARD →
+            </button>
+
+        </div>
+
+
+        <!-- FIRE -->
+
+        <div class="project-card">
+
+            <div class="project-top">
+
+                <div class="project-icon">
+                    🔥
+                </div>
+
+                <div class="status">
+
+                    <span class="status-dot"></span>
+
+                    ACTIVE
+
+                </div>
+
+            </div>
+
+            <div class="project-name">
+                Fire Protection
+            </div>
+
+            <div class="project-desc">
+
+                Multi-zone fire detection using IR,
+                flame and MQ2 sensors with automated
+                emergency response and sprinkler control.
+
+            </div>
+
+            <div class="tech-stack">
+
+                <span class="tech">IR Sensor</span>
+                <span class="tech">MQ2</span>
+                <span class="tech">Flame Sensor</span>
+                <span class="tech">Servo</span>
+
+            </div>
+
+            <button class="open-btn" onclick="openFire()">
+                OPEN FIRE DASHBOARD →
+            </button>
+
+        </div>
+
+
+        <!-- DUSTBIN -->
+
+        <div class="project-card">
+
+            <div class="project-top">
+
+                <div class="project-icon">
+                    ♻️
+                </div>
+
+                <div class="status">
+
+                    <span class="status-dot"></span>
+
+                    READY
+
+                </div>
+
+            </div>
+
+            <div class="project-name">
+                Smart QR Dustbin
+            </div>
+
+            <div class="project-desc">
+
+                Smart waste disposal system with QR
+                identification, reward points and
+                user activity tracking.
+
+            </div>
+
+            <div class="tech-stack">
+
+                <span class="tech">QR Scanner</span>
+                <span class="tech">Points</span>
+                <span class="tech">Camera</span>
+                <span class="tech">IoT</span>
+
+            </div>
+
+            <button class="open-btn" onclick="openDust()">
+                OPEN DUSTBIN DASHBOARD →
+            </button>
+
+        </div>
+
+
+        <!-- INTRUDER -->
+
+        <div class="project-card">
+
+            <div class="project-top">
+
+                <div class="project-icon">
+                    🕵️
+                </div>
+
+                <div class="status">
+
+                    <span class="status-dot"></span>
+
+                    ONLINE
+
+                </div>
+
+            </div>
+
+            <div class="project-name">
+                Intruder Detection
+            </div>
+
+            <div class="project-desc">
+
+                Camera-based security monitoring system
+                designed to identify suspicious or
+                unauthorized persons in real time.
+
+            </div>
+
+            <div class="tech-stack">
+
+                <span class="tech">Camera</span>
+                <span class="tech">AI Detection</span>
+                <span class="tech">Arduino</span>
+                <span class="tech">Python</span>
+
+            </div>
+
+            <button class="open-btn" onclick="openIntruder()">
+                OPEN INTRUDER DASHBOARD →
+            </button>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ACTIVITY
+========================= -->
+
+<section class="section">
+
+    <div class="section-head">
+
+        <div>
+
+            <div class="section-title">
+                Live Activity
+            </div>
+
+            <div class="section-sub">
+                REAL-TIME SYSTEM EVENTS
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="activity-layout">
+
+
+        <div class="activity-panel">
+
+            <div class="activity-list" id="activityList">
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        🪪
+                    </div>
+
+                    <div class="activity-text">
+
+                        <div class="activity-title">
+                            RFID authentication successful
+                        </div>
+
+                        <div class="activity-time">
+                            JUST NOW
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        📡
+                    </div>
+
+                    <div class="activity-text">
+
+                        <div class="activity-title">
+                            Sensor network heartbeat received
+                        </div>
+
+                        <div class="activity-time">
+                            12 SEC AGO
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity">
+
+                    <div class="activity-icon">
+                        🛡️
+                    </div>
+
+                    <div class="activity-text">
+
+                        <div class="activity-title">
+                            Security monitoring active
+                        </div>
+
+                        <div class="activity-time">
+                            38 SEC AGO
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="activity-panel">
+
+            <div class="panel-title">
+                Quick Controls
+            </div>
+
+
+            <div class="quick-controls">
+
+                <div class="control" onclick="openRFID()">
+
+                    <div class="control-icon">
+                        🪪
+                    </div>
+
+                    <div class="control-name">
+                        RFID
+                    </div>
+
+                    <div class="control-status">
+                        ONLINE
+                    </div>
+
+                </div>
+
+
+                <div class="control" onclick="openFire()">
+
+                    <div class="control-icon">
+                        🔥
+                    </div>
+
+                    <div class="control-name">
+                        FIRE
+                    </div>
+
+                    <div class="control-status">
+                        ACTIVE
+                    </div>
+
+                </div>
+
+
+                <div class="control" onclick="openDust()">
+
+                    <div class="control-icon">
+                        ♻️
+                    </div>
+
+                    <div class="control-name">
+                        DUSTBIN
+                    </div>
+
+                    <div class="control-status">
+                        READY
+                    </div>
+
+                </div>
+
+
+                <div class="control" onclick="openIntruder()">
+
+                    <div class="control-icon">
+                        🕵️
+                    </div>
+
+                    <div class="control-name">
+                        SECURITY
+                    </div>
+
+                    <div class="control-status">
+                        ACTIVE
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ABOUT
+========================= -->
+
+<section class="about">
+
+    <div class="section-title">
+        ⚡ EcoGuardian Architecture
+    </div>
+
+    <div class="about-grid">
+
+        <div class="about-item">
+
+            <h3>
+                Hardware Layer
+            </h3>
+
+            <p>
+                Arduino-based embedded systems,
+                RFID modules, sensors, cameras and
+                actuators collect and process physical
+                environment data.
+            </p>
+
+        </div>
+
+
+        <div class="about-item">
+
+            <h3>
+                Communication Layer
+            </h3>
+
+            <p>
+                Serial communication and Python bridge
+                services transport hardware events into
+                the real-time web monitoring layer.
+            </p>
+
+        </div>
+
+
+        <div class="about-item">
+
+            <h3>
+                Intelligence Layer
+            </h3>
+
+            <p>
+                Detection and authentication logic
+                converts raw sensor and camera data
+                into meaningful security events.
+            </p>
+
+        </div>
+
+
+        <div class="about-item">
+
+            <h3>
+                Dashboard Layer
+            </h3>
+
+            <p>
+                Web dashboards provide centralized
+                monitoring, alerts, access history and
+                system control from one interface.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer class="footer">
+
+    <span>
+        ECOGUARDIAN AI • IOT CONTROL CENTER
+    </span>
+
+    <span class="footer-live">
+
+        <span class="pulse"></span>
+
+        ALL SYSTEMS OPERATIONAL
+
+    </span>
+
+    <span id="clock">
+        --:--:--
+    </span>
+
+</footer>
+
+
 </div>
 
-<div class="hero-desc">
-Advanced automated fire protection system using multiple detection zones with IR Sensors, Flame Sensors and MQ2 Gas Sensors. 
-Real-time detection alerts with sprinkler automation and emergency response activation.
-</div>
-
-<div class="badge green">
-● LIVE MONITORING ENABLED
-</div>
-
-</div>
-
-<div class="hero-card">
-
-<div class="hero-title">
-🪪 RFID Access Control
-</div>
-
-<div class="hero-desc">
-Secure RFID authentication dashboard with real-time scan history, user verification, access logs and live authorization tracking system using RC522 RFID module.
-</div>
-
-<div class="badge blue">
-● ACCESS CONTROL ACTIVE
-</div>
-
-</div>
-
-</div>
-
-  <div class="hero-card">
-
-<div class="hero-title">
-🗑️ Smart Dustbin
-</div>
-
-<div class="hero-desc">
-This Smart Dustbin works with QR for Smart entry and Points Counting Helping them to get free Tickets by These points.
-</div>
-
-<div class="badge blue">
-● Dustbin Ready
-</div>
-
-</div>
-
-</div>
-
-<!-- PROJECTS -->
-
-<div class="section-title">
-🚀 OUR ACTIVE PROJECTS
-</div>
-
-<div class="projects">
-
-<!-- RFID -->
-
-<div class="project-card">
-
-<div class="project-top">
-
-<div class="project-icon">
-🪪
-</div>
-
-<div class="project-status">
-ONLINE
-</div>
-
-</div>
-
-<div class="project-name">
-RFID Smart Access System
-</div>
-
-<div class="project-desc">
-Live RFID card scanning system with real-time authentication and monitoring dashboard. Displays authorized users, denied access attempts and complete scan history.
-</div>
-
-<div class="tech-stack">
-
-<div class="tech">Arduino UNO</div>
-<div class="tech">RC522 RFID</div>
-<div class="tech">Python Bridge</div>
-<div class="tech">WebSocket</div>
-
-</div>
-
-<button class="open-btn" onclick="openRFID()">
-OPEN RFID DASHBOARD
-</button>
-
-</div>
-
-<!-- FIRE -->
-
-<div class="project-card">
-
-<div class="project-top">
-
-<div class="project-icon">
-🔥
-</div>
-
-<div class="project-status">
-ACTIVE
-</div>
-
-</div>
-
-<div class="project-name">
-Fire Protection System
-</div>
-
-<div class="project-desc">
-Zone-based automated fire protection system with multiple flame, gas and IR sensors. Includes live alerts, sprinkler automation and detection history.
-</div>
-
-<div class="tech-stack">
-
-<div class="tech">IR Sensors</div>
-<div class="tech">MQ2 Sensor</div>
-<div class="tech">Servo Motor</div>
-<div class="tech">Web Dashboard</div>
-
-</div>
-
-<button class="open-btn" onclick="openFire()">
-OPEN FIRE DASHBOARD
-</button>
-
-</div>
-
-<!-- FUTURE -->
-
-<div class="project-card">
-
-<div class="project-top">
-
-<div class="project-icon">
-♻
-</div>
-
-<div class="project-status">
-Active
-</div>
-
-</div>
-
-<div class="project-name">
-Smart Dustbin + QR Rewards
-</div>
-
-<div class="project-desc">
-Future eco-tech project where users scan QR codes before disposing waste and receive reward points. Includes live user history and points tracking.
-</div>
-
-<div class="tech-stack">
-
-<div class="tech">QR Scanner</div>
-<div class="tech">Points System</div>
-<div class="tech">Camera Module</div>
-
-</div>
-
-<button class="open-btn" onclick="openDust()">
-  Open Smart QR Dustbin Dashboard
-</button>
-
-</div>
-
-</div>
-<!------Intruder------>
-  <div class="project-card">
-
-<div class="project-top">
-
-<div class="project-icon">
-🪪
-</div>
-
-<div class="project-status">
-ONLINE
-</div>
-
-</div>
-
-<div class="project-name">
-Intruder Detection System
-</div>
-
-<div class="project-desc">
-Live Camera for intruder detection monitoring dashboard. Displays authorized users, denied persons photos.
-
-<div class="tech-stack">
-
-<div class="tech">Arduino UNO</div>
-<div class="tech">RC522 RFID</div>
-<div class="tech">Python Bridge</div>
-<div class="tech">WebSocket</div>
-
-</div>
-
-<button class="open-btn" onclick="openIntruder()">
-OPEN Intruder DASHBOARD
-</button>
-
-</div>
-
-
-<!-- ABOUT -->
-
-<div class="about">
-
-<div class="section-title">
-⚡ HOW OUR SYSTEM WORKS
-</div>
-
-<p>
-All our projects use Arduino-based embedded systems connected with Python WebSocket bridge servers for real-time communication between hardware and web dashboards.
-</p>
-
-<p>
-The RFID System scans cards using RC522 RFID module and instantly sends authentication data to the dashboard through Serial Communication → Python Bridge → WebSocket Server.
-</p>
-
-<p>
-The Fire Protection System continuously monitors all sensor zones. When fire, smoke or intrusion is detected, emergency alerts and sprinkler systems activate automatically and live alerts are displayed instantly on the dashboard.
-</p>
-
-</div>
-
-<div class="footer">
-ECOGUARDIAN AI • REAL TIME IOT MONITORING SYSTEM
-</div>
-
-</div>
 
 <script>
 
+/* =========================
+   DASHBOARD LINKS
+========================= */
+
 function openRFID(){
 
-window.open("IOT.html","_blank");
+    window.open("IOT.html","_blank");
 
 }
 
 function openFire(){
 
-window.open("IOT2.html","_blank");
+    window.open("IOT2.html","_blank");
 
 }
 
 function openDust(){
 
-window.open("IOT3.html","_blank");
+    window.open("IOT3.html","_blank");
 
 }
 
 function openIntruder(){
 
-window.open("IOT4.html","_blank");
+    window.open("IOT4.html","_blank");
 
 }
+
+
+/* =========================
+   SCROLL
+========================= */
+
+function scrollToProjects(){
+
+    document
+        .getElementById("projects")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+
+}
+
+
+/* =========================
+   LIVE CLOCK
+========================= */
+
+function updateClock(){
+
+    const now = new Date();
+
+    const time =
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour12:false
+            }
+        );
+
+    document.getElementById("clock").textContent = time;
+
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
+
+
+/* =========================
+   LIVE SCAN SIMULATION
+========================= */
+
+let scans = 1284;
+
+setInterval(()=>{
+
+    scans++;
+
+    document.getElementById("scans").textContent =
+        scans.toLocaleString();
+
+},12000);
+
+
+/* =========================
+   ACTIVITY SIMULATION
+========================= */
+
+const events = [
+
+    ["🪪","RFID access request processed"],
+
+    ["📡","IoT sensor heartbeat received"],
+
+    ["🛡️","Security monitoring heartbeat"],
+
+    ["♻️","Smart dustbin system synchronized"],
+
+    ["🔥","Fire monitoring system checked"]
+
+];
+
+let eventIndex = 0;
+
+function addActivity(){
+
+    const list =
+        document.getElementById("activityList");
+
+    const [icon,text] =
+        events[eventIndex % events.length];
+
+    const item =
+        document.createElement("div");
+
+    item.className = "activity";
+
+    item.innerHTML = `
+
+        <div class="activity-icon">
+            ${icon}
+        </div>
+
+        <div class="activity-text">
+
+            <div class="activity-title">
+                ${text}
+            </div>
+
+            <div class="activity-time">
+                JUST NOW
+            </div>
+
+        </div>
+
+    `;
+
+    list.prepend(item);
+
+    if(list.children.length > 5){
+
+        list.removeChild(list.lastElementChild);
+
+    }
+
+    eventIndex++;
+
+}
+
+setInterval(addActivity,7000);
+
 </script>
-<script src='https://www.noupe.com/embed/01980cc4a3ab788f92fbee0c70a738e54d73.js'></script>
 
 </body>
 </html>
