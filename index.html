@@ -5,43 +5,47 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>EcoGuardian AI — IoT Control Center</title>
+<title>EcoGuardian AI — Command Center</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 
+/* =========================================================
+   ROOT
+========================================================= */
+
 :root{
 
-    --bg:#07090d;
-    --panel:#0d1117;
-    --panel2:#111720;
+    --bg:#03080d;
+    --panel:#07121b;
+    --panel2:#091923;
 
-    --border:rgba(255,255,255,.08);
-    --border-hover:rgba(255,255,255,.18);
+    --line:rgba(93,181,220,.20);
+    --line2:rgba(93,181,220,.35);
 
-    --text:#f4f7fb;
-    --muted:#788392;
+    --text:#e8f5ff;
+    --muted:#718899;
 
-    --accent:#ff7a3d;
-    --accent-soft:rgba(255,122,61,.12);
+    --green:#42d96b;
+    --green2:#18a94b;
 
-    --green:#22c55e;
-    --green-soft:rgba(34,197,94,.1);
+    --cyan:#35c8ff;
+    --blue:#2787ff;
 
-    --blue:#3b82f6;
-    --blue-soft:rgba(59,130,246,.1);
+    --yellow:#f6c945;
+    --orange:#ff9d35;
 
-    --red:#ef4444;
-    --red-soft:rgba(239,68,68,.1);
+    --red:#ff4747;
 
-    --yellow:#eab308;
-    --yellow-soft:rgba(234,179,8,.1);
+    --purple:#a855f7;
 
-    --shadow:0 20px 60px rgba(0,0,0,.35);
+    --glow-green:0 0 20px rgba(66,217,107,.25);
+    --glow-blue:0 0 20px rgba(53,200,255,.20);
+    --glow-red:0 0 20px rgba(255,71,71,.25);
 }
 
 *{
@@ -59,9 +63,12 @@ body{
     min-height:100vh;
 
     background:
-        radial-gradient(circle at 10% 10%,rgba(255,122,61,.08),transparent 30%),
-        radial-gradient(circle at 90% 20%,rgba(59,130,246,.07),transparent 30%),
-        var(--bg);
+        radial-gradient(
+            circle at 50% 30%,
+            rgba(15,87,119,.13),
+            transparent 38%
+        ),
+        #03080d;
 
     color:var(--text);
 
@@ -71,26 +78,31 @@ body{
 }
 
 
-/* =========================
-   BACKGROUND
-========================= */
+/* =========================================================
+   GLOBAL HUD EFFECT
+========================================================= */
 
 body::before{
 
     content:"";
 
     position:fixed;
+
     inset:0;
-
-    background-image:
-        linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-
-    background-size:45px 45px;
 
     pointer-events:none;
 
-    mask-image:linear-gradient(to bottom,black,transparent);
+    z-index:100;
+
+    background:
+        linear-gradient(
+            rgba(255,255,255,.012) 50%,
+            transparent 50%
+        );
+
+    background-size:100% 4px;
+
+    opacity:.18;
 }
 
 body::after{
@@ -99,744 +111,467 @@ body::after{
 
     position:fixed;
 
-    width:400px;
-    height:400px;
-
-    background:var(--accent);
-
-    opacity:.035;
-
-    filter:blur(120px);
-
-    top:30%;
-    left:50%;
-
-    transform:translate(-50%,-50%);
+    inset:0;
 
     pointer-events:none;
+
+    z-index:99;
+
+    background:
+
+        radial-gradient(
+            circle at center,
+            transparent 55%,
+            rgba(0,0,0,.45)
+        );
 }
 
 
-/* =========================
-   LAYOUT
-========================= */
+/* =========================================================
+   MAIN WRAPPER
+========================================================= */
 
-.wrapper{
+.command-center{
 
-    width:min(1450px,94%);
+    width:100%;
 
-    margin:auto;
+    min-height:100vh;
+
+    padding:7px;
 
     position:relative;
-
-    z-index:2;
-
-    padding:28px 0 40px;
 }
 
 
-/* =========================
+/* =========================================================
    HEADER
-========================= */
+========================================================= */
 
-header{
+.top-header{
 
-    display:flex;
+    height:72px;
 
-    justify-content:space-between;
-    align-items:center;
+    display:grid;
 
-    gap:20px;
-
-    padding:18px 22px;
-
-    background:rgba(13,17,23,.78);
-
-    backdrop-filter:blur(18px);
-
-    border:1px solid var(--border);
-
-    border-radius:20px;
-
-    box-shadow:var(--shadow);
-
-    position:sticky;
-
-    top:15px;
-
-    z-index:20;
-}
-
-.logo-area{
-
-    display:flex;
+    grid-template-columns:280px 1fr 300px;
 
     align-items:center;
 
-    gap:13px;
-}
+    gap:12px;
 
-.logo-mark{
+    padding:7px 10px;
 
-    width:48px;
-    height:48px;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(9,25,36,.98),
+            rgba(4,14,21,.98)
+        );
 
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    border-radius:15px;
-
-    font-size:23px;
-
-    background:linear-gradient(
-        135deg,
-        var(--accent),
-        #ff4d4d
-    );
+    border:1px solid var(--line);
 
     box-shadow:
-        0 0 25px rgba(255,122,61,.25);
+        inset 0 1px rgba(255,255,255,.04),
+        0 5px 30px rgba(0,0,0,.4);
 }
 
-.logo{
 
-    font-size:20px;
+/* LOGO */
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.brand-logo{
+
+    width:52px;
+
+    height:52px;
+
+    border:1px solid var(--line2);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:27px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(53,200,255,.12),
+            transparent 70%
+        );
+
+    box-shadow:var(--glow-blue);
+}
+
+.brand-name{
+
+    font-family:'Orbitron',sans-serif;
+
+    font-size:19px;
 
     font-weight:800;
 
-    letter-spacing:-.5px;
+    letter-spacing:1px;
 }
 
-.logo span{
+.brand-name span{
 
-    color:var(--accent);
+    color:var(--cyan);
 }
 
-.logo-sub{
+.brand-sub{
 
     font-family:'Space Mono',monospace;
 
+    font-size:8px;
+
     color:var(--muted);
 
-    font-size:9px;
-
-    letter-spacing:2px;
+    letter-spacing:1.5px;
 
     margin-top:3px;
 }
 
 
-/* =========================
-   NAV
-========================= */
+/* COMMAND TITLE */
 
-.nav{
+.command-title{
+
+    text-align:center;
+}
+
+.command-title h1{
+
+    font-family:'Orbitron',sans-serif;
+
+    font-size:28px;
+
+    letter-spacing:5px;
+
+    font-weight:700;
+
+    color:#dcefff;
+
+    text-shadow:0 0 20px rgba(53,200,255,.15);
+}
+
+.command-title p{
+
+    margin-top:3px;
+
+    font-family:'Space Mono',monospace;
+
+    font-size:8px;
+
+    color:var(--muted);
+
+    letter-spacing:3px;
+}
+
+
+/* CLOCK */
+
+.header-right{
 
     display:flex;
 
-    gap:7px;
+    justify-content:flex-end;
 
     align-items:center;
+
+    gap:15px;
 }
 
-.nav button{
+.clock{
+
+    text-align:right;
+}
+
+.clock-time{
+
+    font-family:'Orbitron',sans-serif;
+
+    font-size:17px;
+}
+
+.clock-date{
+
+    color:var(--muted);
+
+    font-size:8px;
+
+    margin-top:3px;
+}
+
+.system-status{
+
+    min-width:140px;
+
+    padding:10px 12px;
+
+    text-align:center;
+
+    border:1px solid rgba(66,217,107,.25);
+
+    background:rgba(66,217,107,.05);
+}
+
+.system-status small{
+
+    display:block;
+
+    color:var(--muted);
+
+    font-size:7px;
+
+    letter-spacing:1px;
+
+    font-family:'Space Mono',monospace;
+}
+
+.system-status strong{
+
+    display:block;
+
+    color:var(--green);
+
+    font-family:'Space Mono',monospace;
+
+    font-size:9px;
+
+    margin-top:4px;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.navbar{
+
+    height:39px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:2px;
+
+    margin-top:3px;
+
+    padding:3px;
+
+    overflow-x:auto;
+
+    background:#061018;
+
+    border:1px solid var(--line);
+}
+
+.nav-btn{
+
+    height:31px;
+
+    padding:0 19px;
 
     border:1px solid transparent;
 
     background:transparent;
 
-    color:var(--muted);
-
-    padding:10px 15px;
-
-    border-radius:11px;
-
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.25s;
-
-    font-family:inherit;
-}
-
-.nav button:hover{
-
-    color:white;
-
-    background:rgba(255,255,255,.05);
-}
-
-.nav button.active{
-
-    background:var(--accent-soft);
-
-    color:var(--accent);
-
-    border-color:rgba(255,122,61,.2);
-}
-
-
-/* =========================
-   HERO
-========================= */
-
-.hero{
-
-    margin-top:28px;
-
-    display:grid;
-
-    grid-template-columns:1.5fr 1fr;
-
-    gap:18px;
-}
-
-.hero-main{
-
-    min-height:310px;
-
-    position:relative;
-
-    overflow:hidden;
-
-    padding:38px;
-
-    border-radius:25px;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(255,122,61,.13),
-            rgba(255,255,255,.025)
-        ),
-        var(--panel);
-
-    border:1px solid rgba(255,255,255,.09);
-
-    box-shadow:var(--shadow);
-}
-
-.hero-main::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:280px;
-    height:280px;
-
-    border-radius:50%;
-
-    border:1px solid rgba(255,122,61,.12);
-
-    right:-100px;
-    bottom:-130px;
-
-    box-shadow:
-        0 0 0 35px rgba(255,122,61,.025),
-        0 0 0 70px rgba(255,122,61,.015);
-}
-
-.eyebrow{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    font-family:'Space Mono',monospace;
-
-    font-size:11px;
-
-    color:var(--accent);
-
-    letter-spacing:1.5px;
-
-    margin-bottom:20px;
-}
-
-.pulse{
-
-    width:7px;
-    height:7px;
-
-    background:var(--green);
-
-    border-radius:50%;
-
-    box-shadow:0 0 0 0 rgba(34,197,94,.6);
-
-    animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-
-    0%{
-        box-shadow:0 0 0 0 rgba(34,197,94,.5);
-    }
-
-    70%{
-        box-shadow:0 0 0 9px rgba(34,197,94,0);
-    }
-
-    100%{
-        box-shadow:0 0 0 0 rgba(34,197,94,0);
-    }
-}
-
-.hero-title{
-
-    max-width:700px;
-
-    font-size:clamp(2rem,4vw,4rem);
-
-    line-height:1.02;
-
-    letter-spacing:-2px;
-
-    font-weight:800;
-}
-
-.hero-title span{
-
-    color:var(--accent);
-}
-
-.hero-desc{
-
-    max-width:650px;
-
-    margin-top:20px;
-
-    color:var(--muted);
-
-    line-height:1.75;
-
-    font-size:14px;
-}
-
-.hero-actions{
-
-    display:flex;
-
-    gap:12px;
-
-    margin-top:28px;
-}
-
-.primary-btn,
-.secondary-btn{
-
-    padding:13px 18px;
-
-    border-radius:12px;
-
-    font-family:inherit;
-
-    font-weight:700;
-
-    cursor:pointer;
-
-    transition:.25s;
-}
-
-.primary-btn{
-
-    border:0;
-
-    background:var(--accent);
-
-    color:#080808;
-
-    box-shadow:0 10px 25px rgba(255,122,61,.18);
-}
-
-.primary-btn:hover{
-
-    transform:translateY(-2px);
-
-    box-shadow:0 14px 35px rgba(255,122,61,.28);
-}
-
-.secondary-btn{
-
-    color:white;
-
-    background:rgba(255,255,255,.04);
-
-    border:1px solid var(--border);
-}
-
-.secondary-btn:hover{
-
-    background:rgba(255,255,255,.08);
-
-    border-color:var(--border-hover);
-}
-
-
-/* =========================
-   LIVE PANEL
-========================= */
-
-.live-panel{
-
-    background:var(--panel);
-
-    border:1px solid var(--border);
-
-    border-radius:25px;
-
-    padding:26px;
-
-    box-shadow:var(--shadow);
-}
-
-.panel-header{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:25px;
-}
-
-.panel-title{
-
-    font-size:14px;
-
-    font-weight:800;
-}
-
-.live{
-
-    color:var(--green);
-
-    font-family:'Space Mono',monospace;
-
-    font-size:10px;
-}
-
-.system-ring{
-
-    width:125px;
-    height:125px;
-
-    margin:15px auto 25px;
-
-    border-radius:50%;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    background:
-        radial-gradient(
-            circle,
-            var(--panel) 55%,
-            transparent 56%
-        );
-
-    border:1px solid rgba(34,197,94,.3);
-
-    box-shadow:
-        0 0 35px rgba(34,197,94,.08),
-        inset 0 0 30px rgba(34,197,94,.04);
-
-    position:relative;
-}
-
-.system-ring::before{
-
-    content:"";
-
-    position:absolute;
-
-    inset:8px;
-
-    border-radius:50%;
-
-    border:1px dashed rgba(34,197,94,.3);
-
-    animation:rotate 15s linear infinite;
-}
-
-@keyframes rotate{
-
-    to{
-        transform:rotate(360deg);
-    }
-}
-
-.ring-content{
-
-    text-align:center;
-}
-
-.ring-value{
-
-    font-size:28px;
-
-    font-weight:800;
-
-    color:var(--green);
-}
-
-.ring-label{
-
-    font-family:'Space Mono',monospace;
-
-    color:var(--muted);
-
-    font-size:8px;
-}
-
-.system-list{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:10px;
-}
-
-.system-row{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    padding:11px 13px;
-
-    border-radius:11px;
-
-    background:rgba(255,255,255,.025);
-
-    border:1px solid rgba(255,255,255,.045);
-
-    font-size:12px;
-}
-
-.system-name{
-
-    color:#c7cdd5;
-}
-
-.system-state{
+    color:#8da5b4;
 
     font-family:'Space Mono',monospace;
 
     font-size:9px;
 
-    color:var(--green);
+    cursor:pointer;
+
+    white-space:nowrap;
+
+    transition:.2s;
+}
+
+.nav-btn:hover{
+
+    color:white;
+
+    background:rgba(53,200,255,.06);
+
+    border-color:var(--line);
+}
+
+.nav-btn.active{
+
+    color:#dff8ff;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(53,200,255,.16),
+            rgba(53,200,255,.05)
+        );
+
+    border-color:rgba(53,200,255,.3);
+
+    box-shadow:
+        inset 0 0 15px rgba(53,200,255,.05);
 }
 
 
-/* =========================
-   STATS
-========================= */
+/* =========================================================
+   KPI STRIP
+========================================================= */
 
-.stats{
-
-    display:grid;
-
-    grid-template-columns:repeat(4,1fr);
-
-    gap:15px;
-
-    margin-top:18px;
-}
-
-.stat{
-
-    padding:20px;
-
-    border-radius:18px;
-
-    background:var(--panel);
-
-    border:1px solid var(--border);
-
-    transition:.3s;
-}
-
-.stat:hover{
-
-    transform:translateY(-4px);
-
-    border-color:var(--border-hover);
-}
-
-.stat-top{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    color:var(--muted);
-
-    font-size:11px;
-}
-
-.stat-icon{
-
-    width:30px;
-    height:30px;
-
-    border-radius:9px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    background:var(--accent-soft);
-}
-
-.stat-value{
-
-    margin-top:13px;
-
-    font-size:26px;
-
-    font-weight:800;
-}
-
-.stat-label{
-
-    margin-top:3px;
-
-    color:var(--muted);
-
-    font-size:11px;
-}
-
-
-/* =========================
-   SECTION
-========================= */
-
-.section{
-
-    margin-top:40px;
-}
-
-.section-head{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:end;
-
-    margin-bottom:17px;
-}
-
-.section-title{
-
-    font-size:20px;
-
-    font-weight:800;
-
-    letter-spacing:-.5px;
-}
-
-.section-sub{
-
-    color:var(--muted);
-
-    font-size:11px;
-
-    font-family:'Space Mono',monospace;
-}
-
-
-/* =========================
-   PROJECT GRID
-========================= */
-
-.projects{
+.kpi-strip{
 
     display:grid;
 
     grid-template-columns:
-        repeat(auto-fit,minmax(280px,1fr));
+        repeat(7,1fr);
 
-    gap:16px;
+    gap:4px;
+
+    margin-top:4px;
 }
 
-.project-card{
+.kpi{
+
+    min-height:69px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:9px 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(9,27,39,.95),
+            rgba(4,14,21,.95)
+        );
+
+    border:1px solid var(--line);
 
     position:relative;
 
     overflow:hidden;
-
-    padding:22px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.035),
-            transparent
-        ),
-        var(--panel);
-
-    border:1px solid var(--border);
-
-    border-radius:20px;
-
-    transition:.35s;
-
-    box-shadow:0 10px 35px rgba(0,0,0,.15);
 }
 
-.project-card::before{
+.kpi::after{
 
     content:"";
 
     position:absolute;
 
-    width:140px;
-    height:140px;
+    left:0;
 
-    border-radius:50%;
+    bottom:0;
 
-    background:var(--accent);
+    width:100%;
 
-    opacity:0;
+    height:1px;
 
-    filter:blur(70px);
+    background:var(--green);
 
-    top:-50px;
-    right:-50px;
+    box-shadow:0 0 8px var(--green);
 
-    transition:.35s;
+    opacity:.45;
 }
 
-.project-card:hover{
+.kpi-icon{
 
-    transform:translateY(-7px);
+    font-size:25px;
 
-    border-color:var(--border-hover);
-
-    box-shadow:0 25px 50px rgba(0,0,0,.3);
+    filter:drop-shadow(
+        0 0 5px rgba(53,200,255,.25)
+    );
 }
 
-.project-card:hover::before{
+.kpi-label{
 
-    opacity:.13;
+    color:#6e8b9d;
+
+    font-size:7px;
+
+    font-family:'Space Mono',monospace;
+
+    text-transform:uppercase;
 }
 
-.project-top{
+.kpi-value{
+
+    font-family:'Orbitron',sans-serif;
+
+    font-size:18px;
+
+    margin-top:3px;
+}
+
+.kpi-unit{
+
+    color:var(--muted);
+
+    font-size:8px;
+}
+
+
+/* =========================================================
+   MAIN GRID
+========================================================= */
+
+.main-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        230px
+        minmax(500px,1fr)
+        315px;
+
+    gap:4px;
+
+    margin-top:4px;
+
+    align-items:stretch;
+}
+
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+.panel{
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(8,25,36,.97),
+            rgba(3,13,20,.97)
+        );
+
+    border:1px solid var(--line);
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+.panel-title{
+
+    height:32px;
 
     display:flex;
 
@@ -844,305 +579,845 @@ header{
 
     align-items:center;
 
-    margin-bottom:18px;
-}
+    padding:0 11px;
 
-.project-icon{
+    background:
+        linear-gradient(
+            90deg,
+            rgba(53,200,255,.07),
+            transparent
+        );
 
-    width:54px;
-    height:54px;
+    border-bottom:1px solid var(--line);
 
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    border-radius:15px;
-
-    font-size:22px;
-
-    background:var(--panel2);
-
-    border:1px solid var(--border);
-}
-
-.status{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:6px;
-
-    padding:6px 9px;
-
-    border-radius:20px;
+    color:#a8c9d9;
 
     font-family:'Space Mono',monospace;
 
-    font-size:8px;
+    font-size:9px;
+
+    letter-spacing:.8px;
+}
+
+.panel-title .live{
 
     color:var(--green);
 
-    background:var(--green-soft);
-
-    border:1px solid rgba(34,197,94,.2);
-}
-
-.status-dot{
-
-    width:5px;
-    height:5px;
-
-    border-radius:50%;
-
-    background:currentColor;
-}
-
-.project-name{
-
-    font-size:17px;
-
-    font-weight:800;
-
-    margin-bottom:9px;
-}
-
-.project-desc{
-
-    min-height:75px;
-
-    color:var(--muted);
-
-    line-height:1.65;
-
-    font-size:12px;
-}
-
-.tech-stack{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:6px;
-
-    margin:18px 0;
-}
-
-.tech{
-
-    padding:6px 9px;
-
-    border-radius:8px;
-
-    background:rgba(255,255,255,.035);
-
-    border:1px solid var(--border);
-
-    color:#aeb7c2;
-
-    font-family:'Space Mono',monospace;
-
-    font-size:8px;
-}
-
-.open-btn{
-
-    width:100%;
-
-    padding:12px;
-
-    border:1px solid rgba(255,122,61,.2);
-
-    border-radius:11px;
-
-    background:var(--accent-soft);
-
-    color:var(--accent);
-
-    font-family:inherit;
-
-    font-size:11px;
-
-    font-weight:800;
-
-    cursor:pointer;
-
-    transition:.25s;
-}
-
-.open-btn:hover{
-
-    background:var(--accent);
-
-    color:#080808;
-
-    transform:translateY(-2px);
+    font-size:7px;
 }
 
 
-/* =========================
-   ACTIVITY
-========================= */
+/* =========================================================
+   LEFT COLUMN
+========================================================= */
 
-.activity-layout{
-
-    display:grid;
-
-    grid-template-columns:1.4fr .8fr;
-
-    gap:16px;
-}
-
-.activity-panel{
-
-    padding:23px;
-
-    border-radius:20px;
-
-    background:var(--panel);
-
-    border:1px solid var(--border);
-}
-
-.activity-list{
+.left-column{
 
     display:flex;
 
     flex-direction:column;
 
-    margin-top:10px;
+    gap:4px;
 }
 
-.activity{
 
-    display:flex;
+/* HEALTH */
 
-    gap:13px;
+.health-panel{
 
-    padding:15px 0;
-
-    border-bottom:1px solid rgba(255,255,255,.05);
-
-    animation:fadeIn .4s ease;
+    min-height:315px;
 }
 
-.activity:last-child{
+.health-gauge{
 
-    border-bottom:0;
-}
+    width:150px;
 
-.activity-icon{
+    height:150px;
 
-    width:35px;
-    height:35px;
+    margin:20px auto 10px;
 
-    flex-shrink:0;
+    border-radius:50%;
+
+    position:relative;
 
     display:flex;
 
     align-items:center;
+
     justify-content:center;
 
-    border-radius:10px;
+    background:
+        conic-gradient(
+            var(--green) 0deg 340deg,
+            rgba(255,255,255,.05) 340deg 360deg
+        );
 
-    background:var(--green-soft);
+    box-shadow:
+        0 0 30px rgba(66,217,107,.08);
 }
 
-.activity-text{
+.health-gauge::before{
 
-    flex:1;
+    content:"";
+
+    position:absolute;
+
+    inset:12px;
+
+    border-radius:50%;
+
+    background:#07131c;
+
+    border:1px solid rgba(66,217,107,.15);
 }
 
-.activity-title{
+.gauge-center{
 
-    font-size:11px;
+    position:relative;
 
-    font-weight:700;
+    text-align:center;
 }
 
-.activity-time{
+.gauge-number{
 
-    margin-top:4px;
+    font-family:'Orbitron',sans-serif;
+
+    font-size:28px;
+
+    color:#f0fff4;
+}
+
+.gauge-grade{
 
     font-family:'Space Mono',monospace;
 
     font-size:8px;
 
+    color:var(--green);
+
+    margin-top:4px;
+}
+
+.health-stars{
+
+    text-align:center;
+
+    color:var(--green);
+
+    letter-spacing:4px;
+
+    font-size:11px;
+
+    margin-bottom:15px;
+}
+
+
+/* HEALTH BARS */
+
+.health-list{
+
+    padding:0 12px 14px;
+}
+
+.health-row{
+
+    display:grid;
+
+    grid-template-columns:78px 1fr 31px;
+
+    gap:7px;
+
+    align-items:center;
+
+    margin-top:9px;
+}
+
+.health-name{
+
+    font-family:'Space Mono',monospace;
+
+    color:#91a9b7;
+
+    font-size:7px;
+}
+
+.health-bar{
+
+    height:4px;
+
+    background:#0d2733;
+
+    overflow:hidden;
+}
+
+.health-fill{
+
+    height:100%;
+
+    background:var(--green);
+
+    box-shadow:0 0 8px rgba(66,217,107,.45);
+}
+
+.health-percent{
+
+    color:var(--green);
+
+    font-family:'Space Mono',monospace;
+
+    font-size:7px;
+
+    text-align:right;
+}
+
+
+/* WEATHER */
+
+.weather-panel{
+
+    min-height:170px;
+}
+
+.weather-main{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:18px;
+
+    padding:15px 0;
+}
+
+.weather-icon{
+
+    font-size:40px;
+}
+
+.temperature{
+
+    font-family:'Orbitron',sans-serif;
+
+    font-size:26px;
+}
+
+.weather-desc{
+
     color:var(--muted);
+
+    font-size:8px;
+
+    margin-top:4px;
 }
 
-@keyframes fadeIn{
-
-    from{
-        opacity:0;
-        transform:translateY(8px);
-    }
-
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
-
-
-/* =========================
-   QUICK CONTROL
-========================= */
-
-.quick-controls{
+.weather-data{
 
     display:grid;
 
     grid-template-columns:1fr 1fr;
 
-    gap:10px;
+    gap:8px;
 
-    margin-top:16px;
+    padding:0 12px 12px;
 }
 
-.control{
+.weather-item{
 
-    padding:15px;
+    padding:7px;
 
-    border-radius:13px;
+    border:1px solid rgba(255,255,255,.04);
 
-    background:rgba(255,255,255,.025);
+    background:rgba(255,255,255,.015);
 
-    border:1px solid var(--border);
+    font-size:7px;
 
-    cursor:pointer;
-
-    transition:.25s;
+    color:var(--muted);
 }
 
-.control:hover{
+.weather-item strong{
 
-    background:rgba(255,255,255,.06);
+    display:block;
 
-    transform:translateY(-2px);
-}
+    color:#c9dce7;
 
-.control-icon{
+    font-family:'Space Mono',monospace;
 
-    font-size:18px;
-
-    margin-bottom:8px;
-}
-
-.control-name{
-
-    font-size:10px;
-
-    font-weight:700;
-}
-
-.control-status{
+    font-size:8px;
 
     margin-top:3px;
+}
+
+
+/* AIR */
+
+.air-panel{
+
+    min-height:150px;
+}
+
+.air-content{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:17px;
+}
+
+.air-circle{
+
+    width:85px;
+
+    height:85px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    flex-direction:column;
+
+    border:5px solid var(--green);
+
+    box-shadow:var(--glow-green);
+}
+
+.air-value{
+
+    font-family:'Orbitron',sans-serif;
+
+    font-size:20px;
 
     color:var(--green);
+}
+
+.air-label{
+
+    font-size:7px;
+
+    color:var(--green);
+}
+
+.air-values{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    font-family:'Space Mono',monospace;
+
+    font-size:7px;
+
+    color:var(--muted);
+}
+
+.air-values strong{
+
+    color:var(--green);
+
+    margin-left:5px;
+}
+
+
+/* =========================================================
+   DIGITAL TWIN
+========================================================= */
+
+.center-column{
+
+    min-width:0;
+}
+
+.digital-twin{
+
+    height:100%;
+
+    min-height:540px;
+
+    position:relative;
+
+    background:
+
+        radial-gradient(
+            ellipse at center,
+            rgba(31,110,61,.18),
+            transparent 55%
+        ),
+
+        linear-gradient(
+            145deg,
+            #071a18,
+            #061018
+        );
+
+    overflow:hidden;
+}
+
+
+/* GRID */
+
+.digital-twin::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background-image:
+
+        linear-gradient(
+            rgba(47,161,194,.08) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(47,161,194,.08) 1px,
+            transparent 1px
+        );
+
+    background-size:35px 35px;
+
+    opacity:.4;
+}
+
+
+/* ROAD SYSTEM */
+
+.road{
+
+    position:absolute;
+
+    background:
+        linear-gradient(
+            90deg,
+            #0b171b,
+            #13242a,
+            #0b171b
+        );
+
+    border:1px solid rgba(108,153,164,.18);
+
+    box-shadow:
+        inset 0 0 12px rgba(0,0,0,.5);
+}
+
+.road.horizontal{
+
+    height:30px;
+
+    width:95%;
+
+    left:2.5%;
+}
+
+.road.vertical{
+
+    width:30px;
+
+    height:92%;
+
+    top:4%;
+}
+
+.road.r1{top:27%;}
+.road.r2{top:53%;}
+.road.r3{top:75%;}
+
+.road.v1{left:23%;}
+.road.v2{left:48%;}
+.road.v3{left:73%;}
+
+
+/* BUILDINGS */
+
+.building{
+
+    position:absolute;
+
+    width:74px;
+
+    height:52px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #152d32,
+            #0b191f
+        );
+
+    border:1px solid rgba(74,170,157,.35);
+
+    box-shadow:
+        0 7px 15px rgba(0,0,0,.55),
+        inset 0 0 15px rgba(50,160,120,.05);
+}
+
+.building::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:6px;
+
+    height:6px;
+
+    border-radius:50%;
+
+    background:#55df82;
+
+    top:9px;
+
+    left:9px;
+
+    box-shadow:
+        15px 0 #55df82,
+        30px 0 #55df82,
+        45px 0 #55df82,
+        0 25px #55df82,
+        15px 25px #55df82,
+        30px 25px #55df82;
+}
+
+
+/* BUILDING POSITIONS */
+
+.b1{left:7%;top:15%;}
+.b2{left:31%;top:12%;}
+.b3{left:58%;top:16%;}
+.b4{left:80%;top:12%;}
+
+.b5{left:8%;top:39%;}
+.b6{left:34%;top:38%;}
+.b7{left:62%;top:39%;}
+.b8{left:81%;top:42%;}
+
+.b9{left:10%;top:63%;}
+.b10{left:35%;top:65%;}
+.b11{left:60%;top:64%;}
+.b12{left:81%;top:67%;}
+
+
+/* CENTER COMMAND BUILDING */
+
+.command-building{
+
+    position:absolute;
+
+    width:110px;
+
+    height:78px;
+
+    left:50%;
+
+    top:48%;
+
+    transform:translate(-50%,-50%);
+
+    border:1px solid var(--cyan);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(53,200,255,.13),
+            #0b2029
+        );
+
+    box-shadow:
+        0 0 30px rgba(53,200,255,.18),
+        inset 0 0 25px rgba(53,200,255,.08);
+}
+
+.command-building::after{
+
+    content:"AI";
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-family:'Orbitron',sans-serif;
+
+    font-size:22px;
+
+    color:var(--cyan);
+
+    text-shadow:0 0 12px var(--cyan);
+}
+
+
+/* MAP SCANNER */
+
+.scan-line{
+
+    position:absolute;
+
+    left:0;
+
+    width:100%;
+
+    height:1px;
+
+    background:var(--cyan);
+
+    box-shadow:
+        0 0 12px var(--cyan),
+        0 0 30px var(--cyan);
+
+    opacity:.35;
+
+    animation:scan 5s linear infinite;
+}
+
+@keyframes scan{
+
+    0%{
+        top:0;
+    }
+
+    100%{
+        top:100%;
+    }
+}
+
+
+/* MAP LABEL */
+
+.map-label{
+
+    position:absolute;
+
+    padding:7px 10px;
+
+    background:rgba(2,15,20,.88);
+
+    border:1px solid rgba(66,217,107,.5);
+
+    box-shadow:
+        0 0 10px rgba(66,217,107,.08);
+
+    font-family:'Space Mono',monospace;
+
+    font-size:7px;
+
+    color:var(--green);
+
+    z-index:5;
+}
+
+.map-label span{
+
+    display:block;
+
+    color:#a5bac4;
+
+    margin-top:3px;
+}
+
+.label1{left:3%;top:7%;}
+.label2{left:39%;top:6%;}
+.label3{right:4%;top:7%;}
+.label4{left:7%;top:47%;}
+.label5{right:6%;top:47%;}
+.label6{left:40%;bottom:8%;}
+
+
+/* DRONE ICON */
+
+.drone{
+
+    position:absolute;
+
+    color:var(--cyan);
+
+    font-size:21px;
+
+    filter:drop-shadow(0 0 8px var(--cyan));
+
+    animation:droneMove 8s ease-in-out infinite;
+}
+
+.drone1{
+    left:25%;
+    top:22%;
+}
+
+.drone2{
+    right:25%;
+    bottom:25%;
+
+    animation-delay:2s;
+}
+
+@keyframes droneMove{
+
+    0%,100%{
+        transform:translate(0,0);
+    }
+
+    50%{
+        transform:translate(25px,-18px);
+    }
+}
+
+
+/* MAP CORNERS */
+
+.corner{
+
+    position:absolute;
+
+    width:15px;
+
+    height:15px;
+
+    border-color:var(--cyan);
+
+    z-index:10;
+}
+
+.c1{
+    top:8px;
+    left:8px;
+    border-top:1px solid;
+    border-left:1px solid;
+}
+
+.c2{
+    top:8px;
+    right:8px;
+    border-top:1px solid;
+    border-right:1px solid;
+}
+
+.c3{
+    bottom:8px;
+    left:8px;
+    border-bottom:1px solid;
+    border-left:1px solid;
+}
+
+.c4{
+    bottom:8px;
+    right:8px;
+    border-bottom:1px solid;
+    border-right:1px solid;
+}
+
+
+/* =========================================================
+   RIGHT COLUMN
+========================================================= */
+
+.right-column{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+}
+
+
+/* ALERTS */
+
+.alert-panel{
+
+    min-height:225px;
+}
+
+.alert{
+
+    display:grid;
+
+    grid-template-columns:28px 1fr auto;
+
+    gap:9px;
+
+    align-items:center;
+
+    padding:11px;
+
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.alert-icon{
+
+    width:27px;
+
+    height:27px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:rgba(255,71,71,.08);
+
+    color:var(--red);
+
+    border:1px solid rgba(255,71,71,.2);
+}
+
+.alert.warning .alert-icon{
+
+    color:var(--yellow);
+
+    background:rgba(246,201,69,.07);
+
+    border-color:rgba(246,201,69,.2);
+}
+
+.alert.ok .alert-icon{
+
+    color:var(--green);
+
+    background:rgba(66,217,107,.07);
+
+    border-color:rgba(66,217,107,.2);
+}
+
+.alert-title{
+
+    color:#e4edf2;
+
+    font-family:'Space Mono',monospace;
+
+    font-size:8px;
+}
+
+.alert-sub{
+
+    color:var(--muted);
+
+    font-size:7px;
+
+    margin-top:4px;
+}
+
+.alert-time{
+
+    color:#637985;
 
     font-family:'Space Mono',monospace;
 
@@ -1150,71 +1425,623 @@ header{
 }
 
 
-/* =========================
-   ABOUT
-========================= */
+/* =========================================================
+   DRONE FEED
+========================================================= */
 
-.about{
+.drone-feed{
 
-    margin-top:40px;
+    min-height:230px;
 
-    padding:28px;
+    position:relative;
+}
 
-    border-radius:22px;
+.feed-screen{
+
+    height:180px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:
+
+        radial-gradient(
+            ellipse at 50% 50%,
+            rgba(43,102,69,.5),
+            rgba(7,21,25,.95)
+        );
+}
+
+
+/* fake terrain */
+
+.feed-screen::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:-30px;
+
+    background:
+
+        repeating-linear-gradient(
+            27deg,
+            transparent 0 17px,
+            rgba(66,132,86,.15) 18px 20px
+        ),
+
+        repeating-linear-gradient(
+            -30deg,
+            transparent 0 30px,
+            rgba(90,160,100,.09) 31px 34px
+        );
+
+    transform:rotate(-5deg) scale(1.1);
+}
+
+.feed-screen::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        linear-gradient(
+            transparent 48%,
+            rgba(53,200,255,.2) 50%,
+            transparent 52%
+        );
+
+    animation:feedScan 3s linear infinite;
+}
+
+@keyframes feedScan{
+
+    0%{
+        transform:translateY(-100%);
+    }
+
+    100%{
+        transform:translateY(100%);
+    }
+}
+
+.feed-cross{
+
+    position:absolute;
+
+    width:65px;
+
+    height:65px;
+
+    border:1px solid rgba(255,255,255,.45);
+
+    left:50%;
+
+    top:50%;
+
+    transform:translate(-50%,-50%);
+}
+
+.feed-cross::before,
+.feed-cross::after{
+
+    content:"";
+
+    position:absolute;
+
+    background:rgba(255,255,255,.4);
+}
+
+.feed-cross::before{
+
+    width:1px;
+
+    height:100%;
+
+    left:50%;
+}
+
+.feed-cross::after{
+
+    height:1px;
+
+    width:100%;
+
+    top:50%;
+}
+
+.live-tag{
+
+    position:absolute;
+
+    top:9px;
+
+    right:9px;
+
+    background:var(--red);
+
+    color:white;
+
+    padding:4px 7px;
+
+    font-family:'Space Mono',monospace;
+
+    font-size:7px;
+
+    z-index:4;
+}
+
+.feed-bottom{
+
+    height:35px;
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    border-top:1px solid var(--line);
+}
+
+.feed-control{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#77909f;
+
+    font-family:'Space Mono',monospace;
+
+    font-size:7px;
+
+    border-right:1px solid rgba(255,255,255,.04);
+}
+
+.feed-control:hover{
+
+    color:var(--cyan);
+
+    background:rgba(53,200,255,.04);
+}
+
+
+/* =========================================================
+   AI ASSISTANT
+========================================================= */
+
+.ai-panel{
+
+    min-height:245px;
+}
+
+.ai-header{
+
+    color:#c58cff;
+
+    font-family:'Orbitron',sans-serif;
+
+    font-size:9px;
+
+    padding:12px;
+
+    border-bottom:1px solid rgba(168,85,247,.15);
+
+    background:rgba(168,85,247,.05);
+}
+
+.ai-situation{
+
+    padding:11px;
+
+    font-size:8px;
+
+    color:#9bb0bc;
+
+    line-height:1.6;
+}
+
+.threat{
+
+    display:inline-block;
+
+    padding:3px 7px;
+
+    background:rgba(255,71,71,.12);
+
+    color:var(--red);
+
+    border:1px solid rgba(255,71,71,.25);
+
+    font-family:'Space Mono',monospace;
+
+    font-size:7px;
+
+    margin-left:4px;
+}
+
+.recommendations{
+
+    padding:0 12px;
+
+    list-style:none;
+}
+
+.recommendations li{
+
+    font-size:7px;
+
+    color:#9fb1bb;
+
+    margin:7px 0;
+}
+
+.recommendations li::before{
+
+    content:"●";
+
+    color:var(--green);
+
+    margin-right:7px;
+}
+
+.ai-btn{
+
+    width:calc(100% - 24px);
+
+    margin:10px 12px;
+
+    padding:10px;
+
+    border:1px solid rgba(168,85,247,.35);
+
+    background:rgba(168,85,247,.10);
+
+    color:#d7b5ff;
+
+    font-family:'Space Mono',monospace;
+
+    font-size:7px;
+
+    cursor:pointer;
+}
+
+.ai-btn:hover{
+
+    background:rgba(168,85,247,.18);
+}
+
+
+/* =========================================================
+   LOWER ANALYTICS
+========================================================= */
+
+.analytics{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:4px;
+
+    margin-top:4px;
+}
+
+.analytics-panel{
+
+    min-height:165px;
+}
+
+.analytics-body{
+
+    display:grid;
+
+    grid-template-columns:100px 1fr;
+
+    gap:12px;
+
+    padding:12px;
+}
+
+
+/* DONUT */
+
+.donut{
+
+    width:82px;
+
+    height:82px;
+
+    border-radius:50%;
+
+    background:
+        conic-gradient(
+            var(--green) 0 280deg,
+            #12313a 280deg
+        );
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+.donut::before{
+
+    content:"";
+
+    width:61px;
+
+    height:61px;
+
+    border-radius:50%;
+
+    background:#07131b;
+}
+
+.donut-wrap{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    position:relative;
+}
+
+.donut-value{
+
+    position:absolute;
+
+    font-family:'Orbitron',sans-serif;
+
+    font-size:14px;
+
+    color:var(--green);
+}
+
+
+/* MINI CHART */
+
+.chart{
+
+    height:95px;
+
+    position:relative;
 
     background:
         linear-gradient(
-            135deg,
-            rgba(255,122,61,.05),
-            rgba(59,130,246,.025)
-        ),
-        var(--panel);
+            rgba(53,200,255,.04) 1px,
+            transparent 1px
+        );
 
-    border:1px solid var(--border);
+    background-size:100% 20px;
+
+    border-left:1px solid var(--line);
+
+    border-bottom:1px solid var(--line);
+
+    overflow:hidden;
 }
 
-.about-grid{
+.chart svg{
+
+    width:100%;
+
+    height:100%;
+}
+
+.chart-line{
+
+    fill:none;
+
+    stroke:var(--cyan);
+
+    stroke-width:2;
+
+    filter:drop-shadow(
+        0 0 4px rgba(53,200,255,.45)
+    );
+}
+
+.chart-line.green{
+
+    stroke:var(--green);
+}
+
+
+/* ANALYTIC LIST */
+
+.metric-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:9px;
+}
+
+.metric{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    font-size:7px;
+
+    font-family:'Space Mono',monospace;
+
+    color:var(--muted);
+}
+
+.metric strong{
+
+    color:var(--green);
+}
+
+
+/* =========================================================
+   BOTTOM HARDWARE
+========================================================= */
+
+.hardware-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(12,1fr);
+
+    gap:4px;
+
+    margin-top:4px;
+
+    padding:4px;
+
+    background:#041019;
+
+    border:1px solid var(--line);
+}
+
+.hardware{
+
+    min-height:83px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(10,30,41,.95),
+            rgba(5,17,25,.95)
+        );
+
+    border:1px solid rgba(93,181,220,.15);
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    position:relative;
+}
+
+.hardware:hover{
+
+    transform:translateY(-2px);
+
+    border-color:rgba(53,200,255,.4);
+
+    box-shadow:
+        inset 0 0 20px rgba(53,200,255,.04),
+        0 0 15px rgba(53,200,255,.06);
+}
+
+.hardware-icon{
+
+    font-size:22px;
+}
+
+.hardware-name{
+
+    font-family:'Space Mono',monospace;
+
+    font-size:7px;
+
+    color:#a3b9c5;
+
+    text-align:center;
+}
+
+.hardware-status{
+
+    font-family:'Space Mono',monospace;
+
+    color:var(--green);
+
+    font-size:6px;
+}
+
+
+/* =========================================================
+   ACTIVITY
+========================================================= */
+
+.activity-panel{
+
+    margin-top:4px;
+
+    min-height:150px;
+}
+
+.activity-grid{
 
     display:grid;
 
     grid-template-columns:1fr 1fr;
 
-    gap:25px;
+    gap:0;
 
-    margin-top:20px;
+    padding:5px 12px;
 }
 
-.about-item{
+.activity-row{
 
-    padding:18px;
+    display:grid;
 
-    border-left:2px solid var(--accent);
+    grid-template-columns:65px 25px 1fr;
 
-    background:rgba(255,255,255,.02);
+    align-items:center;
+
+    padding:8px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.04);
+
+    font-family:'Space Mono',monospace;
+
+    font-size:7px;
 }
 
-.about-item h3{
+.activity-time{
 
-    font-size:12px;
-
-    margin-bottom:8px;
+    color:#657e8c;
 }
 
-.about-item p{
+.activity-icon{
 
-    color:var(--muted);
+    color:var(--cyan);
+}
 
-    line-height:1.7;
+.activity-message{
 
-    font-size:11px;
+    color:#9db0ba;
 }
 
 
-/* =========================
+/* =========================================================
    FOOTER
-========================= */
+========================================================= */
 
 .footer{
+
+    margin-top:4px;
+
+    padding:12px;
 
     display:flex;
 
@@ -1222,79 +2049,180 @@ header{
 
     align-items:center;
 
-    margin-top:35px;
+    background:#041019;
 
-    padding-top:20px;
+    border:1px solid var(--line);
 
-    border-top:1px solid var(--border);
-
-    color:var(--muted);
+    color:#526b78;
 
     font-family:'Space Mono',monospace;
 
-    font-size:8px;
+    font-size:7px;
 
     letter-spacing:1px;
 }
 
 .footer-live{
 
+    color:var(--green);
+
     display:flex;
 
     align-items:center;
 
-    gap:7px;
+    gap:6px;
+}
 
-    color:var(--green);
+.dot{
+
+    width:5px;
+
+    height:5px;
+
+    background:var(--green);
+
+    border-radius:50%;
+
+    box-shadow:0 0 8px var(--green);
+
+    animation:blink 1.5s infinite;
+}
+
+@keyframes blink{
+
+    50%{
+        opacity:.25;
+    }
 }
 
 
-/* =========================
+/* =========================================================
    RESPONSIVE
-========================= */
+========================================================= */
 
-@media(max-width:1050px){
+@media(max-width:1200px){
 
-    .hero{
+    .top-header{
 
-        grid-template-columns:1fr;
+        grid-template-columns:220px 1fr 220px;
     }
 
-    .activity-layout{
+    .command-title h1{
 
-        grid-template-columns:1fr;
+        font-size:21px;
+    }
+
+    .main-grid{
+
+        grid-template-columns:
+            200px
+            minmax(400px,1fr)
+            280px;
+    }
+
+    .kpi{
+
+        padding:7px;
+    }
+
+    .kpi-icon{
+
+        font-size:18px;
     }
 }
 
-@media(max-width:800px){
 
-    header{
+@media(max-width:950px){
 
-        position:relative;
+    .top-header{
 
-        flex-direction:column;
+        height:auto;
 
-        align-items:flex-start;
+        grid-template-columns:1fr;
+
+        padding:14px;
     }
 
-    .nav{
+    .command-title{
 
-        width:100%;
-
-        overflow-x:auto;
+        order:2;
     }
 
-    .nav button{
+    .header-right{
 
-        white-space:nowrap;
+        justify-content:space-between;
+
+        order:3;
     }
 
-    .stats{
+    .brand{
+
+        justify-content:center;
+    }
+
+    .kpi-strip{
+
+        grid-template-columns:
+            repeat(4,1fr);
+    }
+
+    .main-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .left-column,
+    .right-column{
+
+        display:grid;
 
         grid-template-columns:1fr 1fr;
     }
 
-    .about-grid{
+    .digital-twin{
+
+        min-height:500px;
+    }
+
+    .hardware-grid{
+
+        grid-template-columns:
+            repeat(6,1fr);
+    }
+}
+
+
+@media(max-width:600px){
+
+    .command-center{
+
+        padding:3px;
+    }
+
+    .kpi-strip{
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+    .left-column,
+    .right-column{
+
+        display:flex;
+    }
+
+    .analytics{
+
+        grid-template-columns:1fr;
+    }
+
+    .hardware-grid{
+
+        grid-template-columns:
+            repeat(3,1fr);
+    }
+
+    .activity-grid{
 
         grid-template-columns:1fr;
     }
@@ -1303,39 +2231,24 @@ header{
 
         flex-direction:column;
 
-        gap:10px;
-
-        align-items:flex-start;
-    }
-}
-
-@media(max-width:500px){
-
-    .wrapper{
-
-        width:92%;
+        gap:8px;
     }
 
-    .hero-main{
+    .command-title h1{
 
-        padding:25px;
+        font-size:16px;
+
+        letter-spacing:2px;
     }
 
-    .hero-title{
+    .command-title p{
 
-        font-size:2rem;
-
-        letter-spacing:-1px;
+        font-size:6px;
     }
 
-    .stats{
+    .brand-name{
 
-        grid-template-columns:1fr;
-    }
-
-    .hero-actions{
-
-        flex-direction:column;
+        font-size:15px;
     }
 }
 
@@ -1343,31 +2256,34 @@ header{
 
 </head>
 
+
 <body>
 
-<div class="wrapper">
+
+<div class="command-center">
 
 
-<!-- =========================
+<!-- =====================================================
      HEADER
-========================= -->
+===================================================== -->
 
-<header>
+<header class="top-header">
 
-    <div class="logo-area">
 
-        <div class="logo-mark">
+    <div class="brand">
+
+        <div class="brand-logo">
             🛡️
         </div>
 
         <div>
 
-            <div class="logo">
+            <div class="brand-name">
                 ECOGUARDIAN <span>AI</span>
             </div>
 
-            <div class="logo-sub">
-                IOT CONTROL CENTER
+            <div class="brand-sub">
+                POWERED ECO-DEFENCE & SMART IOT
             </div>
 
         </div>
@@ -1375,163 +2291,1264 @@ header{
     </div>
 
 
-    <nav class="nav">
+    <div class="command-title">
 
-        <button class="active">
-            Dashboard
-        </button>
+        <h1>
+            AI COMMAND CENTER
+        </h1>
 
-        <button onclick="openRFID()">
-            RFID
-        </button>
+        <p>
+            SECURE • SUSTAINABLE • SMART • SELF-RELIANT
+        </p>
 
-        <button onclick="openFire()">
-            Fire System
-        </button>
+    </div>
 
-        <button onclick="openDust()">
-            Smart Dustbin
-        </button>
 
-        <button onclick="openIntruder()">
-            Intruder
-        </button>
+    <div class="header-right">
 
-    </nav>
+        <div class="clock">
+
+            <div
+                class="clock-time"
+                id="clock"
+            >
+                00:00:00
+            </div>
+
+            <div
+                class="clock-date"
+                id="date"
+            >
+                18 AUG 2026
+            </div>
+
+        </div>
+
+
+        <div class="system-status">
+
+            <small>
+                SYSTEM STATUS
+            </small>
+
+            <strong>
+                ● ALL SYSTEMS OPERATIONAL
+            </strong>
+
+        </div>
+
+    </div>
 
 </header>
 
 
-<!-- =========================
-     HERO
-========================= -->
+<!-- =====================================================
+     NAV
+===================================================== -->
 
-<section class="hero">
+<nav class="navbar">
 
-    <div class="hero-main">
+    <button class="nav-btn active">
+        ▣ DASHBOARD
+    </button>
 
-        <div class="eyebrow">
+    <button
+        class="nav-btn"
+        onclick="openIntruder()"
+    >
+        ◉ SECURITY
+    </button>
 
-            <span class="pulse"></span>
+    <button
+        class="nav-btn"
+        onclick="openFire()"
+    >
+        ⚡ FIRE SYSTEM
+    </button>
 
-            SYSTEM OPERATIONAL
+    <button class="nav-btn">
+        ◉ ENVIRONMENT
+    </button>
 
+    <button class="nav-btn">
+        ♟ PERSONNEL
+    </button>
+
+    <button
+        class="nav-btn"
+        onclick="openDust()"
+    >
+        ♻ RESOURCES
+    </button>
+
+    <button class="nav-btn">
+        ◉ DRONES
+    </button>
+
+    <button class="nav-btn">
+        ⚠ EMERGENCY
+    </button>
+
+    <button class="nav-btn">
+        ▥ ANALYTICS
+    </button>
+
+    <button class="nav-btn">
+        ⚙ SETTINGS
+    </button>
+
+</nav>
+
+
+<!-- =====================================================
+     KPI STRIP
+===================================================== -->
+
+<section class="kpi-strip">
+
+
+    <div class="kpi">
+
+        <div class="kpi-icon">
+            👥
         </div>
 
-        <h1 class="hero-title">
+        <div>
 
-            Intelligent
-            <span>Protection.</span>
+            <div class="kpi-label">
+                PERSONNEL
+            </div>
 
-            Real-Time
-            <span>Control.</span>
-
-        </h1>
-
-        <p class="hero-desc">
-
-            EcoGuardian AI connects embedded IoT hardware,
-            sensors, cameras and intelligent monitoring systems
-            into one centralized real-time control center.
-
-        </p>
-
-        <div class="hero-actions">
-
-            <button class="primary-btn" onclick="openRFID()">
-                OPEN CONTROL CENTER →
-            </button>
-
-            <button class="secondary-btn" onclick="scrollToProjects()">
-                VIEW SYSTEMS
-            </button>
+            <div class="kpi-value">
+                152
+                <span class="kpi-unit">
+                    / 200
+                </span>
+            </div>
 
         </div>
 
     </div>
 
 
-    <!-- LIVE SYSTEM -->
+    <div class="kpi">
 
-    <div class="live-panel">
+        <div class="kpi-icon">
+            🪪
+        </div>
 
-        <div class="panel-header">
+        <div>
 
-            <div class="panel-title">
-                SYSTEM HEALTH
+            <div class="kpi-label">
+                RFID SCANS
             </div>
 
-            <div class="live">
+            <div
+                class="kpi-value"
+                id="scanCounter"
+            >
+                07
+            </div>
+
+            <div class="kpi-unit">
+                TODAY
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-icon">
+            🚗
+        </div>
+
+        <div>
+
+            <div class="kpi-label">
+                VEHICLES
+            </div>
+
+            <div class="kpi-value">
+                12
+            </div>
+
+            <div class="kpi-unit">
+                INSIDE
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-icon">
+            🛸
+        </div>
+
+        <div>
+
+            <div class="kpi-label">
+                DRONES
+            </div>
+
+            <div class="kpi-value">
+                02
+            </div>
+
+            <div class="kpi-unit">
+                ACTIVE
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-icon">
+            ⚡
+        </div>
+
+        <div>
+
+            <div class="kpi-label">
+                POWER
+            </div>
+
+            <div class="kpi-value">
+                18.6
+                <span class="kpi-unit">
+                    kWh
+                </span>
+            </div>
+
+            <div class="kpi-unit">
+                TODAY
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-icon">
+            💧
+        </div>
+
+        <div>
+
+            <div class="kpi-label">
+                WATER
+            </div>
+
+            <div class="kpi-value">
+                76%
+            </div>
+
+            <div class="kpi-unit">
+                LEVEL
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="kpi">
+
+        <div class="kpi-icon">
+            🌿
+        </div>
+
+        <div>
+
+            <div class="kpi-label">
+                CO₂ CAPTURED
+            </div>
+
+            <div class="kpi-value">
+                2.35
+            </div>
+
+            <div class="kpi-unit">
+                KG TODAY
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main-grid">
+
+
+<!-- =====================================================
+     LEFT
+===================================================== -->
+
+<div class="left-column">
+
+
+    <!-- HEALTH -->
+
+    <section class="panel health-panel">
+
+        <div class="panel-title">
+
+            CAMP HEALTH INDEX
+
+            <span class="live">
+                ● LIVE
+            </span>
+
+        </div>
+
+
+        <div class="health-gauge">
+
+            <div class="gauge-center">
+
+                <div class="gauge-number">
+                    94.7%
+                </div>
+
+                <div class="gauge-grade">
+                    EXCELLENT
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="health-stars">
+            ★ ★ ★ ★ ★
+        </div>
+
+
+        <div class="health-list">
+
+
+            <div class="health-row">
+
+                <span class="health-name">
+                    SECURITY
+                </span>
+
+                <div class="health-bar">
+                    <div
+                        class="health-fill"
+                        style="width:96%"
+                    ></div>
+                </div>
+
+                <span class="health-percent">
+                    96%
+                </span>
+
+            </div>
+
+
+            <div class="health-row">
+
+                <span class="health-name">
+                    ENERGY
+                </span>
+
+                <div class="health-bar">
+                    <div
+                        class="health-fill"
+                        style="width:92%"
+                    ></div>
+                </div>
+
+                <span class="health-percent">
+                    92%
+                </span>
+
+            </div>
+
+
+            <div class="health-row">
+
+                <span class="health-name">
+                    ENVIRONMENT
+                </span>
+
+                <div class="health-bar">
+                    <div
+                        class="health-fill"
+                        style="width:91%"
+                    ></div>
+                </div>
+
+                <span class="health-percent">
+                    91%
+                </span>
+
+            </div>
+
+
+            <div class="health-row">
+
+                <span class="health-name">
+                    WATER
+                </span>
+
+                <div class="health-bar">
+                    <div
+                        class="health-fill"
+                        style="width:95%"
+                    ></div>
+                </div>
+
+                <span class="health-percent">
+                    95%
+                </span>
+
+            </div>
+
+
+            <div class="health-row">
+
+                <span class="health-name">
+                    EMERGENCY
+                </span>
+
+                <div class="health-bar">
+                    <div
+                        class="health-fill"
+                        style="width:97%"
+                    ></div>
+                </div>
+
+                <span class="health-percent">
+                    97%
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- WEATHER -->
+
+    <section class="panel weather-panel">
+
+        <div class="panel-title">
+            WEATHER STATION
+        </div>
+
+
+        <div class="weather-main">
+
+            <div class="weather-icon">
+                🌤️
+            </div>
+
+            <div>
+
+                <div class="temperature">
+                    28°C
+                </div>
+
+                <div class="weather-desc">
+                    CLEAR SKY
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="weather-data">
+
+            <div class="weather-item">
+                HUMIDITY
+                <strong>43%</strong>
+            </div>
+
+            <div class="weather-item">
+                WIND
+                <strong>12 km/h</strong>
+            </div>
+
+            <div class="weather-item">
+                RAINFALL
+                <strong>0 mm</strong>
+            </div>
+
+            <div class="weather-item">
+                UV INDEX
+                <strong>6 HIGH</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- AIR -->
+
+    <section class="panel air-panel">
+
+        <div class="panel-title">
+            AIR QUALITY
+        </div>
+
+
+        <div class="air-content">
+
+            <div class="air-circle">
+
+                <div class="air-value">
+                    38
+                </div>
+
+                <div class="air-label">
+                    GOOD
+                </div>
+
+            </div>
+
+
+            <div class="air-values">
+
+                <div>
+                    CO₂
+                    <strong>412 ppm</strong>
+                </div>
+
+                <div>
+                    PM2.5
+                    <strong>18 μg/m³</strong>
+                </div>
+
+                <div>
+                    O₂
+                    <strong>21.4%</strong>
+                </div>
+
+                <div>
+                    TVOC
+                    <strong>0.21 ppm</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<!-- =====================================================
+     CENTER DIGITAL TWIN
+===================================================== -->
+
+<div class="center-column">
+
+<section class="panel digital-twin">
+
+    <div class="panel-title">
+
+        CAMP DIGITAL TWIN
+        <span>
+            ◉ LIVE
+        </span>
+
+    </div>
+
+
+    <div class="corner c1"></div>
+    <div class="corner c2"></div>
+    <div class="corner c3"></div>
+    <div class="corner c4"></div>
+
+
+    <!-- ROADS -->
+
+    <div class="road horizontal r1"></div>
+    <div class="road horizontal r2"></div>
+    <div class="road horizontal r3"></div>
+
+    <div class="road vertical v1"></div>
+    <div class="road vertical v2"></div>
+    <div class="road vertical v3"></div>
+
+
+    <!-- BUILDINGS -->
+
+    <div class="building b1"></div>
+    <div class="building b2"></div>
+    <div class="building b3"></div>
+    <div class="building b4"></div>
+
+    <div class="building b5"></div>
+    <div class="building b6"></div>
+    <div class="building b7"></div>
+    <div class="building b8"></div>
+
+    <div class="building b9"></div>
+    <div class="building b10"></div>
+    <div class="building b11"></div>
+    <div class="building b12"></div>
+
+
+    <!-- COMMAND CENTER -->
+
+    <div class="command-building"></div>
+
+
+    <!-- SCAN -->
+
+    <div class="scan-line"></div>
+
+
+    <!-- LABELS -->
+
+    <div class="map-label label1">
+
+        WATCH TOWER
+
+        <span>
+            Status: Active
+        </span>
+
+    </div>
+
+
+    <div class="map-label label2">
+
+        DRONE DOCK
+
+        <span>
+            2 Drones Ready
+        </span>
+
+    </div>
+
+
+    <div class="map-label label3">
+
+        SOLAR PLANT
+
+        <span>
+            Power: 8.2 kW
+        </span>
+
+    </div>
+
+
+    <div class="map-label label4">
+
+        MAIN GATE
+
+        <span>
+            Access: Secured
+        </span>
+
+    </div>
+
+
+    <div class="map-label label5">
+
+        WATER PLANT
+
+        <span>
+            Level: 76%
+        </span>
+
+    </div>
+
+
+    <div class="map-label label6">
+
+        CONTROL ROOM
+
+        <span>
+            All Systems Normal
+        </span>
+
+    </div>
+
+
+    <!-- DRONES -->
+
+    <div class="drone drone1">
+        🛸
+    </div>
+
+    <div class="drone drone2">
+        🛸
+    </div>
+
+
+</section>
+
+</div>
+
+
+<!-- =====================================================
+     RIGHT
+===================================================== -->
+
+<div class="right-column">
+
+
+    <!-- ALERTS -->
+
+    <section class="panel alert-panel">
+
+        <div class="panel-title">
+
+            <span style="color:var(--red)">
+                LIVE ALERTS
+            </span>
+
+            <span>
+                VIEW ALL →
+            </span>
+
+        </div>
+
+
+        <div class="alert">
+
+            <div class="alert-icon">
+                ⚠
+            </div>
+
+            <div>
+
+                <div class="alert-title">
+                    INTRUDER DETECTED
+                </div>
+
+                <div class="alert-sub">
+                    North Perimeter Zone
+                </div>
+
+            </div>
+
+            <div class="alert-time">
+                11:42
+            </div>
+
+        </div>
+
+
+        <div class="alert">
+
+            <div class="alert-icon">
+                🔥
+            </div>
+
+            <div>
+
+                <div class="alert-title">
+                    FIRE DETECTED
+                </div>
+
+                <div class="alert-sub">
+                    Sensor Zone — Block B
+                </div>
+
+            </div>
+
+            <div class="alert-time">
+                11:38
+            </div>
+
+        </div>
+
+
+        <div class="alert warning">
+
+            <div class="alert-icon">
+                💧
+            </div>
+
+            <div>
+
+                <div class="alert-title">
+                    LOW WATER LEVEL
+                </div>
+
+                <div class="alert-sub">
+                    Water Tank 2
+                </div>
+
+            </div>
+
+            <div class="alert-time">
+                11:30
+            </div>
+
+        </div>
+
+
+        <div class="alert ok">
+
+            <div class="alert-icon">
+                ✓
+            </div>
+
+            <div>
+
+                <div class="alert-title">
+                    SYSTEM CHECK
+                </div>
+
+                <div class="alert-sub">
+                    All Systems Normal
+                </div>
+
+            </div>
+
+            <div class="alert-time">
+                11:20
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- DRONE FEED -->
+
+    <section class="panel drone-feed">
+
+        <div class="panel-title">
+
+            LIVE DRONE FEED
+
+            <span>
+                DRONE-01 ▼
+            </span>
+
+        </div>
+
+
+        <div class="feed-screen">
+
+            <div class="live-tag">
                 ● LIVE
             </div>
 
-        </div>
-
-
-        <div class="system-ring">
-
-            <div class="ring-content">
-
-                <div class="ring-value">
-                    98%
-                </div>
-
-                <div class="ring-label">
-                    HEALTH
-                </div>
-
-            </div>
+            <div class="feed-cross"></div>
 
         </div>
 
 
-        <div class="system-list">
+        <div class="feed-bottom">
 
-            <div class="system-row">
+            <div class="feed-control">
+                📷 CAPTURE
+            </div>
 
-                <span class="system-name">
-                    RFID Network
-                </span>
+            <div class="feed-control">
+                🔴 RECORD
+            </div>
 
-                <span class="system-state">
-                    ONLINE
-                </span>
+            <div class="feed-control">
+                ◈ THERMAL
+            </div>
+
+            <div class="feed-control">
+                ◉ NIGHT
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- AI ASSISTANT -->
+
+    <section class="panel ai-panel">
+
+        <div class="ai-header">
+
+            ◈ AI MISSION ASSISTANT
+
+        </div>
+
+
+        <div class="ai-situation">
+
+            Situation:
+            <strong>
+                Intrusion detected
+            </strong>
+
+            <br>
+
+            Threat Level:
+
+            <span class="threat">
+                HIGH
+            </span>
+
+        </div>
+
+
+        <ul class="recommendations">
+
+            <li>
+                Deploy Drone-1 for area scan
+            </li>
+
+            <li>
+                Lock Gate 2 and increase security
+            </li>
+
+            <li>
+                Alert Security Team Bravo
+            </li>
+
+            <li>
+                Activate perimeter lighting
+            </li>
+
+            <li>
+                Start video recording
+            </li>
+
+            <li>
+                Inform command authority
+            </li>
+
+        </ul>
+
+
+        <button
+            class="ai-btn"
+            onclick="executeAI()"
+        >
+            EXECUTE RECOMMENDATION ▶
+        </button>
+
+    </section>
+
+
+</div>
+
+</main>
+
+
+<!-- =====================================================
+     ANALYTICS
+===================================================== -->
+
+<section class="analytics">
+
+
+    <!-- ENERGY -->
+
+    <div class="panel analytics-panel">
+
+        <div class="panel-title">
+            ENERGY MANAGEMENT
+        </div>
+
+
+        <div class="analytics-body">
+
+            <div class="donut-wrap">
+
+                <div class="donut"></div>
+
+                <div class="donut-value">
+                    78%
+                </div>
 
             </div>
 
-            <div class="system-row">
 
-                <span class="system-name">
-                    Fire Sensors
-                </span>
+            <div>
 
-                <span class="system-state">
-                    MONITORING
-                </span>
+                <div class="metric-list">
+
+                    <div class="metric">
+                        SOLAR POWER
+                        <strong>8.2 kW</strong>
+                    </div>
+
+                    <div class="metric">
+                        PIEZO POWER
+                        <strong>1.6 kW</strong>
+                    </div>
+
+                    <div class="metric">
+                        BATTERY
+                        <strong>78%</strong>
+                    </div>
+
+                    <div class="metric">
+                        TOTAL
+                        <strong>11.0 kWh</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="chart">
+
+                    <svg viewBox="0 0 300 100">
+
+                        <polyline
+                            class="chart-line green"
+                            points="
+                            0,75
+                            30,65
+                            60,72
+                            90,45
+                            120,60
+                            150,32
+                            180,48
+                            210,25
+                            240,40
+                            270,20
+                            300,30
+                            "
+                        />
+
+                        <polyline
+                            class="chart-line"
+                            points="
+                            0,85
+                            30,78
+                            60,82
+                            90,70
+                            120,74
+                            150,60
+                            180,68
+                            210,52
+                            240,57
+                            270,45
+                            300,50
+                            "
+                        />
+
+                    </svg>
+
+                </div>
 
             </div>
 
-            <div class="system-row">
+        </div>
 
-                <span class="system-name">
-                    Camera System
-                </span>
+    </div>
 
-                <span class="system-state">
-                    ACTIVE
-                </span>
+
+    <!-- WATER -->
+
+    <div class="panel analytics-panel">
+
+        <div class="panel-title">
+            WATER MANAGEMENT
+        </div>
+
+
+        <div class="analytics-body">
+
+            <div class="donut-wrap">
+
+                <div
+                    class="donut"
+                    style="
+                        background:
+                        conic-gradient(
+                            var(--cyan) 0 235deg,
+                            #12313a 235deg
+                        )
+                    "
+                ></div>
+
+                <div
+                    class="donut-value"
+                    style="color:var(--cyan)"
+                >
+                    65%
+                </div>
 
             </div>
 
-            <div class="system-row">
 
-                <span class="system-name">
-                    QR Dustbin
-                </span>
+            <div>
 
-                <span class="system-state">
-                    READY
-                </span>
+                <div class="metric-list">
+
+                    <div class="metric">
+                        TANK 1
+                        <strong>65%</strong>
+                    </div>
+
+                    <div class="metric">
+                        TANK 2
+                        <strong>40%</strong>
+                    </div>
+
+                    <div class="metric">
+                        TANK 3
+                        <strong>80%</strong>
+                    </div>
+
+                    <div class="metric">
+                        CONSUMED
+                        <strong>12.5 L</strong>
+                    </div>
+
+                    <div class="metric">
+                        RECYCLED
+                        <strong>4.8 L</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="chart">
+
+                    <svg viewBox="0 0 300 100">
+
+                        <polyline
+                            class="chart-line"
+                            points="
+                            0,60
+                            30,48
+                            60,65
+                            90,45
+                            120,55
+                            150,38
+                            180,44
+                            210,25
+                            240,35
+                            270,18
+                            300,27
+                            "
+                        />
+
+                    </svg>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- WASTE -->
+
+    <div class="panel analytics-panel">
+
+        <div class="panel-title">
+            WASTE MANAGEMENT
+        </div>
+
+
+        <div class="analytics-body">
+
+            <div class="donut-wrap">
+
+                <div
+                    class="donut"
+                    style="
+                        background:
+                        conic-gradient(
+                            var(--green) 0 160deg,
+                            #12313a 160deg
+                        )
+                    "
+                ></div>
+
+                <div
+                    class="donut-value"
+                    style="color:var(--green)"
+                >
+                    45%
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <div class="metric-list">
+
+                    <div class="metric">
+                        DRY WASTE
+                        <strong>45%</strong>
+                    </div>
+
+                    <div class="metric">
+                        WET WASTE
+                        <strong>40%</strong>
+                    </div>
+
+                    <div class="metric">
+                        HAZARDOUS
+                        <strong>30%</strong>
+                    </div>
+
+                    <div class="metric">
+                        RECYCLED
+                        <strong>18.6 kg</strong>
+                    </div>
+
+                    <div class="metric">
+                        REWARDS
+                        <strong>245</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="chart">
+
+                    <svg viewBox="0 0 300 100">
+
+                        <polyline
+                            class="chart-line green"
+                            points="
+                            0,80
+                            30,72
+                            60,75
+                            90,60
+                            120,64
+                            150,48
+                            180,52
+                            210,35
+                            240,40
+                            270,28
+                            300,34
+                            "
+                        />
+
+                    </svg>
+
+                </div>
 
             </div>
 
@@ -1542,503 +3559,347 @@ header{
 </section>
 
 
-<!-- =========================
-     STATS
-========================= -->
+<!-- =====================================================
+     HARDWARE
+===================================================== -->
 
-<section class="stats">
+<section class="hardware-grid">
 
-    <div class="stat">
 
-        <div class="stat-top">
+    <div
+        class="hardware"
+        onclick="openIntruder()"
+    >
 
-            <span>CONNECTED DEVICES</span>
-
-            <div class="stat-icon">
-                📡
-            </div>
-
+        <div class="hardware-icon">
+            🛰️
         </div>
 
-        <div class="stat-value" id="devices">
-            12
+        <div class="hardware-name">
+            LASER FENCE
         </div>
 
-        <div class="stat-label">
-            IoT devices online
-        </div>
-
-    </div>
-
-
-    <div class="stat">
-
-        <div class="stat-top">
-
-            <span>SECURITY EVENTS</span>
-
-            <div class="stat-icon">
-                🛡️
-            </div>
-
-        </div>
-
-        <div class="stat-value">
-            247
-        </div>
-
-        <div class="stat-label">
-            Events processed
+        <div class="hardware-status">
+            ● ACTIVE
         </div>
 
     </div>
 
 
-    <div class="stat">
+    <div class="hardware">
 
-        <div class="stat-top">
-
-            <span>ACCESS SCANS</span>
-
-            <div class="stat-icon">
-                🪪
-            </div>
-
+        <div class="hardware-icon">
+            📡
         </div>
 
-        <div class="stat-value" id="scans">
-            1,284
+        <div class="hardware-name">
+            PIR SENSORS
         </div>
 
-        <div class="stat-label">
-            RFID scans
+        <div class="hardware-status">
+            ● ACTIVE
         </div>
 
     </div>
 
 
-    <div class="stat">
+    <div class="hardware">
 
-        <div class="stat-top">
-
-            <span>UPTIME</span>
-
-            <div class="stat-icon">
-                ⚡
-            </div>
-
+        <div class="hardware-icon">
+            📹
         </div>
 
-        <div class="stat-value">
-            99.9%
+        <div class="hardware-name">
+            CCTV SYSTEM
         </div>
 
-        <div class="stat-label">
-            System reliability
+        <div class="hardware-status">
+            ● ACTIVE
         </div>
 
     </div>
+
+
+    <div
+        class="hardware"
+        onclick="openRFID()"
+    >
+
+        <div class="hardware-icon">
+            🪪
+        </div>
+
+        <div class="hardware-name">
+            RFID GATE
+        </div>
+
+        <div class="hardware-status">
+            ● ACTIVE
+        </div>
+
+    </div>
+
+
+    <div
+        class="hardware"
+        onclick="openFire()"
+    >
+
+        <div class="hardware-icon">
+            🔥
+        </div>
+
+        <div class="hardware-name">
+            FIRE SENSORS
+        </div>
+
+        <div class="hardware-status">
+            ● ACTIVE
+        </div>
+
+    </div>
+
+
+    <div class="hardware">
+
+        <div class="hardware-icon">
+            🌫️
+        </div>
+
+        <div class="hardware-name">
+            GAS SENSORS
+        </div>
+
+        <div class="hardware-status">
+            ● ACTIVE
+        </div>
+
+    </div>
+
+
+    <div class="hardware">
+
+        <div class="hardware-icon">
+            🛸
+        </div>
+
+        <div class="hardware-name">
+            DRONE SYSTEM
+        </div>
+
+        <div class="hardware-status">
+            ● ACTIVE
+        </div>
+
+    </div>
+
+
+    <div class="hardware">
+
+        <div class="hardware-icon">
+            ☀️
+        </div>
+
+        <div class="hardware-name">
+            SOLAR SYSTEM
+        </div>
+
+        <div class="hardware-status">
+            ● ACTIVE
+        </div>
+
+    </div>
+
+
+    <div class="hardware">
+
+        <div class="hardware-icon">
+            💧
+        </div>
+
+        <div class="hardware-name">
+            WATER SYSTEM
+        </div>
+
+        <div class="hardware-status">
+            ● ACTIVE
+        </div>
+
+    </div>
+
+
+    <div class="hardware">
+
+        <div class="hardware-icon">
+            🌿
+        </div>
+
+        <div class="hardware-name">
+            COMMUNICATION
+        </div>
+
+        <div class="hardware-status">
+            ● ACTIVE
+        </div>
+
+    </div>
+
+
+    <div class="hardware">
+
+        <div class="hardware-icon">
+            ⚡
+        </div>
+
+        <div class="hardware-name">
+            PIEZO TILES
+        </div>
+
+        <div class="hardware-status">
+            ● ACTIVE
+        </div>
+
+    </div>
+
+
+    <div class="hardware">
+
+        <div class="hardware-icon">
+            💡
+        </div>
+
+        <div class="hardware-name">
+            STREET LIGHTS
+        </div>
+
+        <div class="hardware-status">
+            ● ACTIVE
+        </div>
+
+    </div>
+
 
 </section>
 
 
-<!-- =========================
-     PROJECTS
-========================= -->
-
-<section class="section" id="projects">
-
-    <div class="section-head">
-
-        <div>
-
-            <div class="section-title">
-                Active Systems
-            </div>
-
-            <div class="section-sub">
-                ECOSYSTEM / IOT MODULES
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="projects">
-
-
-        <!-- RFID -->
-
-        <div class="project-card">
-
-            <div class="project-top">
-
-                <div class="project-icon">
-                    🪪
-                </div>
-
-                <div class="status">
-
-                    <span class="status-dot"></span>
-
-                    ONLINE
-
-                </div>
-
-            </div>
-
-            <div class="project-name">
-                RFID Smart Access
-            </div>
-
-            <div class="project-desc">
-
-                Real-time RFID authentication system
-                using RC522 with access verification,
-                user logs and live monitoring.
-
-            </div>
-
-            <div class="tech-stack">
-
-                <span class="tech">Arduino UNO</span>
-                <span class="tech">RC522</span>
-                <span class="tech">Python</span>
-                <span class="tech">WebSocket</span>
-
-            </div>
-
-            <button class="open-btn" onclick="openRFID()">
-                OPEN RFID DASHBOARD →
-            </button>
-
-        </div>
-
-
-        <!-- FIRE -->
-
-        <div class="project-card">
-
-            <div class="project-top">
-
-                <div class="project-icon">
-                    🔥
-                </div>
-
-                <div class="status">
-
-                    <span class="status-dot"></span>
-
-                    ACTIVE
-
-                </div>
-
-            </div>
-
-            <div class="project-name">
-                Fire Protection
-            </div>
-
-            <div class="project-desc">
-
-                Multi-zone fire detection using IR,
-                flame and MQ2 sensors with automated
-                emergency response and sprinkler control.
-
-            </div>
-
-            <div class="tech-stack">
-
-                <span class="tech">IR Sensor</span>
-                <span class="tech">MQ2</span>
-                <span class="tech">Flame Sensor</span>
-                <span class="tech">Servo</span>
-
-            </div>
-
-            <button class="open-btn" onclick="openFire()">
-                OPEN FIRE DASHBOARD →
-            </button>
-
-        </div>
-
-
-        <!-- DUSTBIN -->
-
-        <div class="project-card">
-
-            <div class="project-top">
-
-                <div class="project-icon">
-                    ♻️
-                </div>
-
-                <div class="status">
-
-                    <span class="status-dot"></span>
-
-                    READY
-
-                </div>
-
-            </div>
-
-            <div class="project-name">
-                Smart QR Dustbin
-            </div>
-
-            <div class="project-desc">
-
-                Smart waste disposal system with QR
-                identification, reward points and
-                user activity tracking.
-
-            </div>
-
-            <div class="tech-stack">
-
-                <span class="tech">QR Scanner</span>
-                <span class="tech">Points</span>
-                <span class="tech">Camera</span>
-                <span class="tech">IoT</span>
-
-            </div>
-
-            <button class="open-btn" onclick="openDust()">
-                OPEN DUSTBIN DASHBOARD →
-            </button>
-
-        </div>
-
-
-        <!-- INTRUDER -->
-
-        <div class="project-card">
-
-            <div class="project-top">
-
-                <div class="project-icon">
-                    🕵️
-                </div>
-
-                <div class="status">
-
-                    <span class="status-dot"></span>
-
-                    ONLINE
-
-                </div>
-
-            </div>
-
-            <div class="project-name">
-                Intruder Detection
-            </div>
-
-            <div class="project-desc">
-
-                Camera-based security monitoring system
-                designed to identify suspicious or
-                unauthorized persons in real time.
-
-            </div>
-
-            <div class="tech-stack">
-
-                <span class="tech">Camera</span>
-                <span class="tech">AI Detection</span>
-                <span class="tech">Arduino</span>
-                <span class="tech">Python</span>
-
-            </div>
-
-            <button class="open-btn" onclick="openIntruder()">
-                OPEN INTRUDER DASHBOARD →
-            </button>
-
-        </div>
-
-
-    </div>
-
-</section>
-
-
-<!-- =========================
+<!-- =====================================================
      ACTIVITY
-========================= -->
+===================================================== -->
 
-<section class="section">
+<section class="panel activity-panel">
 
-    <div class="section-head">
+    <div class="panel-title">
 
-        <div>
+        ACTIVITY LOG
 
-            <div class="section-title">
-                Live Activity
-            </div>
-
-            <div class="section-sub">
-                REAL-TIME SYSTEM EVENTS
-            </div>
-
-        </div>
+        <span>
+            VIEW ALL →
+        </span>
 
     </div>
 
 
-    <div class="activity-layout">
+    <div class="activity-grid" id="activityLog">
 
 
-        <div class="activity-panel">
+        <div class="activity-row">
 
-            <div class="activity-list" id="activityList">
+            <span class="activity-time">
+                11:42 AM
+            </span>
 
-                <div class="activity">
+            <span class="activity-icon">
+                ⚠
+            </span>
 
-                    <div class="activity-icon">
-                        🪪
-                    </div>
-
-                    <div class="activity-text">
-
-                        <div class="activity-title">
-                            RFID authentication successful
-                        </div>
-
-                        <div class="activity-time">
-                            JUST NOW
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="activity">
-
-                    <div class="activity-icon">
-                        📡
-                    </div>
-
-                    <div class="activity-text">
-
-                        <div class="activity-title">
-                            Sensor network heartbeat received
-                        </div>
-
-                        <div class="activity-time">
-                            12 SEC AGO
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="activity">
-
-                    <div class="activity-icon">
-                        🛡️
-                    </div>
-
-                    <div class="activity-text">
-
-                        <div class="activity-title">
-                            Security monitoring active
-                        </div>
-
-                        <div class="activity-time">
-                            38 SEC AGO
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
+            <span class="activity-message">
+                Intruder Detected — North Perimeter
+            </span>
 
         </div>
 
 
-        <div class="activity-panel">
+        <div class="activity-row">
 
-            <div class="panel-title">
-                Quick Controls
-            </div>
+            <span class="activity-time">
+                11:38 AM
+            </span>
 
+            <span class="activity-icon">
+                🔥
+            </span>
 
-            <div class="quick-controls">
+            <span class="activity-message">
+                Fire Detection System Triggered
+            </span>
 
-                <div class="control" onclick="openRFID()">
-
-                    <div class="control-icon">
-                        🪪
-                    </div>
-
-                    <div class="control-name">
-                        RFID
-                    </div>
-
-                    <div class="control-status">
-                        ONLINE
-                    </div>
-
-                </div>
+        </div>
 
 
-                <div class="control" onclick="openFire()">
+        <div class="activity-row">
 
-                    <div class="control-icon">
-                        🔥
-                    </div>
+            <span class="activity-time">
+                11:35 AM
+            </span>
 
-                    <div class="control-name">
-                        FIRE
-                    </div>
+            <span class="activity-icon">
+                🪪
+            </span>
 
-                    <div class="control-status">
-                        ACTIVE
-                    </div>
+            <span class="activity-message">
+                RFID Gate — Authorized Entry
+            </span>
 
-                </div>
-
-
-                <div class="control" onclick="openDust()">
-
-                    <div class="control-icon">
-                        ♻️
-                    </div>
-
-                    <div class="control-name">
-                        DUSTBIN
-                    </div>
-
-                    <div class="control-status">
-                        READY
-                    </div>
-
-                </div>
+        </div>
 
 
-                <div class="control" onclick="openIntruder()">
+        <div class="activity-row">
 
-                    <div class="control-icon">
-                        🕵️
-                    </div>
+            <span class="activity-time">
+                11:30 AM
+            </span>
 
-                    <div class="control-name">
-                        SECURITY
-                    </div>
+            <span class="activity-icon">
+                💧
+            </span>
 
-                    <div class="control-status">
-                        ACTIVE
-                    </div>
+            <span class="activity-message">
+                Water Level Warning — Tank 2
+            </span>
 
-                </div>
+        </div>
 
-            </div>
+
+        <div class="activity-row">
+
+            <span class="activity-time">
+                11:20 AM
+            </span>
+
+            <span class="activity-icon">
+                ✓
+            </span>
+
+            <span class="activity-message">
+                All Systems Normal
+            </span>
+
+        </div>
+
+
+        <div class="activity-row">
+
+            <span class="activity-time">
+                11:12 AM
+            </span>
+
+            <span class="activity-icon">
+                🛸
+            </span>
+
+            <span class="activity-message">
+                Drone-01 Patrol Completed
+            </span>
 
         </div>
 
@@ -2047,103 +3908,26 @@ header{
 </section>
 
 
-<!-- =========================
-     ABOUT
-========================= -->
-
-<section class="about">
-
-    <div class="section-title">
-        ⚡ EcoGuardian Architecture
-    </div>
-
-    <div class="about-grid">
-
-        <div class="about-item">
-
-            <h3>
-                Hardware Layer
-            </h3>
-
-            <p>
-                Arduino-based embedded systems,
-                RFID modules, sensors, cameras and
-                actuators collect and process physical
-                environment data.
-            </p>
-
-        </div>
-
-
-        <div class="about-item">
-
-            <h3>
-                Communication Layer
-            </h3>
-
-            <p>
-                Serial communication and Python bridge
-                services transport hardware events into
-                the real-time web monitoring layer.
-            </p>
-
-        </div>
-
-
-        <div class="about-item">
-
-            <h3>
-                Intelligence Layer
-            </h3>
-
-            <p>
-                Detection and authentication logic
-                converts raw sensor and camera data
-                into meaningful security events.
-            </p>
-
-        </div>
-
-
-        <div class="about-item">
-
-            <h3>
-                Dashboard Layer
-            </h3>
-
-            <p>
-                Web dashboards provide centralized
-                monitoring, alerts, access history and
-                system control from one interface.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
+<!-- =====================================================
      FOOTER
-========================= -->
+===================================================== -->
 
 <footer class="footer">
 
     <span>
-        ECOGUARDIAN AI • IOT CONTROL CENTER
+        ECOGUARDIAN AI • IOT COMMAND CENTER
     </span>
 
     <span class="footer-live">
 
-        <span class="pulse"></span>
+        <span class="dot"></span>
 
         ALL SYSTEMS OPERATIONAL
 
     </span>
 
-    <span id="clock">
-        --:--:--
+    <span>
+        SECURE CHANNEL • ENCRYPTED
     </span>
 
 </footer>
@@ -2154,159 +3938,186 @@ header{
 
 <script>
 
-/* =========================
-   DASHBOARD LINKS
-========================= */
+/* =========================================================
+   EXISTING DASHBOARDS
+========================================================= */
 
 function openRFID(){
 
-    window.open("IOT.html","_blank");
+    window.open(
+        "IOT.html",
+        "_blank"
+    );
 
 }
+
 
 function openFire(){
 
-    window.open("IOT2.html","_blank");
+    window.open(
+        "IOT2.html",
+        "_blank"
+    );
 
 }
+
 
 function openDust(){
 
-    window.open("IOT3.html","_blank");
+    window.open(
+        "IOT3.html",
+        "_blank"
+    );
 
 }
+
 
 function openIntruder(){
 
-    window.open("IOT4.html","_blank");
+    window.open(
+        "IOT4.html",
+        "_blank"
+    );
 
 }
 
 
-/* =========================
-   SCROLL
-========================= */
-
-function scrollToProjects(){
-
-    document
-        .getElementById("projects")
-        .scrollIntoView({
-            behavior:"smooth"
-        });
-
-}
-
-
-/* =========================
-   LIVE CLOCK
-========================= */
+/* =========================================================
+   CLOCK
+========================================================= */
 
 function updateClock(){
 
     const now = new Date();
 
-    const time =
+    document.getElementById("clock").textContent =
         now.toLocaleTimeString(
             "en-IN",
             {
-                hour12:false
+                hour12:true
             }
         );
 
-    document.getElementById("clock").textContent = time;
+    document.getElementById("date").textContent =
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                day:"2-digit",
+                month:"short",
+                year:"numeric"
+            }
+        ).toUpperCase();
 
 }
 
-setInterval(updateClock,1000);
+setInterval(
+    updateClock,
+    1000
+);
 
 updateClock();
 
 
-/* =========================
-   LIVE SCAN SIMULATION
-========================= */
+/* =========================================================
+   RFID LIVE COUNTER
+========================================================= */
 
-let scans = 1284;
+let scans = 7;
 
 setInterval(()=>{
 
     scans++;
 
-    document.getElementById("scans").textContent =
-        scans.toLocaleString();
+    document.getElementById(
+        "scanCounter"
+    ).textContent =
+        String(scans).padStart(2,"0");
 
-},12000);
+},15000);
 
 
-/* =========================
-   ACTIVITY SIMULATION
-========================= */
+/* =========================================================
+   AI RECOMMENDATION
+========================================================= */
 
-const events = [
+function executeAI(){
 
-    ["🪪","RFID access request processed"],
+    const button =
+        document.querySelector(".ai-btn");
 
-    ["📡","IoT sensor heartbeat received"],
+    button.textContent =
+        "✓ RECOMMENDATION EXECUTED";
 
-    ["🛡️","Security monitoring heartbeat"],
+    button.style.color =
+        "#42d96b";
 
-    ["♻️","Smart dustbin system synchronized"],
+    button.style.borderColor =
+        "rgba(66,217,107,.4)";
 
-    ["🔥","Fire monitoring system checked"]
+    setTimeout(()=>{
 
-];
+        button.textContent =
+            "EXECUTE RECOMMENDATION ▶";
 
-let eventIndex = 0;
+        button.style.color =
+            "";
 
-function addActivity(){
+        button.style.borderColor =
+            "";
 
-    const list =
-        document.getElementById("activityList");
-
-    const [icon,text] =
-        events[eventIndex % events.length];
-
-    const item =
-        document.createElement("div");
-
-    item.className = "activity";
-
-    item.innerHTML = `
-
-        <div class="activity-icon">
-            ${icon}
-        </div>
-
-        <div class="activity-text">
-
-            <div class="activity-title">
-                ${text}
-            </div>
-
-            <div class="activity-time">
-                JUST NOW
-            </div>
-
-        </div>
-
-    `;
-
-    list.prepend(item);
-
-    if(list.children.length > 5){
-
-        list.removeChild(list.lastElementChild);
-
-    }
-
-    eventIndex++;
+    },3000);
 
 }
 
-setInterval(addActivity,7000);
+
+/* =========================================================
+   NAV ACTIVE STATE
+========================================================= */
+
+document
+    .querySelectorAll(".nav-btn")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function(){
+
+                document
+                    .querySelectorAll(".nav-btn")
+                    .forEach(btn =>
+                        btn.classList.remove("active")
+                    );
+
+                this.classList.add("active");
+
+            }
+        );
+
+    });
+
+
+/* =========================================================
+   RANDOM SYSTEM HEARTBEAT
+========================================================= */
+
+setInterval(()=>{
+
+    const health =
+        document.querySelector(".gauge-number");
+
+    if(!health) return;
+
+    const value =
+        (94 + Math.random() * 1.5)
+        .toFixed(1);
+
+    health.textContent =
+        value + "%";
+
+},5000);
 
 </script>
+
 
 </body>
 </html>
