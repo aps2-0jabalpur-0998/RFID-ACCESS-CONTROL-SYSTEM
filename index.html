@@ -1,25 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>EcoGuardian AI — Command Center</title>
 
-<link rel="preconnect"
-      href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 
@@ -32,41 +22,29 @@
     --bg:#02070c;
 
     --panel:#07131d;
-
     --panel2:#0a1a25;
-
     --panel3:#0d202c;
 
-    --border:rgba(83,174,214,.20);
-
-    --border-bright:rgba(83,174,214,.40);
+    --border:rgba(83,174,214,.22);
+    --border-bright:rgba(83,174,214,.42);
 
     --text:#eaf7ff;
-
-    --muted:#718b9b;
+    --muted:#7f99a8;
 
     --green:#42df6c;
-
-    --green-soft:rgba(66,223,108,.10);
-
     --cyan:#39caff;
-
-    --cyan-soft:rgba(57,202,255,.10);
-
     --blue:#328cff;
 
     --yellow:#f4ca45;
-
     --orange:#ff9d38;
-
     --red:#ff4848;
-
-    --red-soft:rgba(255,72,72,.10);
-
     --purple:#ad62ff;
 
-    --shadow:
-        0 15px 40px rgba(0,0,0,.45);
+    --green-soft:rgba(66,223,108,.10);
+    --cyan-soft:rgba(57,202,255,.10);
+    --red-soft:rgba(255,72,72,.10);
+
+    --shadow:0 15px 40px rgba(0,0,0,.45);
 }
 
 
@@ -75,16 +53,12 @@
 ========================================================= */
 
 *{
-
     margin:0;
-
     padding:0;
-
     box-sizing:border-box;
 }
 
 html{
-
     scroll-behavior:smooth;
 }
 
@@ -93,7 +67,6 @@ body{
     min-height:100vh;
 
     background:
-
         radial-gradient(
             circle at 50% 15%,
             rgba(20,100,140,.12),
@@ -117,7 +90,7 @@ body{
 
 
 /* =========================================================
-   HUD OVERLAY
+   SCREEN EFFECT
 ========================================================= */
 
 body::before{
@@ -141,9 +114,8 @@ body::before{
             transparent 4px
         );
 
-    opacity:.25;
+    opacity:.20;
 }
-
 
 body::after{
 
@@ -163,14 +135,14 @@ body::after{
 
 
 /* =========================================================
-   COMMAND CENTER
+   MAIN
 ========================================================= */
 
 .command-center{
 
     width:100%;
 
-    padding:7px;
+    padding:8px;
 
     position:relative;
 
@@ -184,17 +156,17 @@ body::after{
 
 .top-header{
 
-    min-height:72px;
+    min-height:82px;
 
     display:grid;
 
-    grid-template-columns:280px 1fr 310px;
+    grid-template-columns:290px 1fr 330px;
 
     align-items:center;
 
-    gap:15px;
+    gap:18px;
 
-    padding:8px 12px;
+    padding:10px 15px;
 
     background:
         linear-gradient(
@@ -217,14 +189,14 @@ body::after{
 
     align-items:center;
 
-    gap:12px;
+    gap:13px;
 }
 
 .brand-logo{
 
-    width:52px;
+    width:56px;
 
-    height:52px;
+    height:56px;
 
     display:flex;
 
@@ -241,17 +213,14 @@ body::after{
             transparent 70%
         );
 
-    font-size:27px;
-
-    box-shadow:
-        0 0 20px rgba(57,202,255,.10);
+    font-size:29px;
 }
 
 .brand-name{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:18px;
+    font-size:20px;
 
     font-weight:800;
 
@@ -259,28 +228,26 @@ body::after{
 }
 
 .brand-name span{
-
     color:var(--cyan);
 }
 
 .brand-sub{
 
-    margin-top:4px;
+    margin-top:5px;
 
     font-family:'Space Mono',monospace;
 
-    font-size:7px;
+    font-size:9px;
 
     color:var(--muted);
 
-    letter-spacing:1.5px;
+    letter-spacing:1.2px;
 }
 
 
 /* COMMAND TITLE */
 
 .command-title{
-
     text-align:center;
 }
 
@@ -288,27 +255,24 @@ body::after{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:28px;
+    font-size:30px;
 
     letter-spacing:5px;
 
     color:#e4f5ff;
-
-    text-shadow:
-        0 0 20px rgba(57,202,255,.15);
 }
 
 .command-title p{
 
-    margin-top:4px;
+    margin-top:6px;
 
     color:var(--muted);
 
     font-family:'Space Mono',monospace;
 
-    font-size:7px;
+    font-size:9px;
 
-    letter-spacing:3px;
+    letter-spacing:2px;
 }
 
 
@@ -322,11 +286,10 @@ body::after{
 
     align-items:center;
 
-    gap:14px;
+    gap:17px;
 }
 
 .clock{
-
     text-align:right;
 }
 
@@ -334,23 +297,23 @@ body::after{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:16px;
+    font-size:18px;
 }
 
 .clock-date{
 
-    margin-top:4px;
+    margin-top:5px;
 
     color:var(--muted);
 
-    font-size:7px;
+    font-size:9px;
 }
 
 .system-status{
 
-    min-width:150px;
+    min-width:165px;
 
-    padding:9px 11px;
+    padding:11px 13px;
 
     text-align:center;
 
@@ -367,7 +330,7 @@ body::after{
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 
     letter-spacing:1px;
 }
@@ -376,33 +339,33 @@ body::after{
 
     display:block;
 
-    margin-top:4px;
+    margin-top:5px;
 
     color:var(--green);
 
     font-family:'Space Mono',monospace;
 
-    font-size:8px;
+    font-size:9px;
 }
 
 
 /* =========================================================
-   NAVIGATION
+   NAVBAR
 ========================================================= */
 
 .navbar{
 
-    height:39px;
+    height:45px;
 
-    margin-top:4px;
+    margin-top:5px;
 
-    padding:3px;
+    padding:4px;
 
     display:flex;
 
     align-items:center;
 
-    gap:2px;
+    gap:3px;
 
     overflow-x:auto;
 
@@ -413,19 +376,19 @@ body::after{
 
 .nav-btn{
 
-    height:31px;
+    height:35px;
 
-    padding:0 17px;
+    padding:0 18px;
 
     border:1px solid transparent;
 
     background:transparent;
 
-    color:#7893a2;
+    color:#829aa8;
 
     font-family:'Space Mono',monospace;
 
-    font-size:8px;
+    font-size:9px;
 
     white-space:nowrap;
 
@@ -450,9 +413,6 @@ body::after{
     background:rgba(57,202,255,.10);
 
     border-color:rgba(57,202,255,.32);
-
-    box-shadow:
-        inset 0 0 15px rgba(57,202,255,.04);
 }
 
 
@@ -462,27 +422,26 @@ body::after{
 
 .kpi-strip{
 
-    margin-top:4px;
+    margin-top:5px;
 
     display:grid;
 
-    grid-template-columns:
-        repeat(7,1fr);
+    grid-template-columns:repeat(7,1fr);
 
-    gap:4px;
+    gap:5px;
 }
 
 .kpi{
 
-    min-height:68px;
+    min-height:78px;
 
-    padding:9px 10px;
+    padding:11px 12px;
 
     display:flex;
 
     align-items:center;
 
-    gap:9px;
+    gap:11px;
 
     position:relative;
 
@@ -520,33 +479,36 @@ body::after{
 }
 
 .kpi-icon{
-
-    font-size:23px;
+    font-size:25px;
 }
 
 .kpi-label{
 
-    color:#688393;
+    color:#78919f;
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
+
+    letter-spacing:.4px;
 }
 
 .kpi-value{
 
-    margin-top:3px;
+    margin-top:4px;
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:17px;
+    font-size:20px;
+
+    font-weight:600;
 }
 
 .kpi-unit{
 
     color:var(--muted);
 
-    font-size:7px;
+    font-size:9px;
 }
 
 
@@ -556,16 +518,16 @@ body::after{
 
 .main-grid{
 
-    margin-top:4px;
+    margin-top:5px;
 
     display:grid;
 
     grid-template-columns:
-        230px
+        250px
         minmax(500px,1fr)
-        315px;
+        335px;
 
-    gap:4px;
+    gap:5px;
 
     align-items:stretch;
 }
@@ -596,9 +558,9 @@ body::after{
 
 .panel-title{
 
-    min-height:32px;
+    min-height:38px;
 
-    padding:0 10px;
+    padding:0 13px;
 
     display:flex;
 
@@ -615,20 +577,22 @@ body::after{
             transparent
         );
 
-    color:#a7c6d5;
+    color:#afd0df;
 
     font-family:'Space Mono',monospace;
 
-    font-size:8px;
+    font-size:10px;
 
-    letter-spacing:.8px;
+    font-weight:700;
+
+    letter-spacing:.7px;
 }
 
 .panel-title .live{
 
     color:var(--green);
 
-    font-size:6px;
+    font-size:8px;
 }
 
 
@@ -642,22 +606,21 @@ body::after{
 
     flex-direction:column;
 
-    gap:4px;
+    gap:5px;
 }
 
 
 /* HEALTH */
 
 .health-panel{
-
-    min-height:310px;
+    min-height:330px;
 }
 
 .health-gauge{
 
-    width:145px;
+    width:155px;
 
-    height:145px;
+    height:155px;
 
     margin:20px auto 10px;
 
@@ -687,7 +650,7 @@ body::after{
 
     position:absolute;
 
-    inset:11px;
+    inset:12px;
 
     border-radius:50%;
 
@@ -707,18 +670,18 @@ body::after{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:27px;
+    font-size:29px;
 }
 
 .gauge-grade{
 
-    margin-top:4px;
+    margin-top:5px;
 
     color:var(--green);
 
     font-family:'Space Mono',monospace;
 
-    font-size:7px;
+    font-size:9px;
 }
 
 .health-stars{
@@ -729,27 +692,26 @@ body::after{
 
     letter-spacing:3px;
 
-    font-size:10px;
+    font-size:12px;
 
-    margin-bottom:13px;
+    margin-bottom:14px;
 }
 
 .health-list{
-
-    padding:0 12px 13px;
+    padding:0 13px 14px;
 }
 
 .health-row{
 
     display:grid;
 
-    grid-template-columns:75px 1fr 30px;
+    grid-template-columns:78px 1fr 32px;
 
-    gap:7px;
+    gap:8px;
 
     align-items:center;
 
-    margin-top:9px;
+    margin-top:10px;
 }
 
 .health-name{
@@ -758,12 +720,12 @@ body::after{
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 }
 
 .health-bar{
 
-    height:4px;
+    height:5px;
 
     background:#0d2935;
 
@@ -787,20 +749,19 @@ body::after{
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 }
 
 
 /* WEATHER */
 
 .weather-panel{
-
-    min-height:165px;
+    min-height:180px;
 }
 
 .weather-main{
 
-    padding:13px 0;
+    padding:15px 0;
 
     display:flex;
 
@@ -808,28 +769,27 @@ body::after{
 
     align-items:center;
 
-    gap:15px;
+    gap:17px;
 }
 
 .weather-icon{
-
-    font-size:36px;
+    font-size:40px;
 }
 
 .temperature{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:25px;
+    font-size:28px;
 }
 
 .weather-desc{
 
-    margin-top:3px;
+    margin-top:4px;
 
     color:var(--muted);
 
-    font-size:7px;
+    font-size:9px;
 }
 
 .weather-data{
@@ -838,18 +798,18 @@ body::after{
 
     grid-template-columns:1fr 1fr;
 
-    gap:6px;
+    gap:7px;
 
-    padding:0 11px 11px;
+    padding:0 12px 12px;
 }
 
 .weather-item{
 
-    padding:6px;
+    padding:8px;
 
     color:var(--muted);
 
-    font-size:6px;
+    font-size:8px;
 
     border:1px solid rgba(255,255,255,.04);
 
@@ -860,39 +820,38 @@ body::after{
 
     display:block;
 
-    margin-top:3px;
+    margin-top:4px;
 
     color:#d4e5ed;
 
     font-family:'Space Mono',monospace;
 
-    font-size:7px;
+    font-size:9px;
 }
 
 
 /* AIR */
 
 .air-panel{
-
-    min-height:145px;
+    min-height:155px;
 }
 
 .air-content{
 
-    padding:15px;
+    padding:16px;
 
     display:flex;
 
     align-items:center;
 
-    gap:14px;
+    gap:16px;
 }
 
 .air-circle{
 
-    width:82px;
+    width:90px;
 
-    height:82px;
+    height:90px;
 
     flex-shrink:0;
 
@@ -908,7 +867,7 @@ body::after{
 
     border:5px solid var(--green);
 
-    box-shadow:var(--glow-green);
+    box-shadow:0 0 20px rgba(66,223,108,.10);
 }
 
 .air-value{
@@ -917,14 +876,14 @@ body::after{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:19px;
+    font-size:21px;
 }
 
 .air-label{
 
     color:var(--green);
 
-    font-size:6px;
+    font-size:8px;
 }
 
 .air-values{
@@ -933,18 +892,18 @@ body::after{
 
     flex-direction:column;
 
-    gap:7px;
+    gap:8px;
 
     color:var(--muted);
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 }
 
 .air-values strong{
 
-    margin-left:4px;
+    margin-left:5px;
 
     color:var(--green);
 }
@@ -956,7 +915,7 @@ body::after{
 
 .control-hub{
 
-    min-height:620px;
+    min-height:650px;
 
     background:
 
@@ -994,13 +953,10 @@ body::after{
             transparent 1px
         );
 
-    background-size:30px 30px;
+    background-size:32px 32px;
 
     pointer-events:none;
 }
-
-
-/* HUB HEADER */
 
 .hub-header{
 
@@ -1008,7 +964,7 @@ body::after{
 
     z-index:2;
 
-    padding:22px 23px 17px;
+    padding:24px 25px 18px;
 
     display:flex;
 
@@ -1023,35 +979,35 @@ body::after{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:18px;
+    font-size:20px;
 
-    letter-spacing:1.5px;
+    letter-spacing:1.4px;
 
     color:#e8f7ff;
 }
 
 .hub-subtitle{
 
-    margin-top:6px;
+    margin-top:7px;
 
-    color:#668494;
+    color:#708b99;
 
     font-family:'Space Mono',monospace;
 
-    font-size:7px;
+    font-size:8px;
 
-    letter-spacing:.7px;
+    letter-spacing:.6px;
 }
 
 .hub-status{
 
-    padding:8px 10px;
+    padding:10px 12px;
 
     color:var(--green);
 
     font-family:'Space Mono',monospace;
 
-    font-size:7px;
+    font-size:8px;
 
     border:1px solid rgba(66,223,108,.22);
 
@@ -1062,11 +1018,11 @@ body::after{
 
     display:inline-block;
 
-    width:6px;
+    width:7px;
 
-    height:6px;
+    height:7px;
 
-    margin-right:5px;
+    margin-right:6px;
 
     border-radius:50%;
 
@@ -1086,13 +1042,13 @@ body::after{
 
     z-index:2;
 
-    padding:20px;
+    padding:22px;
 
     display:grid;
 
     grid-template-columns:1fr 1fr;
 
-    gap:12px;
+    gap:14px;
 }
 
 
@@ -1100,17 +1056,17 @@ body::after{
 
 .dashboard-btn{
 
-    min-height:130px;
+    min-height:145px;
 
-    padding:18px;
+    padding:19px;
 
     display:grid;
 
-    grid-template-columns:55px 1fr 20px;
+    grid-template-columns:62px 1fr 25px;
 
     align-items:center;
 
-    gap:12px;
+    gap:14px;
 
     text-align:left;
 
@@ -1157,43 +1113,11 @@ body::after{
     transition:.3s;
 }
 
-.dashboard-btn::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:130px;
-
-    height:130px;
-
-    right:-80px;
-
-    top:-70px;
-
-    border-radius:50%;
-
-    background:var(--cyan);
-
-    filter:blur(55px);
-
-    opacity:0;
-
-    transition:.3s;
-}
-
 .dashboard-btn:hover{
 
     transform:translateY(-4px);
 
     border-color:rgba(57,202,255,.45);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(14,48,65,.98),
-            rgba(5,20,30,.98)
-        );
 
     box-shadow:
         0 12px 25px rgba(0,0,0,.35),
@@ -1207,19 +1131,14 @@ body::after{
     box-shadow:0 0 15px var(--cyan);
 }
 
-.dashboard-btn:hover::after{
-
-    opacity:.08;
-}
-
 
 /* ICON */
 
 .dashboard-icon{
 
-    width:53px;
+    width:58px;
 
-    height:53px;
+    height:58px;
 
     display:flex;
 
@@ -1227,9 +1146,9 @@ body::after{
 
     justify-content:center;
 
-    font-size:25px;
+    font-size:29px;
 
-    border-radius:12px;
+    border-radius:13px;
 
     background:rgba(57,202,255,.06);
 
@@ -1247,7 +1166,7 @@ body::after{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:10px;
+    font-size:12px;
 
     letter-spacing:.7px;
 }
@@ -1256,26 +1175,26 @@ body::after{
 
     display:block;
 
-    margin-top:6px;
+    margin-top:7px;
 
-    color:#8ba4b2;
+    color:#91aab7;
 
-    font-size:8px;
+    font-size:10px;
 }
 
 .dashboard-info small{
 
     display:block;
 
-    margin-top:9px;
+    margin-top:10px;
 
-    color:#506d7b;
+    color:#607b88;
 
     font-family:'Space Mono',monospace;
 
-    font-size:5px;
+    font-size:7px;
 
-    letter-spacing:.5px;
+    letter-spacing:.4px;
 }
 
 
@@ -1285,7 +1204,7 @@ body::after{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:20px;
+    font-size:23px;
 
     color:var(--cyan);
 
@@ -1300,10 +1219,9 @@ body::after{
 }
 
 
-/* INDIVIDUAL COLORS */
+/* COLORS */
 
 .dashboard-btn.fire::before{
-
     background:var(--red);
 }
 
@@ -1315,17 +1233,10 @@ body::after{
 }
 
 .dashboard-btn.fire .dashboard-arrow{
-
     color:var(--red);
 }
 
-.dashboard-btn.rfid::before{
-
-    background:var(--cyan);
-}
-
 .dashboard-btn.dust::before{
-
     background:var(--green);
 }
 
@@ -1337,12 +1248,10 @@ body::after{
 }
 
 .dashboard-btn.dust .dashboard-arrow{
-
     color:var(--green);
 }
 
 .dashboard-btn.security::before{
-
     background:var(--orange);
 }
 
@@ -1354,12 +1263,10 @@ body::after{
 }
 
 .dashboard-btn.security .dashboard-arrow{
-
     color:var(--orange);
 }
 
 .dashboard-btn.sensor::before{
-
     background:var(--blue);
 }
 
@@ -1371,12 +1278,10 @@ body::after{
 }
 
 .dashboard-btn.sensor .dashboard-arrow{
-
     color:var(--blue);
 }
 
 .dashboard-btn.drone::before{
-
     background:var(--purple);
 }
 
@@ -1388,7 +1293,6 @@ body::after{
 }
 
 .dashboard-btn.drone .dashboard-arrow{
-
     color:var(--purple);
 }
 
@@ -1405,17 +1309,17 @@ body::after{
 
     width:100%;
 
-    padding:13px 20px;
+    padding:15px 22px;
 
     display:flex;
 
     justify-content:space-between;
 
-    color:#536f7e;
+    color:#607987;
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 
     border-top:1px solid rgba(83,174,214,.12);
 
@@ -1426,11 +1330,11 @@ body::after{
 
     display:inline-block;
 
-    width:5px;
+    width:6px;
 
-    height:5px;
+    height:6px;
 
-    margin-right:5px;
+    margin-right:6px;
 
     border-radius:50%;
 
@@ -1440,7 +1344,6 @@ body::after{
 }
 
 .hub-footer strong{
-
     color:var(--green);
 }
 
@@ -1455,37 +1358,36 @@ body::after{
 
     flex-direction:column;
 
-    gap:4px;
+    gap:5px;
 }
 
 
 /* ALERTS */
 
 .alert-panel{
-
-    min-height:220px;
+    min-height:235px;
 }
 
 .alert{
 
     display:grid;
 
-    grid-template-columns:28px 1fr auto;
+    grid-template-columns:32px 1fr auto;
 
-    gap:9px;
+    gap:10px;
 
     align-items:center;
 
-    padding:10px;
+    padding:12px;
 
     border-bottom:1px solid rgba(255,255,255,.045);
 }
 
 .alert-icon{
 
-    width:27px;
+    width:30px;
 
-    height:27px;
+    height:30px;
 
     display:flex;
 
@@ -1500,6 +1402,8 @@ body::after{
     background:var(--red-soft);
 
     border:1px solid rgba(255,72,72,.2);
+
+    font-size:14px;
 }
 
 .alert.warning .alert-icon{
@@ -1526,25 +1430,27 @@ body::after{
 
     font-family:'Space Mono',monospace;
 
-    font-size:7px;
+    font-size:9px;
+
+    font-weight:700;
 }
 
 .alert-sub{
 
-    margin-top:4px;
+    margin-top:5px;
 
     color:var(--muted);
 
-    font-size:7px;
+    font-size:9px;
 }
 
 .alert-time{
 
-    color:#5e7582;
+    color:#66808d;
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 }
 
 
@@ -1553,13 +1459,12 @@ body::after{
 ========================================================= */
 
 .drone-feed{
-
-    min-height:225px;
+    min-height:245px;
 }
 
 .feed-screen{
 
-    height:175px;
+    height:190px;
 
     position:relative;
 
@@ -1626,7 +1531,6 @@ body::after{
 @keyframes feedScan{
 
     to{
-
         top:100%;
     }
 }
@@ -1635,9 +1539,9 @@ body::after{
 
     position:absolute;
 
-    width:65px;
+    width:75px;
 
-    height:65px;
+    height:75px;
 
     top:50%;
 
@@ -1682,13 +1586,13 @@ body::after{
 
     position:absolute;
 
-    right:8px;
+    right:10px;
 
-    top:8px;
+    top:10px;
 
     z-index:4;
 
-    padding:4px 7px;
+    padding:5px 8px;
 
     background:var(--red);
 
@@ -1696,12 +1600,12 @@ body::after{
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 }
 
 .feed-bottom{
 
-    height:34px;
+    height:39px;
 
     display:grid;
 
@@ -1718,11 +1622,11 @@ body::after{
 
     justify-content:center;
 
-    color:#77909f;
+    color:#8097a4;
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 
     border-right:1px solid rgba(255,255,255,.04);
 
@@ -1742,13 +1646,12 @@ body::after{
 ========================================================= */
 
 .ai-panel{
-
-    min-height:235px;
+    min-height:250px;
 }
 
 .ai-header{
 
-    padding:11px;
+    padding:13px;
 
     color:#d09bff;
 
@@ -1758,25 +1661,25 @@ body::after{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:8px;
+    font-size:10px;
 }
 
 .ai-situation{
 
-    padding:10px 11px;
+    padding:12px 13px;
 
-    color:#8fa5b2;
+    color:#9aaeba;
 
-    font-size:7px;
+    font-size:9px;
 
-    line-height:1.7;
+    line-height:1.8;
 }
 
 .threat{
 
-    padding:3px 6px;
+    padding:4px 7px;
 
-    margin-left:3px;
+    margin-left:4px;
 
     color:var(--red);
 
@@ -1786,41 +1689,41 @@ body::after{
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:7px;
 }
 
 .recommendations{
 
-    padding:0 12px;
+    padding:0 14px;
 
     list-style:none;
 }
 
 .recommendations li{
 
-    margin:6px 0;
+    margin:7px 0;
 
-    color:#9cafb9;
+    color:#a5b6be;
 
-    font-size:6px;
+    font-size:8px;
 }
 
 .recommendations li::before{
 
     content:"●";
 
-    margin-right:6px;
+    margin-right:7px;
 
     color:var(--green);
 }
 
 .ai-btn{
 
-    width:calc(100% - 22px);
+    width:calc(100% - 26px);
 
-    margin:9px 11px;
+    margin:11px 13px;
 
-    padding:9px;
+    padding:11px;
 
     color:#d8b9ff;
 
@@ -1830,16 +1733,9 @@ body::after{
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 
     cursor:pointer;
-
-    transition:.2s;
-}
-
-.ai-btn:hover{
-
-    background:rgba(173,98,255,.16);
 }
 
 
@@ -1849,29 +1745,28 @@ body::after{
 
 .analytics{
 
-    margin-top:4px;
+    margin-top:5px;
 
     display:grid;
 
     grid-template-columns:repeat(3,1fr);
 
-    gap:4px;
+    gap:5px;
 }
 
 .analytics-panel{
-
-    min-height:160px;
+    min-height:180px;
 }
 
 .analytics-body{
 
-    padding:11px;
+    padding:14px;
 
     display:grid;
 
-    grid-template-columns:85px 1fr;
+    grid-template-columns:95px 1fr;
 
-    gap:10px;
+    gap:14px;
 }
 
 .donut-wrap{
@@ -1887,9 +1782,9 @@ body::after{
 
 .donut{
 
-    width:75px;
+    width:84px;
 
-    height:75px;
+    height:84px;
 
     border-radius:50%;
 
@@ -1910,9 +1805,9 @@ body::after{
 
     content:"";
 
-    width:55px;
+    width:62px;
 
-    height:55px;
+    height:62px;
 
     border-radius:50%;
 
@@ -1927,7 +1822,7 @@ body::after{
 
     font-family:'Orbitron',sans-serif;
 
-    font-size:12px;
+    font-size:14px;
 }
 
 .metric-list{
@@ -1936,9 +1831,9 @@ body::after{
 
     flex-direction:column;
 
-    gap:7px;
+    gap:8px;
 
-    margin-bottom:7px;
+    margin-bottom:9px;
 }
 
 .metric{
@@ -1951,17 +1846,16 @@ body::after{
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 }
 
 .metric strong{
-
     color:var(--green);
 }
 
 .chart{
 
-    height:75px;
+    height:82px;
 
     position:relative;
 
@@ -1977,7 +1871,7 @@ body::after{
             transparent 1px
         );
 
-    background-size:100% 18px;
+    background-size:100% 20px;
 }
 
 .chart svg{
@@ -2002,7 +1896,6 @@ body::after{
 }
 
 .chart-line.green{
-
     stroke:var(--green);
 }
 
@@ -2013,16 +1906,15 @@ body::after{
 
 .hardware-grid{
 
-    margin-top:4px;
+    margin-top:5px;
 
-    padding:4px;
+    padding:5px;
 
     display:grid;
 
-    grid-template-columns:
-        repeat(12,1fr);
+    grid-template-columns:repeat(12,1fr);
 
-    gap:4px;
+    gap:5px;
 
     background:#041019;
 
@@ -2031,7 +1923,7 @@ body::after{
 
 .hardware{
 
-    min-height:80px;
+    min-height:90px;
 
     display:flex;
 
@@ -2041,7 +1933,7 @@ body::after{
 
     justify-content:center;
 
-    gap:6px;
+    gap:7px;
 
     cursor:pointer;
 
@@ -2068,17 +1960,18 @@ body::after{
 }
 
 .hardware-icon{
-
-    font-size:20px;
+    font-size:24px;
 }
 
 .hardware-name{
 
-    color:#9db3bf;
+    color:#a5bac5;
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:7px;
+
+    font-weight:700;
 
     text-align:center;
 }
@@ -2089,7 +1982,7 @@ body::after{
 
     font-family:'Space Mono',monospace;
 
-    font-size:5px;
+    font-size:7px;
 }
 
 
@@ -2099,52 +1992,49 @@ body::after{
 
 .activity-panel{
 
-    margin-top:4px;
+    margin-top:5px;
 
-    min-height:135px;
+    min-height:155px;
 }
 
 .activity-grid{
 
-    padding:5px 11px;
+    padding:7px 14px;
 
     display:grid;
 
     grid-template-columns:1fr 1fr;
 
-    gap:0 25px;
+    gap:0 28px;
 }
 
 .activity-row{
 
     display:grid;
 
-    grid-template-columns:62px 23px 1fr;
+    grid-template-columns:72px 25px 1fr;
 
     align-items:center;
 
-    padding:7px 0;
+    padding:9px 0;
 
     border-bottom:1px solid rgba(255,255,255,.04);
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 }
 
 .activity-time{
-
-    color:#5d7684;
+    color:#66808d;
 }
 
 .activity-icon{
-
     color:var(--cyan);
 }
 
 .activity-message{
-
-    color:#98abb5;
+    color:#9db1bb;
 }
 
 
@@ -2154,9 +2044,9 @@ body::after{
 
 .footer{
 
-    margin-top:4px;
+    margin-top:5px;
 
-    padding:12px;
+    padding:14px;
 
     display:flex;
 
@@ -2168,13 +2058,13 @@ body::after{
 
     border:1px solid var(--border);
 
-    color:#506b79;
+    color:#607986;
 
     font-family:'Space Mono',monospace;
 
-    font-size:6px;
+    font-size:8px;
 
-    letter-spacing:.8px;
+    letter-spacing:.7px;
 }
 
 .footer-live{
@@ -2183,16 +2073,16 @@ body::after{
 
     align-items:center;
 
-    gap:6px;
+    gap:7px;
 
     color:var(--green);
 }
 
 .dot{
 
-    width:5px;
+    width:6px;
 
-    height:5px;
+    height:6px;
 
     border-radius:50%;
 
@@ -2202,6 +2092,11 @@ body::after{
 
     animation:blink 1.5s infinite;
 }
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
 
 @keyframes blink{
 
@@ -2215,60 +2110,51 @@ body::after{
    RESPONSIVE
 ========================================================= */
 
-@media(max-width:1200px){
+@media(max-width:1250px){
 
     .top-header{
 
         grid-template-columns:
-            220px
+            240px
             1fr
-            220px;
+            260px;
     }
 
     .command-title h1{
-
-        font-size:21px;
+        font-size:24px;
     }
 
     .main-grid{
 
         grid-template-columns:
-            200px
+            220px
             minmax(400px,1fr)
-            280px;
+            300px;
     }
 
-    .kpi{
-
-        padding:7px;
+    .kpi-value{
+        font-size:17px;
     }
 }
 
 
-@media(max-width:950px){
+@media(max-width:1000px){
 
     .top-header{
 
         grid-template-columns:1fr;
 
-        padding:14px;
+        padding:15px;
 
         text-align:center;
     }
 
     .brand{
-
         justify-content:center;
     }
 
     .header-right{
-
         justify-content:center;
-    }
-
-    .command-title h1{
-
-        font-size:21px;
     }
 
     .kpi-strip{
@@ -2278,7 +2164,6 @@ body::after{
     }
 
     .main-grid{
-
         grid-template-columns:1fr;
     }
 
@@ -2291,80 +2176,58 @@ body::after{
     }
 
     .analytics{
-
         grid-template-columns:1fr;
     }
 
     .hardware-grid{
-
-        grid-template-columns:
-            repeat(6,1fr);
+        grid-template-columns:repeat(6,1fr);
     }
 }
 
 
-@media(max-width:650px){
+@media(max-width:700px){
 
     .kpi-strip{
-
-        grid-template-columns:
-            repeat(2,1fr);
+        grid-template-columns:repeat(2,1fr);
     }
 
     .left-column,
     .right-column{
-
         display:flex;
     }
 
     .dashboard-grid{
-
         grid-template-columns:1fr;
-
-        padding:12px;
     }
 
     .hub-header{
-
         flex-direction:column;
-
         align-items:flex-start;
-
         gap:12px;
     }
 
     .hardware-grid{
-
-        grid-template-columns:
-            repeat(3,1fr);
+        grid-template-columns:repeat(3,1fr);
     }
 
     .activity-grid{
-
         grid-template-columns:1fr;
     }
 
     .footer{
-
         flex-direction:column;
-
-        gap:8px;
-
+        gap:9px;
         text-align:center;
     }
 
     .header-right{
-
         flex-direction:column;
     }
 
     .command-title h1{
-
-        font-size:16px;
-
+        font-size:19px;
         letter-spacing:2px;
     }
-
 }
 
 
@@ -2373,14 +2236,11 @@ body::after{
 ========================================================= */
 
 ::-webkit-scrollbar{
-
-    width:5px;
-
-    height:5px;
+    width:6px;
+    height:6px;
 }
 
 ::-webkit-scrollbar-track{
-
     background:#03090e;
 }
 
@@ -2392,12 +2252,10 @@ body::after{
 }
 
 ::-webkit-scrollbar-thumb:hover{
-
     background:#23718e;
 }
 
 </style>
-
 </head>
 
 
@@ -2412,7 +2270,6 @@ body::after{
 ===================================================== -->
 
 <header class="top-header">
-
 
     <div class="brand">
 
@@ -2487,7 +2344,7 @@ body::after{
 
 
 <!-- =====================================================
-     NAV
+     NAVIGATION
 ===================================================== -->
 
 <nav class="navbar">
@@ -2570,7 +2427,6 @@ body::after{
 ===================================================== -->
 
 <section class="kpi-strip">
-
 
     <div class="kpi">
 
@@ -2751,12 +2607,11 @@ body::after{
 
     </div>
 
-
 </section>
 
 
 <!-- =====================================================
-     MAIN GRID
+     MAIN
 ===================================================== -->
 
 <main class="main-grid">
@@ -2769,263 +2624,255 @@ body::after{
 <div class="left-column">
 
 
-    <!-- HEALTH -->
+<section class="panel health-panel">
 
-    <section class="panel health-panel">
+    <div class="panel-title">
 
-        <div class="panel-title">
+        CAMP HEALTH INDEX
 
-            CAMP HEALTH INDEX
+        <span class="live">
+            ● LIVE
+        </span>
 
-            <span class="live">
-                ● LIVE
+    </div>
+
+
+    <div class="health-gauge">
+
+        <div class="gauge-center">
+
+            <div
+                class="gauge-number"
+                id="healthValue"
+            >
+                94.7%
+            </div>
+
+            <div class="gauge-grade">
+                EXCELLENT
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="health-stars">
+        ★ ★ ★ ★ ★
+    </div>
+
+
+    <div class="health-list">
+
+
+        <div class="health-row">
+
+            <span class="health-name">
+                SECURITY
+            </span>
+
+            <div class="health-bar">
+                <div
+                    class="health-fill"
+                    style="width:96%"
+                ></div>
+            </div>
+
+            <span class="health-percent">
+                96%
             </span>
 
         </div>
 
 
-        <div class="health-gauge">
+        <div class="health-row">
 
-            <div class="gauge-center">
+            <span class="health-name">
+                ENERGY
+            </span>
 
+            <div class="health-bar">
                 <div
-                    class="gauge-number"
-                    id="healthValue"
-                >
-                    94.7%
-                </div>
+                    class="health-fill"
+                    style="width:92%"
+                ></div>
+            </div>
 
-                <div class="gauge-grade">
-                    EXCELLENT
-                </div>
+            <span class="health-percent">
+                92%
+            </span>
 
+        </div>
+
+
+        <div class="health-row">
+
+            <span class="health-name">
+                ENVIRONMENT
+            </span>
+
+            <div class="health-bar">
+                <div
+                    class="health-fill"
+                    style="width:91%"
+                ></div>
+            </div>
+
+            <span class="health-percent">
+                91%
+            </span>
+
+        </div>
+
+
+        <div class="health-row">
+
+            <span class="health-name">
+                WATER
+            </span>
+
+            <div class="health-bar">
+                <div
+                    class="health-fill"
+                    style="width:95%"
+                ></div>
+            </div>
+
+            <span class="health-percent">
+                95%
+            </span>
+
+        </div>
+
+
+        <div class="health-row">
+
+            <span class="health-name">
+                EMERGENCY
+            </span>
+
+            <div class="health-bar">
+                <div
+                    class="health-fill"
+                    style="width:97%"
+                ></div>
+            </div>
+
+            <span class="health-percent">
+                97%
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="panel weather-panel">
+
+    <div class="panel-title">
+        WEATHER STATION
+    </div>
+
+
+    <div class="weather-main">
+
+        <div class="weather-icon">
+            🌤️
+        </div>
+
+        <div>
+
+            <div class="temperature">
+                28°C
+            </div>
+
+            <div class="weather-desc">
+                CLEAR SKY
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="weather-data">
+
+        <div class="weather-item">
+            HUMIDITY
+            <strong>43%</strong>
+        </div>
+
+        <div class="weather-item">
+            WIND
+            <strong>12 km/h</strong>
+        </div>
+
+        <div class="weather-item">
+            RAINFALL
+            <strong>0 mm</strong>
+        </div>
+
+        <div class="weather-item">
+            UV INDEX
+            <strong>6 HIGH</strong>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="panel air-panel">
+
+    <div class="panel-title">
+        AIR QUALITY
+    </div>
+
+
+    <div class="air-content">
+
+        <div class="air-circle">
+
+            <div class="air-value">
+                38
+            </div>
+
+            <div class="air-label">
+                GOOD
             </div>
 
         </div>
 
 
-        <div class="health-stars">
-            ★ ★ ★ ★ ★
-        </div>
+        <div class="air-values">
 
-
-        <div class="health-list">
-
-
-            <div class="health-row">
-
-                <span class="health-name">
-                    SECURITY
-                </span>
-
-                <div class="health-bar">
-                    <div
-                        class="health-fill"
-                        style="width:96%"
-                    ></div>
-                </div>
-
-                <span class="health-percent">
-                    96%
-                </span>
-
-            </div>
-
-
-            <div class="health-row">
-
-                <span class="health-name">
-                    ENERGY
-                </span>
-
-                <div class="health-bar">
-                    <div
-                        class="health-fill"
-                        style="width:92%"
-                    ></div>
-                </div>
-
-                <span class="health-percent">
-                    92%
-                </span>
-
-            </div>
-
-
-            <div class="health-row">
-
-                <span class="health-name">
-                    ENVIRONMENT
-                </span>
-
-                <div class="health-bar">
-                    <div
-                        class="health-fill"
-                        style="width:91%"
-                    ></div>
-                </div>
-
-                <span class="health-percent">
-                    91%
-                </span>
-
-            </div>
-
-
-            <div class="health-row">
-
-                <span class="health-name">
-                    WATER
-                </span>
-
-                <div class="health-bar">
-                    <div
-                        class="health-fill"
-                        style="width:95%"
-                    ></div>
-                </div>
-
-                <span class="health-percent">
-                    95%
-                </span>
-
-            </div>
-
-
-            <div class="health-row">
-
-                <span class="health-name">
-                    EMERGENCY
-                </span>
-
-                <div class="health-bar">
-                    <div
-                        class="health-fill"
-                        style="width:97%"
-                    ></div>
-                </div>
-
-                <span class="health-percent">
-                    97%
-                </span>
-
-            </div>
-
-
-        </div>
-
-    </section>
-
-
-    <!-- WEATHER -->
-
-    <section class="panel weather-panel">
-
-        <div class="panel-title">
-            WEATHER STATION
-        </div>
-
-
-        <div class="weather-main">
-
-            <div class="weather-icon">
-                🌤️
+            <div>
+                CO₂
+                <strong>412 ppm</strong>
             </div>
 
             <div>
+                PM2.5
+                <strong>18 μg/m³</strong>
+            </div>
 
-                <div class="temperature">
-                    28°C
-                </div>
+            <div>
+                O₂
+                <strong>21.4%</strong>
+            </div>
 
-                <div class="weather-desc">
-                    CLEAR SKY
-                </div>
-
+            <div>
+                TVOC
+                <strong>0.21 ppm</strong>
             </div>
 
         </div>
 
+    </div>
 
-        <div class="weather-data">
-
-            <div class="weather-item">
-                HUMIDITY
-                <strong>43%</strong>
-            </div>
-
-            <div class="weather-item">
-                WIND
-                <strong>12 km/h</strong>
-            </div>
-
-            <div class="weather-item">
-                RAINFALL
-                <strong>0 mm</strong>
-            </div>
-
-            <div class="weather-item">
-                UV INDEX
-                <strong>6 HIGH</strong>
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- AIR -->
-
-    <section class="panel air-panel">
-
-        <div class="panel-title">
-            AIR QUALITY
-        </div>
-
-
-        <div class="air-content">
-
-            <div class="air-circle">
-
-                <div class="air-value">
-                    38
-                </div>
-
-                <div class="air-label">
-                    GOOD
-                </div>
-
-            </div>
-
-
-            <div class="air-values">
-
-                <div>
-                    CO₂
-                    <strong>412 ppm</strong>
-                </div>
-
-                <div>
-                    PM2.5
-                    <strong>18 μg/m³</strong>
-                </div>
-
-                <div>
-                    O₂
-                    <strong>21.4%</strong>
-                </div>
-
-                <div>
-                    TVOC
-                    <strong>0.21 ppm</strong>
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
+</section>
 
 </div>
 
@@ -3037,274 +2884,262 @@ body::after{
 <section class="panel control-hub">
 
 
-    <div class="panel-title">
+<div class="panel-title">
 
-        ECOGUARDIAN CONTROL HUB
+    ECOGUARDIAN CONTROL HUB
 
-        <span class="live">
-            ● ONLINE
+    <span class="live">
+        ● ONLINE
+    </span>
+
+</div>
+
+
+<div class="hub-header">
+
+    <div>
+
+        <div class="hub-title">
+            AI SYSTEM COMMAND
+        </div>
+
+        <div class="hub-subtitle">
+            SELECT A MODULE TO ACCESS ITS LIVE DASHBOARD
+        </div>
+
+    </div>
+
+
+    <div class="hub-status">
+
+        <span></span>
+
+        6 MODULES READY
+
+    </div>
+
+</div>
+
+
+<div class="dashboard-grid">
+
+
+<button
+    class="dashboard-btn rfid"
+    onclick="openRFID()"
+>
+
+    <div class="dashboard-icon">
+        🪪
+    </div>
+
+    <div class="dashboard-info">
+
+        <strong>
+            RFID ACCESS
+        </strong>
+
+        <span>
+            Authentication & Gate Control
         </span>
 
-    </div>
-
-
-    <div class="hub-header">
-
-        <div>
-
-            <div class="hub-title">
-                AI SYSTEM COMMAND
-            </div>
-
-            <div class="hub-subtitle">
-                SELECT A MODULE TO ACCESS ITS LIVE DASHBOARD
-            </div>
-
-        </div>
-
-
-        <div class="hub-status">
-
-            <span></span>
-
-            6 MODULES READY
-
-        </div>
+        <small>
+            RC522 • ARDUINO • ACCESS LOGS
+        </small>
 
     </div>
 
+    <div class="dashboard-arrow">
+        →
+    </div>
 
-    <div class="dashboard-grid">
+</button>
 
 
-        <!-- RFID -->
+<button
+    class="dashboard-btn fire"
+    onclick="openFire()"
+>
 
-        <button
-            class="dashboard-btn rfid"
-            onclick="openRFID()"
-        >
+    <div class="dashboard-icon">
+        🔥
+    </div>
 
-            <div class="dashboard-icon">
-                🪪
-            </div>
+    <div class="dashboard-info">
 
-            <div class="dashboard-info">
+        <strong>
+            FIRE PROTECTION
+        </strong>
 
-                <strong>
-                    RFID ACCESS
-                </strong>
+        <span>
+            Fire & Smoke Monitoring
+        </span>
 
-                <span>
-                    Authentication & Gate Control
-                </span>
-
-                <small>
-                    RC522 • ARDUINO • ACCESS LOGS
-                </small>
-
-            </div>
-
-            <div class="dashboard-arrow">
-                →
-            </div>
-
-        </button>
-
-
-        <!-- FIRE -->
-
-        <button
-            class="dashboard-btn fire"
-            onclick="openFire()"
-        >
-
-            <div class="dashboard-icon">
-                🔥
-            </div>
-
-            <div class="dashboard-info">
-
-                <strong>
-                    FIRE PROTECTION
-                </strong>
-
-                <span>
-                    Fire & Smoke Monitoring
-                </span>
-
-                <small>
-                    FLAME • MQ2 • IR • SPRINKLER
-                </small>
-
-            </div>
-
-            <div class="dashboard-arrow">
-                →
-            </div>
-
-        </button>
-
-
-        <!-- DUSTBIN -->
-
-        <button
-            class="dashboard-btn dust"
-            onclick="openDust()"
-        >
-
-            <div class="dashboard-icon">
-                ♻️
-            </div>
-
-            <div class="dashboard-info">
-
-                <strong>
-                    SMART DUSTBIN
-                </strong>
-
-                <span>
-                    QR Rewards & Waste Management
-                </span>
-
-                <small>
-                    QR • POINTS • WASTE TRACKING
-                </small>
-
-            </div>
-
-            <div class="dashboard-arrow">
-                →
-            </div>
-
-        </button>
-
-
-        <!-- INTRUDER -->
-
-        <button
-            class="dashboard-btn security"
-            onclick="openIntruder()"
-        >
-
-            <div class="dashboard-icon">
-                🕵️
-            </div>
-
-            <div class="dashboard-info">
-
-                <strong>
-                    INTRUDER DETECTION
-                </strong>
-
-                <span>
-                    AI Camera Security System
-                </span>
-
-                <small>
-                    CAMERA • AI DETECTION • ALERTS
-                </small>
-
-            </div>
-
-            <div class="dashboard-arrow">
-                →
-            </div>
-
-        </button>
-
-
-        <!-- SENSOR -->
-
-        <button
-            class="dashboard-btn sensor"
-            onclick="openSensors()"
-        >
-
-            <div class="dashboard-icon">
-                📡
-            </div>
-
-            <div class="dashboard-info">
-
-                <strong>
-                    SENSOR NETWORK
-                </strong>
-
-                <span>
-                    Environmental IoT Monitoring
-                </span>
-
-                <small>
-                    TEMPERATURE • GAS • MOTION
-                </small>
-
-            </div>
-
-            <div class="dashboard-arrow">
-                →
-            </div>
-
-        </button>
-
-
-        <!-- DRONE -->
-
-        <button
-            class="dashboard-btn drone"
-            onclick="openDrone()"
-        >
-
-            <div class="dashboard-icon">
-                🛸
-            </div>
-
-            <div class="dashboard-info">
-
-                <strong>
-                    DRONE SYSTEM
-                </strong>
-
-                <span>
-                    Aerial Monitoring & Surveillance
-                </span>
-
-                <small>
-                    CAMERA • LIVE FEED • PATROL
-                </small>
-
-            </div>
-
-            <div class="dashboard-arrow">
-                →
-            </div>
-
-        </button>
-
+        <small>
+            FLAME • MQ2 • IR • SPRINKLER
+        </small>
 
     </div>
 
+    <div class="dashboard-arrow">
+        →
+    </div>
 
-    <div class="hub-footer">
+</button>
 
-        <div>
 
-            <span class="green-dot"></span>
+<button
+    class="dashboard-btn dust"
+    onclick="openDust()"
+>
 
-            ALL MODULES CONNECTED
+    <div class="dashboard-icon">
+        ♻️
+    </div>
 
-        </div>
+    <div class="dashboard-info">
 
-        <div>
+        <strong>
+            SMART DUSTBIN
+        </strong>
 
-            LAST SYNC:
+        <span>
+            QR Rewards & Waste Management
+        </span>
 
-            <strong id="hubSync">
-                JUST NOW
-            </strong>
-
-        </div>
+        <small>
+            QR • POINTS • WASTE TRACKING
+        </small>
 
     </div>
+
+    <div class="dashboard-arrow">
+        →
+    </div>
+
+</button>
+
+
+<button
+    class="dashboard-btn security"
+    onclick="openIntruder()"
+>
+
+    <div class="dashboard-icon">
+        🕵️
+    </div>
+
+    <div class="dashboard-info">
+
+        <strong>
+            INTRUDER DETECTION
+        </strong>
+
+        <span>
+            AI Camera Security System
+        </span>
+
+        <small>
+            CAMERA • AI DETECTION • ALERTS
+        </small>
+
+    </div>
+
+    <div class="dashboard-arrow">
+        →
+    </div>
+
+</button>
+
+
+<button
+    class="dashboard-btn sensor"
+    onclick="openSensors()"
+>
+
+    <div class="dashboard-icon">
+        📡
+    </div>
+
+    <div class="dashboard-info">
+
+        <strong>
+            SENSOR NETWORK
+        </strong>
+
+        <span>
+            Environmental IoT Monitoring
+        </span>
+
+        <small>
+            TEMPERATURE • GAS • MOTION
+        </small>
+
+    </div>
+
+    <div class="dashboard-arrow">
+        →
+    </div>
+
+</button>
+
+
+<button
+    class="dashboard-btn drone"
+    onclick="openDrone()"
+>
+
+    <div class="dashboard-icon">
+        🛸
+    </div>
+
+    <div class="dashboard-info">
+
+        <strong>
+            DRONE SYSTEM
+        </strong>
+
+        <span>
+            Aerial Monitoring & Surveillance
+        </span>
+
+        <small>
+            CAMERA • LIVE FEED • PATROL
+        </small>
+
+    </div>
+
+    <div class="dashboard-arrow">
+        →
+    </div>
+
+</button>
+
+
+</div>
+
+
+<div class="hub-footer">
+
+    <div>
+
+        <span class="green-dot"></span>
+
+        ALL MODULES CONNECTED
+
+    </div>
+
+    <div>
+
+        LAST SYNC:
+
+        <strong id="hubSync">
+            JUST NOW
+        </strong>
+
+    </div>
+
+</div>
 
 
 </section>
@@ -3317,242 +3152,235 @@ body::after{
 <div class="right-column">
 
 
-    <!-- ALERTS -->
+<section class="panel alert-panel">
 
-    <section class="panel alert-panel">
+    <div class="panel-title">
 
-        <div class="panel-title">
+        <span style="color:var(--red)">
+            LIVE ALERTS
+        </span>
 
-            <span style="color:var(--red)">
-                LIVE ALERTS
-            </span>
+        <span>
+            VIEW ALL →
+        </span>
 
-            <span>
-                VIEW ALL →
-            </span>
+    </div>
 
+
+    <div class="alert">
+
+        <div class="alert-icon">
+            ⚠
         </div>
 
+        <div>
 
-        <div class="alert">
-
-            <div class="alert-icon">
-                ⚠
+            <div class="alert-title">
+                INTRUDER DETECTED
             </div>
 
-            <div>
-
-                <div class="alert-title">
-                    INTRUDER DETECTED
-                </div>
-
-                <div class="alert-sub">
-                    North Perimeter Zone
-                </div>
-
-            </div>
-
-            <div class="alert-time">
-                11:42
+            <div class="alert-sub">
+                North Perimeter Zone
             </div>
 
         </div>
 
+        <div class="alert-time">
+            11:42
+        </div>
 
-        <div class="alert">
+    </div>
 
-            <div class="alert-icon">
-                🔥
+
+    <div class="alert">
+
+        <div class="alert-icon">
+            🔥
+        </div>
+
+        <div>
+
+            <div class="alert-title">
+                FIRE DETECTED
             </div>
 
-            <div>
-
-                <div class="alert-title">
-                    FIRE DETECTED
-                </div>
-
-                <div class="alert-sub">
-                    Sensor Zone — Block B
-                </div>
-
-            </div>
-
-            <div class="alert-time">
-                11:38
+            <div class="alert-sub">
+                Sensor Zone — Block B
             </div>
 
         </div>
 
+        <div class="alert-time">
+            11:38
+        </div>
 
-        <div class="alert warning">
+    </div>
 
-            <div class="alert-icon">
-                💧
+
+    <div class="alert warning">
+
+        <div class="alert-icon">
+            💧
+        </div>
+
+        <div>
+
+            <div class="alert-title">
+                LOW WATER LEVEL
             </div>
 
-            <div>
-
-                <div class="alert-title">
-                    LOW WATER LEVEL
-                </div>
-
-                <div class="alert-sub">
-                    Water Tank 2
-                </div>
-
-            </div>
-
-            <div class="alert-time">
-                11:30
+            <div class="alert-sub">
+                Water Tank 2
             </div>
 
         </div>
 
+        <div class="alert-time">
+            11:30
+        </div>
 
-        <div class="alert ok">
+    </div>
 
-            <div class="alert-icon">
-                ✓
+
+    <div class="alert ok">
+
+        <div class="alert-icon">
+            ✓
+        </div>
+
+        <div>
+
+            <div class="alert-title">
+                SYSTEM CHECK
             </div>
 
-            <div>
-
-                <div class="alert-title">
-                    SYSTEM CHECK
-                </div>
-
-                <div class="alert-sub">
-                    All Systems Normal
-                </div>
-
-            </div>
-
-            <div class="alert-time">
-                11:20
+            <div class="alert-sub">
+                All Systems Normal
             </div>
 
         </div>
 
-    </section>
-
-
-    <!-- DRONE FEED -->
-
-    <section class="panel drone-feed">
-
-        <div class="panel-title">
-
-            LIVE DRONE FEED
-
-            <span>
-                DRONE-01 ▼
-            </span>
-
+        <div class="alert-time">
+            11:20
         </div>
 
+    </div>
 
-        <div class="feed-screen">
+</section>
 
-            <div class="live-tag">
-                ● LIVE
-            </div>
 
-            <div class="feed-cross"></div>
+<section class="panel drone-feed">
 
+    <div class="panel-title">
+
+        LIVE DRONE FEED
+
+        <span>
+            DRONE-01 ▼
+        </span>
+
+    </div>
+
+
+    <div class="feed-screen">
+
+        <div class="live-tag">
+            ● LIVE
         </div>
 
+        <div class="feed-cross"></div>
 
-        <div class="feed-bottom">
+    </div>
 
-            <div class="feed-control">
-                📷 CAPTURE
-            </div>
 
-            <div class="feed-control">
-                🔴 RECORD
-            </div>
+    <div class="feed-bottom">
 
-            <div class="feed-control">
-                ◈ THERMAL
-            </div>
-
-            <div class="feed-control">
-                ◉ NIGHT
-            </div>
-
+        <div class="feed-control">
+            📷 CAPTURE
         </div>
 
-    </section>
-
-
-    <!-- AI ASSISTANT -->
-
-    <section class="panel ai-panel">
-
-        <div class="ai-header">
-            ◈ AI MISSION ASSISTANT
+        <div class="feed-control">
+            🔴 RECORD
         </div>
 
-
-        <div class="ai-situation">
-
-            Situation:
-            <strong>
-                Security monitoring active
-            </strong>
-
-            <br>
-
-            Threat Level:
-
-            <span class="threat">
-                NORMAL
-            </span>
-
+        <div class="feed-control">
+            ◈ THERMAL
         </div>
 
+        <div class="feed-control">
+            ◉ NIGHT
+        </div>
 
-        <ul class="recommendations">
+    </div>
 
-            <li>
-                Monitor North Perimeter
-            </li>
-
-            <li>
-                Keep RFID gates active
-            </li>
-
-            <li>
-                Maintain camera surveillance
-            </li>
-
-            <li>
-                Monitor water tank levels
-            </li>
-
-            <li>
-                Keep fire sensors armed
-            </li>
-
-            <li>
-                Maintain drone standby
-            </li>
-
-        </ul>
+</section>
 
 
-        <button
-            class="ai-btn"
-            onclick="executeAI()"
-        >
-            EXECUTE RECOMMENDATION ▶
-        </button>
+<section class="panel ai-panel">
 
-    </section>
+    <div class="ai-header">
+        ◈ AI MISSION ASSISTANT
+    </div>
+
+
+    <div class="ai-situation">
+
+        Situation:
+        <strong>
+            Security monitoring active
+        </strong>
+
+        <br>
+
+        Threat Level:
+
+        <span class="threat">
+            NORMAL
+        </span>
+
+    </div>
+
+
+    <ul class="recommendations">
+
+        <li>
+            Monitor North Perimeter
+        </li>
+
+        <li>
+            Keep RFID gates active
+        </li>
+
+        <li>
+            Maintain camera surveillance
+        </li>
+
+        <li>
+            Monitor water tank levels
+        </li>
+
+        <li>
+            Keep fire sensors armed
+        </li>
+
+        <li>
+            Maintain drone standby
+        </li>
+
+    </ul>
+
+
+    <button
+        class="ai-btn"
+        onclick="executeAI()"
+    >
+        EXECUTE RECOMMENDATION ▶
+    </button>
+
+</section>
 
 
 </div>
-
 
 </main>
 
@@ -3564,96 +3392,92 @@ body::after{
 <section class="analytics">
 
 
-    <!-- ENERGY -->
+<div class="panel analytics-panel">
 
-    <div class="panel analytics-panel">
+    <div class="panel-title">
+        ENERGY MANAGEMENT
+    </div>
 
-        <div class="panel-title">
-            ENERGY MANAGEMENT
+
+    <div class="analytics-body">
+
+        <div class="donut-wrap">
+
+            <div class="donut"></div>
+
+            <div class="donut-value">
+                78%
+            </div>
+
         </div>
 
 
-        <div class="analytics-body">
+        <div>
 
-            <div class="donut-wrap">
+            <div class="metric-list">
 
-                <div class="donut"></div>
+                <div class="metric">
+                    SOLAR POWER
+                    <strong>8.2 kW</strong>
+                </div>
 
-                <div class="donut-value">
-                    78%
+                <div class="metric">
+                    PIEZO POWER
+                    <strong>1.6 kW</strong>
+                </div>
+
+                <div class="metric">
+                    BATTERY
+                    <strong>78%</strong>
+                </div>
+
+                <div class="metric">
+                    TOTAL
+                    <strong>11.0 kWh</strong>
                 </div>
 
             </div>
 
 
-            <div>
+            <div class="chart">
 
-                <div class="metric-list">
+                <svg viewBox="0 0 300 100">
 
-                    <div class="metric">
-                        SOLAR POWER
-                        <strong>8.2 kW</strong>
-                    </div>
+                    <polyline
+                        class="chart-line green"
+                        points="
+                        0,75
+                        30,65
+                        60,72
+                        90,45
+                        120,60
+                        150,32
+                        180,48
+                        210,25
+                        240,40
+                        270,20
+                        300,30
+                        "
+                    />
 
-                    <div class="metric">
-                        PIEZO POWER
-                        <strong>1.6 kW</strong>
-                    </div>
+                    <polyline
+                        class="chart-line"
+                        points="
+                        0,85
+                        30,78
+                        60,82
+                        90,70
+                        120,74
+                        150,60
+                        180,68
+                        210,52
+                        240,57
+                        270,45
+                        300,50
+                        "
+                    />
 
-                    <div class="metric">
-                        BATTERY
-                        <strong>78%</strong>
-                    </div>
-
-                    <div class="metric">
-                        TOTAL
-                        <strong>11.0 kWh</strong>
-                    </div>
-
-                </div>
-
-
-                <div class="chart">
-
-                    <svg viewBox="0 0 300 100">
-
-                        <polyline
-                            class="chart-line green"
-                            points="
-                            0,75
-                            30,65
-                            60,72
-                            90,45
-                            120,60
-                            150,32
-                            180,48
-                            210,25
-                            240,40
-                            270,20
-                            300,30
-                            "
-                        />
-
-                        <polyline
-                            class="chart-line"
-                            points="
-                            0,85
-                            30,78
-                            60,82
-                            90,70
-                            120,74
-                            150,60
-                            180,68
-                            210,52
-                            240,57
-                            270,45
-                            300,50
-                            "
-                        />
-
-                    </svg>
-
-                </div>
+                </svg>
 
             </div>
 
@@ -3661,96 +3485,94 @@ body::after{
 
     </div>
 
+</div>
 
-    <!-- WATER -->
 
-    <div class="panel analytics-panel">
+<div class="panel analytics-panel">
 
-        <div class="panel-title">
-            WATER MANAGEMENT
+    <div class="panel-title">
+        WATER MANAGEMENT
+    </div>
+
+
+    <div class="analytics-body">
+
+        <div class="donut-wrap">
+
+            <div
+                class="donut"
+                style="
+                background:
+                conic-gradient(
+                    var(--cyan) 0 235deg,
+                    #12303a 235deg
+                )"
+            ></div>
+
+            <div
+                class="donut-value"
+                style="color:var(--cyan)"
+            >
+                65%
+            </div>
+
         </div>
 
 
-        <div class="analytics-body">
+        <div>
 
-            <div class="donut-wrap">
+            <div class="metric-list">
 
-                <div
-                    class="donut"
-                    style="
-                    background:
-                    conic-gradient(
-                        var(--cyan) 0 235deg,
-                        #12303a 235deg
-                    )"
-                ></div>
+                <div class="metric">
+                    TANK 1
+                    <strong>65%</strong>
+                </div>
 
-                <div
-                    class="donut-value"
-                    style="color:var(--cyan)"
-                >
-                    65%
+                <div class="metric">
+                    TANK 2
+                    <strong>40%</strong>
+                </div>
+
+                <div class="metric">
+                    TANK 3
+                    <strong>80%</strong>
+                </div>
+
+                <div class="metric">
+                    CONSUMED
+                    <strong>12.5 L</strong>
+                </div>
+
+                <div class="metric">
+                    RECYCLED
+                    <strong>4.8 L</strong>
                 </div>
 
             </div>
 
 
-            <div>
+            <div class="chart">
 
-                <div class="metric-list">
+                <svg viewBox="0 0 300 100">
 
-                    <div class="metric">
-                        TANK 1
-                        <strong>65%</strong>
-                    </div>
+                    <polyline
+                        class="chart-line"
+                        points="
+                        0,60
+                        30,48
+                        60,65
+                        90,45
+                        120,55
+                        150,38
+                        180,44
+                        210,25
+                        240,35
+                        270,18
+                        300,27
+                        "
+                    />
 
-                    <div class="metric">
-                        TANK 2
-                        <strong>40%</strong>
-                    </div>
-
-                    <div class="metric">
-                        TANK 3
-                        <strong>80%</strong>
-                    </div>
-
-                    <div class="metric">
-                        CONSUMED
-                        <strong>12.5 L</strong>
-                    </div>
-
-                    <div class="metric">
-                        RECYCLED
-                        <strong>4.8 L</strong>
-                    </div>
-
-                </div>
-
-
-                <div class="chart">
-
-                    <svg viewBox="0 0 300 100">
-
-                        <polyline
-                            class="chart-line"
-                            points="
-                            0,60
-                            30,48
-                            60,65
-                            90,45
-                            120,55
-                            150,38
-                            180,44
-                            210,25
-                            240,35
-                            270,18
-                            300,27
-                            "
-                        />
-
-                    </svg>
-
-                </div>
+                </svg>
 
             </div>
 
@@ -3758,99 +3580,99 @@ body::after{
 
     </div>
 
+</div>
 
-    <!-- WASTE -->
 
-    <div class="panel analytics-panel">
+<div class="panel analytics-panel">
 
-        <div class="panel-title">
-            WASTE MANAGEMENT
+    <div class="panel-title">
+        WASTE MANAGEMENT
+    </div>
+
+
+    <div class="analytics-body">
+
+        <div class="donut-wrap">
+
+            <div
+                class="donut"
+                style="
+                background:
+                conic-gradient(
+                    var(--green) 0 160deg,
+                    #12303a 160deg
+                )"
+            ></div>
+
+            <div class="donut-value">
+                45%
+            </div>
+
         </div>
 
 
-        <div class="analytics-body">
+        <div>
 
-            <div class="donut-wrap">
+            <div class="metric-list">
 
-                <div
-                    class="donut"
-                    style="
-                    background:
-                    conic-gradient(
-                        var(--green) 0 160deg,
-                        #12303a 160deg
-                    )"
-                ></div>
+                <div class="metric">
+                    DRY WASTE
+                    <strong>45%</strong>
+                </div>
 
-                <div class="donut-value">
-                    45%
+                <div class="metric">
+                    WET WASTE
+                    <strong>40%</strong>
+                </div>
+
+                <div class="metric">
+                    HAZARDOUS
+                    <strong>30%</strong>
+                </div>
+
+                <div class="metric">
+                    RECYCLED
+                    <strong>18.6 kg</strong>
+                </div>
+
+                <div class="metric">
+                    REWARDS
+                    <strong>245</strong>
                 </div>
 
             </div>
 
 
-            <div>
+            <div class="chart">
 
-                <div class="metric-list">
+                <svg viewBox="0 0 300 100">
 
-                    <div class="metric">
-                        DRY WASTE
-                        <strong>45%</strong>
-                    </div>
+                    <polyline
+                        class="chart-line green"
+                        points="
+                        0,80
+                        30,72
+                        60,75
+                        90,60
+                        120,64
+                        150,48
+                        180,52
+                        210,35
+                        240,40
+                        270,28
+                        300,34
+                        "
+                    />
 
-                    <div class="metric">
-                        WET WASTE
-                        <strong>40%</strong>
-                    </div>
-
-                    <div class="metric">
-                        HAZARDOUS
-                        <strong>30%</strong>
-                    </div>
-
-                    <div class="metric">
-                        RECYCLED
-                        <strong>18.6 kg</strong>
-                    </div>
-
-                    <div class="metric">
-                        REWARDS
-                        <strong>245</strong>
-                    </div>
-
-                </div>
-
-
-                <div class="chart">
-
-                    <svg viewBox="0 0 300 100">
-
-                        <polyline
-                            class="chart-line green"
-                            points="
-                            0,80
-                            30,72
-                            60,75
-                            90,60
-                            120,64
-                            150,48
-                            180,52
-                            210,35
-                            240,40
-                            270,28
-                            300,34
-                            "
-                        />
-
-                    </svg>
-
-                </div>
+                </svg>
 
             </div>
 
         </div>
 
     </div>
+
+</div>
 
 
 </section>
@@ -3863,361 +3685,361 @@ body::after{
 <section class="hardware-grid">
 
 
-    <div
-        class="hardware"
-        onclick="openIntruder()"
-    >
+<div
+    class="hardware"
+    onclick="openIntruder()"
+>
 
-        <div class="hardware-icon">
-            🛰️
-        </div>
-
-        <div class="hardware-name">
-            LASER FENCE
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-icon">
+        🛰️
     </div>
 
-
-    <div class="hardware">
-
-        <div class="hardware-icon">
-            📡
-        </div>
-
-        <div class="hardware-name">
-            PIR SENSORS
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-name">
+        LASER FENCE
     </div>
 
-
-    <div
-        class="hardware"
-        onclick="openIntruder()"
-    >
-
-        <div class="hardware-icon">
-            📹
-        </div>
-
-        <div class="hardware-name">
-            CCTV SYSTEM
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-status">
+        ● ACTIVE
     </div>
 
+</div>
 
-    <div
-        class="hardware"
-        onclick="openRFID()"
-    >
 
-        <div class="hardware-icon">
-            🪪
-        </div>
+<div class="hardware">
 
-        <div class="hardware-name">
-            RFID GATE
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-icon">
+        📡
     </div>
 
-
-    <div
-        class="hardware"
-        onclick="openFire()"
-    >
-
-        <div class="hardware-icon">
-            🔥
-        </div>
-
-        <div class="hardware-name">
-            FIRE SENSORS
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-name">
+        PIR SENSORS
     </div>
 
-
-    <div class="hardware">
-
-        <div class="hardware-icon">
-            🌫️
-        </div>
-
-        <div class="hardware-name">
-            GAS SENSORS
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-status">
+        ● ACTIVE
     </div>
 
+</div>
 
-    <div
-        class="hardware"
-        onclick="openDrone()"
-    >
 
-        <div class="hardware-icon">
-            🛸
-        </div>
+<div
+    class="hardware"
+    onclick="openIntruder()"
+>
 
-        <div class="hardware-name">
-            DRONE SYSTEM
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-icon">
+        📹
     </div>
 
-
-    <div class="hardware">
-
-        <div class="hardware-icon">
-            ☀️
-        </div>
-
-        <div class="hardware-name">
-            SOLAR SYSTEM
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-name">
+        CCTV SYSTEM
     </div>
 
-
-    <div
-        class="hardware"
-        onclick="openSensors()"
-    >
-
-        <div class="hardware-icon">
-            💧
-        </div>
-
-        <div class="hardware-name">
-            WATER SYSTEM
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-status">
+        ● ACTIVE
     </div>
 
+</div>
 
-    <div
-        class="hardware"
-        onclick="openSensors()"
-    >
 
-        <div class="hardware-icon">
-            🌿
-        </div>
+<div
+    class="hardware"
+    onclick="openRFID()"
+>
 
-        <div class="hardware-name">
-            COMMUNICATION
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-icon">
+        🪪
     </div>
 
-
-    <div class="hardware">
-
-        <div class="hardware-icon">
-            ⚡
-        </div>
-
-        <div class="hardware-name">
-            PIEZO TILES
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-name">
+        RFID GATE
     </div>
 
-
-    <div class="hardware">
-
-        <div class="hardware-icon">
-            💡
-        </div>
-
-        <div class="hardware-name">
-            STREET LIGHTS
-        </div>
-
-        <div class="hardware-status">
-            ● ACTIVE
-        </div>
-
+    <div class="hardware-status">
+        ● ACTIVE
     </div>
+
+</div>
+
+
+<div
+    class="hardware"
+    onclick="openFire()"
+>
+
+    <div class="hardware-icon">
+        🔥
+    </div>
+
+    <div class="hardware-name">
+        FIRE SENSORS
+    </div>
+
+    <div class="hardware-status">
+        ● ACTIVE
+    </div>
+
+</div>
+
+
+<div class="hardware">
+
+    <div class="hardware-icon">
+        🌫️
+    </div>
+
+    <div class="hardware-name">
+        GAS SENSORS
+    </div>
+
+    <div class="hardware-status">
+        ● ACTIVE
+    </div>
+
+</div>
+
+
+<div
+    class="hardware"
+    onclick="openDrone()"
+>
+
+    <div class="hardware-icon">
+        🛸
+    </div>
+
+    <div class="hardware-name">
+        DRONE SYSTEM
+    </div>
+
+    <div class="hardware-status">
+        ● ACTIVE
+    </div>
+
+</div>
+
+
+<div class="hardware">
+
+    <div class="hardware-icon">
+        ☀️
+    </div>
+
+    <div class="hardware-name">
+        SOLAR SYSTEM
+    </div>
+
+    <div class="hardware-status">
+        ● ACTIVE
+    </div>
+
+</div>
+
+
+<div
+    class="hardware"
+    onclick="openSensors()"
+>
+
+    <div class="hardware-icon">
+        💧
+    </div>
+
+    <div class="hardware-name">
+        WATER SYSTEM
+    </div>
+
+    <div class="hardware-status">
+        ● ACTIVE
+    </div>
+
+</div>
+
+
+<div
+    class="hardware"
+    onclick="openSensors()"
+>
+
+    <div class="hardware-icon">
+        🌿
+    </div>
+
+    <div class="hardware-name">
+        COMMUNICATION
+    </div>
+
+    <div class="hardware-status">
+        ● ACTIVE
+    </div>
+
+</div>
+
+
+<div class="hardware">
+
+    <div class="hardware-icon">
+        ⚡
+    </div>
+
+    <div class="hardware-name">
+        PIEZO TILES
+    </div>
+
+    <div class="hardware-status">
+        ● ACTIVE
+    </div>
+
+</div>
+
+
+<div class="hardware">
+
+    <div class="hardware-icon">
+        💡
+    </div>
+
+    <div class="hardware-name">
+        STREET LIGHTS
+    </div>
+
+    <div class="hardware-status">
+        ● ACTIVE
+    </div>
+
+</div>
 
 
 </section>
 
 
 <!-- =====================================================
-     ACTIVITY
+     ACTIVITY LOG
 ===================================================== -->
 
 <section class="panel activity-panel">
 
 
-    <div class="panel-title">
+<div class="panel-title">
 
-        ACTIVITY LOG
+    ACTIVITY LOG
 
-        <span>
-            LIVE FEED
-        </span>
+    <span>
+        LIVE FEED
+    </span>
 
-    </div>
-
-
-    <div
-        class="activity-grid"
-        id="activityLog"
-    >
+</div>
 
 
-        <div class="activity-row">
-
-            <span class="activity-time">
-                11:42 AM
-            </span>
-
-            <span class="activity-icon">
-                ⚠
-            </span>
-
-            <span class="activity-message">
-                Intruder Detected — North Perimeter
-            </span>
-
-        </div>
+<div
+    class="activity-grid"
+    id="activityLog"
+>
 
 
-        <div class="activity-row">
+<div class="activity-row">
 
-            <span class="activity-time">
-                11:38 AM
-            </span>
+    <span class="activity-time">
+        11:42 AM
+    </span>
 
-            <span class="activity-icon">
-                🔥
-            </span>
+    <span class="activity-icon">
+        ⚠
+    </span>
 
-            <span class="activity-message">
-                Fire Detection System Triggered
-            </span>
+    <span class="activity-message">
+        Intruder Detected — North Perimeter
+    </span>
 
-        </div>
-
-
-        <div class="activity-row">
-
-            <span class="activity-time">
-                11:35 AM
-            </span>
-
-            <span class="activity-icon">
-                🪪
-            </span>
-
-            <span class="activity-message">
-                RFID Gate — Authorized Entry
-            </span>
-
-        </div>
+</div>
 
 
-        <div class="activity-row">
+<div class="activity-row">
 
-            <span class="activity-time">
-                11:30 AM
-            </span>
+    <span class="activity-time">
+        11:38 AM
+    </span>
 
-            <span class="activity-icon">
-                💧
-            </span>
+    <span class="activity-icon">
+        🔥
+    </span>
 
-            <span class="activity-message">
-                Water Level Warning — Tank 2
-            </span>
+    <span class="activity-message">
+        Fire Detection System Triggered
+    </span>
 
-        </div>
-
-
-        <div class="activity-row">
-
-            <span class="activity-time">
-                11:20 AM
-            </span>
-
-            <span class="activity-icon">
-                ✓
-            </span>
-
-            <span class="activity-message">
-                All Systems Normal
-            </span>
-
-        </div>
+</div>
 
 
-        <div class="activity-row">
+<div class="activity-row">
 
-            <span class="activity-time">
-                11:12 AM
-            </span>
+    <span class="activity-time">
+        11:35 AM
+    </span>
 
-            <span class="activity-icon">
-                🛸
-            </span>
+    <span class="activity-icon">
+        🪪
+    </span>
 
-            <span class="activity-message">
-                Drone-01 Patrol Completed
-            </span>
+    <span class="activity-message">
+        RFID Gate — Authorized Entry
+    </span>
 
-        </div>
+</div>
 
 
-    </div>
+<div class="activity-row">
+
+    <span class="activity-time">
+        11:30 AM
+    </span>
+
+    <span class="activity-icon">
+        💧
+    </span>
+
+    <span class="activity-message">
+        Water Level Warning — Tank 2
+    </span>
+
+</div>
+
+
+<div class="activity-row">
+
+    <span class="activity-time">
+        11:20 AM
+    </span>
+
+    <span class="activity-icon">
+        ✓
+    </span>
+
+    <span class="activity-message">
+        All Systems Normal
+    </span>
+
+</div>
+
+
+<div class="activity-row">
+
+    <span class="activity-time">
+        11:12 AM
+    </span>
+
+    <span class="activity-icon">
+        🛸
+    </span>
+
+    <span class="activity-message">
+        Drone-01 Patrol Completed
+    </span>
+
+</div>
+
+
+</div>
 
 </section>
 
@@ -4258,7 +4080,7 @@ body::after{
 
 
 /* =========================================================
-   DASHBOARD LINKS
+   DASHBOARD NAVIGATION
 ========================================================= */
 
 function openRFID(){
@@ -4300,11 +4122,6 @@ function openIntruder(){
 
 }
 
-
-/*
-   Change these two filenames if your actual
-   Sensor / Drone dashboards have different names.
-*/
 
 function openSensors(){
 
@@ -4351,14 +4168,12 @@ function setActive(button){
 
 function updateClock(){
 
-    const now =
-        new Date();
+    const now = new Date();
 
 
     document
         .getElementById("clock")
         .textContent =
-
         now.toLocaleTimeString(
             "en-IN",
             {
@@ -4370,7 +4185,6 @@ function updateClock(){
     document
         .getElementById("date")
         .textContent =
-
         now.toLocaleDateString(
             "en-IN",
             {
@@ -4404,41 +4218,36 @@ updateClock();
 let scans = 7;
 
 
-setInterval(()=>{
+setInterval(() => {
 
     scans++;
 
     document
         .getElementById("scanCounter")
         .textContent =
-
-        String(scans)
-            .padStart(2,"0");
+        String(scans).padStart(2,"0");
 
 },15000);
 
 
 /* =========================================================
-   HEALTH LIVE EFFECT
+   HEALTH
 ========================================================= */
 
-setInterval(()=>{
+setInterval(() => {
 
     const health =
         document.getElementById(
             "healthValue"
         );
 
-    if(!health)
-        return;
-
+    if(!health) return;
 
     const value =
         (
             94 +
             Math.random() * 1.4
         ).toFixed(1);
-
 
     health.textContent =
         value + "%";
@@ -4470,18 +4279,14 @@ function executeAI(){
         "rgba(66,223,108,.4)";
 
 
-    setTimeout(()=>{
+    setTimeout(() => {
 
         button.textContent =
             "EXECUTE RECOMMENDATION ▶";
 
+        button.style.color = "";
 
-        button.style.color =
-            "";
-
-
-        button.style.borderColor =
-            "";
+        button.style.borderColor = "";
 
     },3000);
 
@@ -4537,9 +4342,7 @@ function addActivity(){
             "activityLog"
         );
 
-
-    if(!list)
-        return;
+    if(!list) return;
 
 
     const event =
@@ -4621,5 +4424,4 @@ setInterval(
 
 
 </body>
-
 </html>
