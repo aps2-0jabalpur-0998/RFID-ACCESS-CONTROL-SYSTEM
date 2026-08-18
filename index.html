@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -4458,52 +4459,12 @@ updateClock();
 
 
 /* =========================================================
-   RFID COUNTER
-========================================================= */
-
-let scans = 7;
-
-
-setInterval(() => {
-
-    scans++;
-
-    document
-        .getElementById("scanCounter")
-        .textContent =
-        String(scans).padStart(2,"0");
-
-},15000);
-
-
-/* =========================================================
-   HEALTH
-========================================================= */
-
-setInterval(() => {
-
-    const health =
-        document.getElementById(
-            "healthValue"
-        );
-
-    if(!health) return;
-
-    const value =
-        (
-            94 +
-            Math.random() * 1.4
-        ).toFixed(1);
-
-    health.textContent =
-        value + "%";
-
-},5000);
-
+   REAL DATA ONLY — no RFID/health simulation
+   ========================================================= */
 
 /* =========================================================
    AI BUTTON
-========================================================= */
+   ========================================================= */
 
 function executeAI(){
 
@@ -4540,123 +4501,8 @@ function executeAI(){
 
 
 /* =========================================================
-   LIVE ACTIVITY
-========================================================= */
-
-const events = [
-
-    [
-        "🪪",
-        "RFID Gate — Access Verification Complete"
-    ],
-
-    [
-        "📡",
-        "IoT Sensor Network Heartbeat Received"
-    ],
-
-    [
-        "🔥",
-        "Fire Protection System Scan Complete"
-    ],
-
-    [
-        "🛸",
-        "Drone-01 Monitoring Perimeter"
-    ],
-
-    [
-        "♻️",
-        "Smart Dustbin System Synchronized"
-    ],
-
-    [
-        "✓",
-        "All Systems Operating Normally"
-    ]
-
-];
-
-
-let eventIndex = 0;
-
-
-function addActivity(){
-
-    const list =
-        document.getElementById(
-            "activityLog"
-        );
-
-    if(!list) return;
-
-
-    const event =
-        events[
-            eventIndex %
-            events.length
-        ];
-
-
-    const row =
-        document.createElement(
-            "div"
-        );
-
-
-    row.className =
-        "activity-row";
-
-
-    const time =
-        new Date()
-        .toLocaleTimeString(
-            "en-IN",
-            {
-                hour:"2-digit",
-                minute:"2-digit"
-            }
-        );
-
-
-    row.innerHTML = `
-
-        <span class="activity-time">
-            ${time}
-        </span>
-
-        <span class="activity-icon">
-            ${event[0]}
-        </span>
-
-        <span class="activity-message">
-            ${event[1]}
-        </span>
-
-    `;
-
-
-    list.prepend(row);
-
-
-    if(list.children.length > 8){
-
-        list.removeChild(
-            list.lastElementChild
-        );
-
-    }
-
-
-    eventIndex++;
-
-}
-
-
-setInterval(
-    addActivity,
-    8000
-);
+   LIVE ACTIVITY SIMULATION REMOVED — REAL EVENTS ONLY
+   ========================================================= */
 
 // =========================================================
 // ECOGUARDIAN LIVE SYSTEM DATA + VOICE COMMAND ENGINE
@@ -5749,109 +5595,1464 @@ function processVoiceCommand(originalText){
 
 </div>
 
-   <script>
-/* =========================================================
-   ECOGUARDIAN LIVE DATA BUS
-   Main Dashboard → All Module Dashboards
-   ========================================================= */
+   <!-- =========================================================
+     ECOGUARDIAN MASTER LIVE DATA BUS
+     REAL BACKEND / ESP32 DATA ONLY
+========================================================= -->
 
-const ecoLiveData = {
-    airQuality: {
-        aqi: 38,
-        co2: 412,
-        pm25: 18,
-        o2: 21.4,
-        tvoc: 0.21
+<script>
+(() => {
+"use strict";
+
+/*
+==============================================================
+IMPORTANT
+==============================================================
+This master dashboard NEVER invents sensor values.
+
+No ESP32 / backend connected:
+    -> value = 0
+    -> module = OFFLINE
+    -> no fake alerts
+    -> no fake activity
+    -> no fake "ALL SYSTEMS OPERATIONAL"
+
+Connected:
+    -> values are accepted ONLY from the real source.
+
+Known real project endpoints from the supplied project files:
+    RFID + Smart Dustbin:
+        wss://nacho-plunder-oblivion.ngrok-free.dev
+        https://nacho-plunder-oblivion.ngrok-free.dev/data
+
+    Surveillance:
+        ws://localhost:8768
+        http://localhost:8081/state
+
+Fire:
+    ws://localhost:8766 is kept configurable because the uploaded
+    dashboard files did not contain the fire bridge source/protocol.
+
+Sensor Network / Drone:
+    NULL until you provide the actual ESP32/backend endpoint.
+==============================================================
+*/
+
+const ECO_CONFIG = {
+    rfidDustbinWS: "wss://nacho-plunder-oblivion.ngrok-free.dev",
+    dustbinHTTP: "https://nacho-plunder-oblivion.ngrok-free.dev/data",
+
+    fireWS: "ws://localhost:8766",
+
+    surveillanceWS: "ws://localhost:8768",
+    surveillanceHTTP: "http://localhost:8081/state",
+
+    sensorWS: null,
+    sensorHTTP: null,
+
+    droneWS: null,
+    droneHTTP: null
+};
+
+const live = {
+    modules: {
+        rfid: false,
+        fire: false,
+        dustbin: false,
+        surveillance: false,
+        sensors: false,
+        drone: false
     },
 
+    dataReceived: {
+        rfid: false,
+        fire: false,
+        dustbin: false,
+        surveillance: false,
+        sensors: false,
+        drone: false
+    },
+
+    personnel: 0,
+    capacity: 0,
+    visitors: 0,
+    vehicles: 0,
+    rfidScans: 0,
+    drones: 0,
+    power: 0,
+    co2Captured: 0,
+
     energy: {
-        efficiency: 78,
-        solar: 8.2,
-        piezo: 1.6,
-        battery: 78,
-        total: 11.0
+        efficiency: 0,
+        solar: 0,
+        piezo: 0,
+        battery: 0,
+        total: 0
     },
 
     water: {
-        level: 65,
-        tank1: 65,
-        tank2: 40,
-        tank3: 80,
-        consumed: 12.5,
-        recycled: 4.8
+        level: 0,
+        tank1: 0,
+        tank2: 0,
+        tank3: 0,
+        consumed: 0,
+        recycled: 0
     },
 
     waste: {
-        capacity: 45,
-        dry: 45,
-        wet: 40,
-        hazardous: 30,
-        recycled: 18.6,
-        rewards: 245
+        capacity: 0,
+        dry: 0,
+        wet: 0,
+        hazardous: 0,
+        recycled: 0,
+        rewards: 0
     },
 
-    personnel: 152,
-    visitors: 7,
-    vehicles: 12,
-    drones: 2,
-    powerGenerated: 18.6,
-    co2Captured: 2.35,
+    air: {
+        aqi: 0,
+        co2: 0,
+        pm25: 0,
+        oxygen: 0,
+        tvoc: 0
+    },
 
-    systems: {
-        laserFence: true,
-        pirSensors: true,
-        cctv: true,
-        rfid: true,
-        fireSensors: true,
-        gasSensors: true,
-        drone: true,
-        solar: true,
-        water: true,
-        communication: true,
-        piezo: true,
-        streetLights: true
-    }
+    weather: {
+        temperature: 0,
+        humidity: 0,
+        wind: 0,
+        rainfall: 0,
+        uv: 0,
+        condition: "NO DATA"
+    },
+
+    security: {
+        status: "OFFLINE",
+        perimeter: "NO DATA",
+        intruder: false
+    },
+
+    fire: {
+        status: "OFFLINE",
+        alert: false
+    },
+
+    alerts: [],
+    activity: []
 };
 
+let rfidWS = null;
+let fireWS = null;
+let surveillanceWS = null;
+let sensorWS = null;
+let droneWS = null;
 
-/* ---------------------------------------------------------
-   BroadcastChannel = REAL-TIME SAME-SITE COMMUNICATION
-   --------------------------------------------------------- */
+const reconnectTimers = {};
 
-const ecoChannel = new BroadcastChannel("ecoguardian_live");
+function n(v, fallback = 0) {
+    const x = Number(v);
+    return Number.isFinite(x) ? x : fallback;
+}
 
-function broadcastEcoData() {
+function safeText(v, fallback = "—") {
+    return v === undefined || v === null || v === "" ? fallback : String(v);
+}
 
-    ecoChannel.postMessage({
-        type: "LIVE_DASHBOARD_UPDATE",
-        timestamp: Date.now(),
-        data: ecoLiveData
+function nowTime() {
+    return new Date().toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+}
+
+function nowShort() {
+    return new Date().toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+}
+
+function moduleOnline(name) {
+    return !!live.modules[name] && !!live.dataReceived[name];
+}
+
+function moduleSocketOpen(name) {
+    return !!live.modules[name];
+}
+
+function markModule(name, socketOpen, hasData = false) {
+    live.modules[name] = !!socketOpen;
+    if (hasData) live.dataReceived[name] = true;
+
+    const connected = Object.keys(live.modules)
+        .filter(k => live.modules[k]).length;
+
+    const ready = Object.keys(live.modules)
+        .filter(k => moduleOnline(k)).length;
+
+    setText("moduleReadyText", ready + " MODULES READY");
+
+    const moduleReady = document.getElementById("moduleReady");
+    if (moduleReady) {
+        moduleReady.className =
+            "hub-status " + (ready ? "" : "offline");
+    }
+
+    setText(
+        "hubConnection",
+        ready
+            ? "● " + ready + " LIVE MODULE" + (ready > 1 ? "S" : "")
+            : "● NO LIVE DATA MODULES"
+    );
+
+    setText(
+        "footerStatus",
+        ready
+            ? ready + " LIVE MODULE" + (ready > 1 ? "S" : "") + " CONNECTED"
+            : "NO PROJECT CONNECTED"
+    );
+
+    const global = document.getElementById("globalStatus");
+    if (global) {
+        global.className =
+            "system-status " + (ready ? "" : "offline");
+    }
+
+    setText(
+        "globalStatusText",
+        ready ? "LIVE DATA OPERATIONAL" : "NO LIVE DATA"
+    );
+
+    setText(
+        "healthLive",
+        ready ? "● LIVE" : "OFFLINE"
+    );
+
+    const map = {
+        rfid: "state-rfid",
+        fire: "state-fire",
+        dustbin: "state-dustbin",
+        surveillance: "state-surveillance",
+        sensors: "state-sensors",
+        drone: "state-drone"
+    };
+
+    const el = document.getElementById(map[name]);
+    if (el) {
+        const liveNow = moduleOnline(name);
+        el.className =
+            "module-state " + (liveNow ? "online" : "offline");
+        el.textContent =
+            liveNow ? "LIVE DATA" :
+            socketOpen && !hasData ? "CONNECTED / WAITING" :
+            "OFFLINE";
+    }
+}
+
+function resetModule(name) {
+    live.dataReceived[name] = false;
+
+    if (name === "rfid") {
+        live.rfidScans = 0;
+    }
+
+    if (name === "dustbin") {
+        live.waste = {
+            capacity: 0,
+            dry: 0,
+            wet: 0,
+            hazardous: 0,
+            recycled: 0,
+            rewards: 0
+        };
+    }
+
+    if (name === "surveillance") {
+        live.security = {
+            status: "OFFLINE",
+            perimeter: "NO DATA",
+            intruder: false
+        };
+    }
+
+    if (name === "fire") {
+        live.fire = {
+            status: "OFFLINE",
+            alert: false
+        };
+    }
+
+    if (name === "sensors") {
+        live.personnel = 0;
+        live.capacity = 0;
+        live.visitors = 0;
+        live.vehicles = 0;
+        live.power = 0;
+        live.co2Captured = 0;
+
+        live.energy = {
+            efficiency: 0,
+            solar: 0,
+            piezo: 0,
+            battery: 0,
+            total: 0
+        };
+
+        live.water = {
+            level: 0,
+            tank1: 0,
+            tank2: 0,
+            tank3: 0,
+            consumed: 0,
+            recycled: 0
+        };
+
+        live.air = {
+            aqi: 0,
+            co2: 0,
+            pm25: 0,
+            oxygen: 0,
+            tvoc: 0
+        };
+
+        live.weather = {
+            temperature: 0,
+            humidity: 0,
+            wind: 0,
+            rainfall: 0,
+            uv: 0,
+            condition: "NO DATA"
+        };
+    }
+
+    if (name === "drone") {
+        live.drones = 0;
+    }
+
+    render();
+}
+
+function addRealActivity(icon, message) {
+    live.activity.unshift({
+        icon,
+        message,
+        time: nowShort()
+    });
+
+    live.activity = live.activity.slice(0, 10);
+    renderActivity();
+}
+
+function addRealAlert(type, title, sub, time) {
+    live.alerts.unshift({
+        type,
+        title,
+        sub,
+        time: time || nowShort()
+    });
+
+    live.alerts = live.alerts.slice(0, 8);
+    renderAlerts();
+}
+
+function renderActivity() {
+    const el = document.getElementById("activityLog");
+    if (!el) return;
+
+    if (!live.activity.length) {
+        el.innerHTML = `
+            <div class="activity-row">
+                <span class="activity-time">—</span>
+                <span class="activity-icon">○</span>
+                <span class="activity-message">
+                    Waiting for real project events...
+                </span>
+            </div>
+        `;
+        return;
+    }
+
+    el.innerHTML = live.activity.map(a => `
+        <div class="activity-row">
+            <span class="activity-time">${safeText(a.time)}</span>
+            <span class="activity-icon">${safeText(a.icon)}</span>
+            <span class="activity-message">${safeText(a.message)}</span>
+        </div>
+    `).join("");
+}
+
+function renderAlerts() {
+    const el = document.getElementById("alertList");
+    if (!el) return;
+
+    setText("alertCount", live.alerts.length + " EVENTS");
+
+    if (!live.alerts.length) {
+        el.innerHTML = `
+            <div class="alert ok">
+                <div class="alert-icon">✓</div>
+                <div>
+                    <div class="alert-title">NO ACTIVE ALERTS</div>
+                    <div class="alert-sub">
+                        Waiting for real sensor events
+                    </div>
+                </div>
+                <div class="alert-time">—</div>
+            </div>
+        `;
+        return;
+    }
+
+    el.innerHTML = live.alerts.map(a => {
+        const cls =
+            a.type === "warning" ? "warning" :
+            a.type === "ok" ? "ok" : "";
+
+        const icon =
+            a.type === "fire" ? "🔥" :
+            a.type === "intruder" ? "⚠" :
+            a.type === "water" ? "💧" :
+            a.type === "rfid" ? "🪪" : "●";
+
+        return `
+            <div class="alert ${cls}">
+                <div class="alert-icon">${icon}</div>
+                <div>
+                    <div class="alert-title">
+                        ${safeText(a.title)}
+                    </div>
+                    <div class="alert-sub">
+                        ${safeText(a.sub)}
+                    </div>
+                </div>
+                <div class="alert-time">
+                    ${safeText(a.time)}
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+function setDonut(id, value, cssVar) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const deg =
+        Math.max(0, Math.min(100, n(value))) * 3.6;
+
+    el.style.background =
+        `conic-gradient(${cssVar} 0 ${deg}deg,#12303a ${deg}deg 360deg)`;
+}
+
+function render() {
+    /*
+       IMPORTANT:
+       These values are read ONLY from live.
+       live starts at zero and resets on disconnect.
+    */
+
+    setText("personnel", live.personnel);
+    setText(
+        "personnelSub",
+        "/ " + live.capacity + " CAPACITY"
+    );
+
+    setText("scanCounter", live.rfidScans);
+    setText("vehicles", live.vehicles);
+    setText("drones", live.drones);
+    setText("power", live.power);
+    setText("water", live.water.level + "%");
+    setText("co2Captured", live.co2Captured);
+
+    setText("solarPower", live.energy.solar + " kW");
+    setText("piezoPower", live.energy.piezo + " kW");
+    setText("battery", live.energy.battery + "%");
+    setText("energyTotal", live.energy.total + " kWh");
+    setText("energyEfficiency", live.energy.efficiency + "%");
+
+    setDonut("energyDonut", live.energy.efficiency, "var(--green)");
+
+    setText("waterDonutValue", live.water.level + "%");
+    setText("tank1", live.water.tank1 + "%");
+    setText("tank2", live.water.tank2 + "%");
+    setText("tank3", live.water.tank3 + "%");
+    setText("waterConsumed", live.water.consumed + " L");
+    setText("waterRecycled", live.water.recycled + " L");
+
+    setDonut("waterDonut", live.water.level, "var(--cyan)");
+
+    setText("wasteCapacity", live.waste.capacity + "%");
+    setText("dryWaste", live.waste.dry + "%");
+    setText("wetWaste", live.waste.wet + "%");
+    setText("hazardousWaste", live.waste.hazardous + "%");
+    setText("recycledWaste", live.waste.recycled + " kg");
+    setText("wasteRewards", live.waste.rewards);
+
+    setDonut("wasteDonut", live.waste.capacity, "var(--green)");
+
+    setText("temperature", live.weather.temperature + "°C");
+    setText("condition", live.weather.condition);
+    setText("humidity", live.weather.humidity + "%");
+    setText("wind", live.weather.wind + " km/h");
+    setText("rainfall", live.weather.rainfall + " mm");
+    setText("uv", live.weather.uv);
+
+    setText("weatherState",
+        moduleOnline("sensors") ? "LIVE" : "OFFLINE"
+    );
+
+    const components = [
+        moduleOnline("rfid") ? 100 : 0,
+        moduleOnline("sensors") ? 100 : 0,
+        moduleOnline("sensors") ? 100 : 0,
+        moduleOnline("sensors") ? 100 : 0,
+        (moduleOnline("fire") || moduleOnline("surveillance")) ? 100 : 0
+    ];
+
+    const health =
+        Math.round(
+            components.reduce((a,b) => a+b,0) /
+            components.length
+        );
+
+    setText("healthValue", health + "%");
+
+    const ring = document.querySelector(".health-gauge");
+    if (ring) {
+        ring.style.background =
+            `conic-gradient(
+                var(--green) 0deg ${health * 3.6}deg,
+                #12303a ${health * 3.6}deg 360deg
+            )`;
+    }
+
+    const names = [
+        ["Security", components[0]],
+        ["Energy", moduleOnline("sensors") ? 100 : 0],
+        ["Environment", moduleOnline("sensors") ? 100 : 0],
+        ["Water", moduleOnline("sensors") ? 100 : 0],
+        ["Emergency",
+            (moduleOnline("fire") || moduleOnline("surveillance"))
+                ? 100 : 0
+        ]
+    ];
+
+    names.forEach(([name,value]) => {
+        setText("health" + name, value + "%");
+
+        const bar =
+            document.getElementById("bar" + name);
+
+        if (bar) {
+            bar.style.width = value + "%";
+        }
+    });
+
+    setText(
+        "energyState",
+        moduleOnline("sensors") ? "LIVE" : "OFFLINE"
+    );
+
+    setText(
+        "waterState",
+        moduleOnline("sensors") ? "LIVE" : "OFFLINE"
+    );
+
+    setText(
+        "wasteState",
+        moduleOnline("dustbin") ? "LIVE" : "OFFLINE"
+    );
+
+    setText(
+        "droneFeedState",
+        moduleOnline("drone") ? "LIVE" : "OFFLINE"
+    );
+
+    setText(
+        "feedLive",
+        moduleOnline("drone") ? "● LIVE" : "OFFLINE"
+    );
+
+    setText(
+        "feedNote",
+        moduleOnline("drone")
+            ? "LIVE DRONE SOURCE CONNECTED"
+            : "NO DRONE DATA SOURCE CONNECTED"
+    );
+
+    const hardware = {
+        rfid: moduleOnline("rfid"),
+        fireSensors: moduleOnline("fire"),
+        cctv: moduleOnline("surveillance"),
+        droneSystem: moduleOnline("drone"),
+        pirSensors: moduleOnline("sensors"),
+        laserFence: moduleOnline("sensors"),
+        gasSensors: moduleOnline("sensors"),
+        solarSystem: moduleOnline("sensors"),
+        waterSystem: moduleOnline("sensors"),
+        communication:
+            Object.values(live.modules).some(Boolean),
+        piezoTiles: moduleOnline("sensors"),
+        streetLights: moduleOnline("sensors")
+    };
+
+    Object.entries(hardware).forEach(([name,on]) => {
+        const el =
+            document.getElementById("hw-" + name);
+
+        if (!el) return;
+
+        el.className =
+            "hardware-status " + (on ? "" : "offline");
+
+        el.textContent =
+            on ? "● ACTIVE" : "● OFFLINE";
     });
 
     /*
-      localStorage backup
-      so newly opened dashboards get latest data.
+       Keep the original voice assistant's systemData in sync.
+       This removes the old hard-coded voice answers.
     */
-    localStorage.setItem(
-        "ECOGUARDIAN_LIVE_DATA",
-        JSON.stringify({
-            timestamp: Date.now(),
-            data: ecoLiveData
-        })
+    if (typeof systemData !== "undefined") {
+        systemData.personnel.present = live.personnel;
+        systemData.personnel.capacity = live.capacity;
+
+        systemData.visitors.today = live.visitors;
+        systemData.vehicles.inside = live.vehicles;
+
+        systemData.rfid.scansToday = live.rfidScans;
+        systemData.rfid.status =
+            moduleOnline("rfid") ? "LIVE" : "OFFLINE";
+
+        systemData.drones.active = live.drones;
+        systemData.drones.status =
+            moduleOnline("drone") ? "LIVE" : "OFFLINE";
+
+        systemData.energy.generatedToday = live.power;
+        systemData.energy.solar = live.energy.solar;
+        systemData.energy.piezo = live.energy.piezo;
+        systemData.energy.battery = live.energy.battery;
+        systemData.energy.total = live.energy.total;
+
+        systemData.water.level = live.water.level;
+        systemData.water.tank1 = live.water.tank1;
+        systemData.water.tank2 = live.water.tank2;
+        systemData.water.tank3 = live.water.tank3;
+        systemData.water.consumed = live.water.consumed;
+        systemData.water.recycled = live.water.recycled;
+
+        systemData.waste.capacity = live.waste.capacity;
+        systemData.waste.dry = live.waste.dry;
+        systemData.waste.wet = live.waste.wet;
+        systemData.waste.hazardous = live.waste.hazardous;
+        systemData.waste.recycled = live.waste.recycled;
+        systemData.waste.rewards = live.waste.rewards;
+
+        systemData.air.aqi = live.air.aqi;
+        systemData.air.co2 = live.air.co2;
+        systemData.air.pm25 = live.air.pm25;
+        systemData.air.oxygen = live.air.oxygen;
+        systemData.air.tvoc = live.air.tvoc;
+
+        systemData.weather.temperature = live.weather.temperature;
+        systemData.weather.humidity = live.weather.humidity;
+        systemData.weather.wind = live.weather.wind;
+        systemData.weather.rainfall = live.weather.rainfall;
+        systemData.weather.uv = live.weather.uv;
+        systemData.weather.condition = live.weather.condition;
+
+        systemData.security.status = live.security.status;
+        systemData.security.perimeter = live.security.perimeter;
+        systemData.security.intruder = live.security.intruder;
+
+        systemData.fire.status = live.fire.status;
+        systemData.fire.alert = live.fire.alert;
+
+        Object.keys(systemData.systems).forEach(k => {
+            systemData.systems[k] = false;
+        });
+
+        if (moduleOnline("rfid"))
+            systemData.systems.rfid = true;
+
+        if (moduleOnline("fire"))
+            systemData.systems.fireSensors = true;
+
+        if (moduleOnline("surveillance"))
+            systemData.systems.cctv = true;
+
+        if (moduleOnline("drone"))
+            systemData.systems.droneSystem = true;
+
+        if (moduleOnline("sensors")) {
+            systemData.systems.laserFence = true;
+            systemData.systems.pirSensors = true;
+            systemData.systems.gasSensors = true;
+            systemData.systems.solarSystem = true;
+            systemData.systems.waterSystem = true;
+            systemData.systems.piezoTiles = true;
+            systemData.systems.streetLights = true;
+        }
+    }
+}
+
+
+/* =========================================================
+   REAL RFID + SMART DUSTBIN
+========================================================= */
+
+function connectRFID() {
+    try {
+        rfidWS = new WebSocket(
+            ECO_CONFIG.rfidDustbinWS
+        );
+
+        rfidWS.onopen = () => {
+            markModule("rfid", true);
+            markModule("dustbin", true);
+            addRealActivity(
+                "🔗",
+                "RFID / Smart Dustbin backend connected"
+            );
+            render();
+        };
+
+        rfidWS.onmessage = event => {
+            let data;
+
+            try {
+                data = JSON.parse(event.data);
+            } catch {
+                return;
+            }
+
+            /*
+               Real RFID scan:
+               project === "rfid"
+            */
+            if (data.project === "rfid") {
+                live.rfidScans++;
+
+                addRealActivity(
+                    "🪪",
+                    `RFID ${safeText(data.access,"EVENT")} — ${safeText(data.name,"Unknown user")}`
+                );
+
+                addRealAlert(
+                    data.access === "GRANTED"
+                        ? "rfid"
+                        : "warning",
+                    `RFID ${safeText(data.access,"EVENT")}`,
+                    safeText(data.name,"Unknown user"),
+                    data.timestamp || nowShort()
+                );
+
+                live.dataReceived.rfid = true;
+            }
+
+            /*
+               Real Smart Dustbin users stream.
+               Existing project sends:
+               { type:"users", data:[...] }
+            */
+            if (
+                data.type === "users" &&
+                Array.isArray(data.data)
+            ) {
+                live.dataReceived.dustbin = true;
+
+                /*
+                   The supplied backend exposes points and garbage.
+                   It does NOT expose a bin-capacity percentage.
+                   Therefore capacity/dry/wet/hazardous remain 0
+                   instead of being invented.
+                */
+                live.waste.rewards =
+                    data.data.reduce(
+                        (sum,u) => sum + n(u.points),
+                        0
+                    );
+
+                live.waste.recycled =
+                    Number(
+                        data.data.reduce(
+                            (sum,u) => sum + n(u.garbage),
+                            0
+                        ).toFixed(1)
+                    );
+
+                addRealActivity(
+                    "♻️",
+                    "Smart Dustbin user data synchronized"
+                );
+            }
+
+            render();
+        };
+
+        rfidWS.onclose = () => {
+            markModule("rfid", false);
+            markModule("dustbin", false);
+
+            resetModule("rfid");
+            resetModule("dustbin");
+
+            scheduleReconnect(
+                "rfid",
+                connectRFID
+            );
+        };
+
+        rfidWS.onerror = () => {
+            try { rfidWS.close(); } catch {}
+        };
+
+    } catch {
+        markModule("rfid", false);
+        markModule("dustbin", false);
+
+        scheduleReconnect(
+            "rfid",
+            connectRFID
+        );
+    }
+}
+
+async function pollDustbin() {
+    try {
+        const res =
+            await fetch(
+                ECO_CONFIG.dustbinHTTP,
+                { cache:"no-store" }
+            );
+
+        if (!res.ok)
+            throw new Error("HTTP " + res.status);
+
+        const data =
+            await res.json();
+
+        if (!Array.isArray(data))
+            return;
+
+        markModule("dustbin", true, true);
+
+        live.waste.rewards =
+            data.reduce(
+                (sum,u) => sum + n(u.points),
+                0
+            );
+
+        live.waste.recycled =
+            Number(
+                data.reduce(
+                    (sum,u) => sum + n(u.garbage),
+                    0
+                ).toFixed(1)
+            );
+
+        render();
+
+    } catch {
+        /*
+           Do not fabricate values.
+           If WebSocket is also closed, reset.
+        */
+        if (!moduleSocketOpen("dustbin")) {
+            resetModule("dustbin");
+        }
+    }
+}
+
+
+/* =========================================================
+   FIRE BRIDGE
+========================================================= */
+
+function connectFire() {
+    if (!ECO_CONFIG.fireWS) {
+        markModule("fire", false);
+        resetModule("fire");
+        return;
+    }
+
+    try {
+        fireWS =
+            new WebSocket(ECO_CONFIG.fireWS);
+
+        fireWS.onopen = () => {
+            markModule("fire", true);
+            render();
+        };
+
+        fireWS.onmessage = event => {
+            let data;
+
+            try {
+                data = JSON.parse(event.data);
+            } catch {
+                return;
+            }
+
+            /*
+               Accept only actual fire bridge messages.
+               Supported flexible shapes:
+               {project:"fire", type:"alert", ...}
+               {project:"fire", type:"safe", ...}
+               {project:"fire", alert:true/false, ...}
+            */
+            if (
+                data.project !== "fire" &&
+                data.type !== "fire"
+            ) {
+                return;
+            }
+
+            live.dataReceived.fire = true;
+
+            const isAlert =
+                data.type === "alert" ||
+                data.alert === true ||
+                data.fire === true ||
+                String(data.status || "").toLowerCase() === "danger";
+
+            live.fire.alert = !!isAlert;
+            live.fire.status =
+                isAlert ? "ALERT" : "MONITORING";
+
+            if (isAlert) {
+                addRealActivity(
+                    "🔥",
+                    `Fire alert — ${safeText(data.sensor,"sensor")}`
+                );
+
+                addRealAlert(
+                    "fire",
+                    "FIRE DETECTED",
+                    safeText(
+                        data.sensor,
+                        "Fire sensor alert"
+                    ),
+                    data.time ||
+                    data.timestamp ||
+                    nowShort()
+                );
+            } else {
+                addRealActivity(
+                    "✓",
+                    "Fire Protection — safe event received"
+                );
+            }
+
+            render();
+        };
+
+        fireWS.onclose = () => {
+            markModule("fire", false);
+            resetModule("fire");
+            scheduleReconnect("fire", connectFire);
+        };
+
+        fireWS.onerror = () => {
+            try { fireWS.close(); } catch {}
+        };
+
+    } catch {
+        markModule("fire", false);
+        resetModule("fire");
+        scheduleReconnect("fire", connectFire);
+    }
+}
+
+
+/* =========================================================
+   SURVEILLANCE
+========================================================= */
+
+function applySurveillance(data) {
+    if (!data)
+        return;
+
+    const state =
+        data.state || data;
+
+    live.dataReceived.surveillance = true;
+
+    const status =
+        String(
+            state.status || "safe"
+        ).toLowerCase();
+
+    live.security.intruder =
+        status === "danger" ||
+        status === "intruder";
+
+    live.security.status =
+        live.security.intruder
+            ? "DANGER"
+            : "NORMAL";
+
+    live.security.perimeter =
+        live.security.intruder
+            ? "THREAT DETECTED"
+            : "SECURE";
+
+    if (live.security.intruder) {
+        addRealAlert(
+            "intruder",
+            "INTRUDER DETECTED",
+            "AI surveillance alert",
+            state.last_event_time ||
+            nowShort()
+        );
+
+        addRealActivity(
+            "⚠️",
+            "Intruder detected by surveillance"
+        );
+    }
+
+    render();
+}
+
+function connectSurveillance() {
+    try {
+        surveillanceWS =
+            new WebSocket(
+                ECO_CONFIG.surveillanceWS
+            );
+
+        surveillanceWS.onopen = () => {
+            markModule(
+                "surveillance",
+                true
+            );
+
+            render();
+        };
+
+        surveillanceWS.onmessage = event => {
+            let data;
+
+            try {
+                data = JSON.parse(event.data);
+            } catch {
+                return;
+            }
+
+            if (
+                data.type === "init" ||
+                data.type === "update"
+            ) {
+                applySurveillance(data);
+            }
+        };
+
+        surveillanceWS.onclose = () => {
+            markModule(
+                "surveillance",
+                false
+            );
+
+            resetModule("surveillance");
+
+            scheduleReconnect(
+                "surveillance",
+                connectSurveillance
+            );
+        };
+
+        surveillanceWS.onerror = () => {
+            try {
+                surveillanceWS.close();
+            } catch {}
+        };
+
+    } catch {
+        markModule(
+            "surveillance",
+            false
+        );
+
+        resetModule("surveillance");
+
+        scheduleReconnect(
+            "surveillance",
+            connectSurveillance
+        );
+    }
+}
+
+async function pollSurveillance() {
+    try {
+        const res =
+            await fetch(
+                ECO_CONFIG.surveillanceHTTP,
+                { cache:"no-store" }
+            );
+
+        if (!res.ok)
+            throw new Error();
+
+        const data =
+            await res.json();
+
+        markModule(
+            "surveillance",
+            true
+        );
+
+        applySurveillance(data);
+
+    } catch {
+        /*
+           Only reset when the WebSocket isn't open.
+        */
+        if (!moduleSocketOpen("surveillance")) {
+            resetModule("surveillance");
+        }
+    }
+}
+
+
+/* =========================================================
+   OPTIONAL SENSOR NETWORK
+========================================================= */
+
+function connectSensorNetwork() {
+    if (!ECO_CONFIG.sensorWS) {
+        markModule("sensors", false);
+        resetModule("sensors");
+        return;
+    }
+
+    try {
+        sensorWS =
+            new WebSocket(
+                ECO_CONFIG.sensorWS
+            );
+
+        sensorWS.onopen = () => {
+            markModule("sensors", true);
+            render();
+        };
+
+        sensorWS.onmessage = event => {
+            let data;
+
+            try {
+                data = JSON.parse(event.data);
+            } catch {
+                return;
+            }
+
+            live.dataReceived.sensors = true;
+
+            /*
+               These fields are accepted only when
+               supplied by the actual sensor backend.
+            */
+
+            if (data.personnel !== undefined)
+                live.personnel = n(data.personnel);
+
+            if (data.capacity !== undefined)
+                live.capacity = n(data.capacity);
+
+            if (data.visitors !== undefined)
+                live.visitors = n(data.visitors);
+
+            if (data.vehicles !== undefined)
+                live.vehicles = n(data.vehicles);
+
+            if (data.power !== undefined)
+                live.power = n(data.power);
+
+            if (data.co2Captured !== undefined)
+                live.co2Captured = n(data.co2Captured);
+
+            if (data.energy)
+                live.energy = {
+                    ...live.energy,
+                    ...cleanNumbers(
+                        data.energy,
+                        live.energy
+                    )
+                };
+
+            if (data.water)
+                live.water = {
+                    ...live.water,
+                    ...cleanNumbers(
+                        data.water,
+                        live.water
+                    )
+                };
+
+            if (data.air)
+                live.air = {
+                    ...live.air,
+                    ...cleanNumbers(
+                        data.air,
+                        live.air
+                    )
+                };
+
+            if (data.weather) {
+                live.weather = {
+                    ...live.weather,
+                    ...data.weather
+                };
+            }
+
+            addRealActivity(
+                "📡",
+                "Sensor Network telemetry received"
+            );
+
+            render();
+        };
+
+        sensorWS.onclose = () => {
+            markModule("sensors", false);
+            resetModule("sensors");
+            scheduleReconnect(
+                "sensors",
+                connectSensorNetwork
+            );
+        };
+
+        sensorWS.onerror = () => {
+            try { sensorWS.close(); } catch {}
+        };
+
+    } catch {
+        markModule("sensors", false);
+        resetModule("sensors");
+
+        scheduleReconnect(
+            "sensors",
+            connectSensorNetwork
+        );
+    }
+}
+
+function cleanNumbers(source, base) {
+    const out = {...base};
+
+    Object.keys(base).forEach(key => {
+        if (source[key] !== undefined) {
+            const value = Number(source[key]);
+            if (Number.isFinite(value)) {
+                out[key] = value;
+            }
+        }
+    });
+
+    return out;
+}
+
+
+/* =========================================================
+   OPTIONAL DRONE
+========================================================= */
+
+function connectDrone() {
+    if (!ECO_CONFIG.droneWS) {
+        markModule("drone", false);
+        resetModule("drone");
+        return;
+    }
+
+    try {
+        droneWS =
+            new WebSocket(
+                ECO_CONFIG.droneWS
+            );
+
+        droneWS.onopen = () => {
+            markModule("drone", true);
+            render();
+        };
+
+        droneWS.onmessage = event => {
+            let data;
+
+            try {
+                data = JSON.parse(event.data);
+            } catch {
+                return;
+            }
+
+            live.dataReceived.drone = true;
+
+            if (data.active !== undefined)
+                live.drones = n(data.active);
+
+            if (data.drones !== undefined)
+                live.drones = n(data.drones);
+
+            addRealActivity(
+                "🛸",
+                "Drone telemetry received"
+            );
+
+            render();
+        };
+
+        droneWS.onclose = () => {
+            markModule("drone", false);
+            resetModule("drone");
+
+            scheduleReconnect(
+                "drone",
+                connectDrone
+            );
+        };
+
+        droneWS.onerror = () => {
+            try { droneWS.close(); } catch {}
+        };
+
+    } catch {
+        markModule("drone", false);
+        resetModule("drone");
+
+        scheduleReconnect(
+            "drone",
+            connectDrone
+        );
+    }
+}
+
+
+/* =========================================================
+   RECONNECT
+========================================================= */
+
+function scheduleReconnect(name, fn) {
+    clearTimeout(
+        reconnectTimers[name]
+    );
+
+    reconnectTimers[name] =
+        setTimeout(
+            fn,
+            3000
+        );
+}
+
+
+/* =========================================================
+   INITIAL MASTER STATE
+========================================================= */
+
+function initializeRealOnlyUI() {
+    /*
+       Remove all hard-coded demo values from the original HTML.
+    */
+
+    live.alerts = [];
+    live.activity = [];
+
+    resetModule("rfid");
+    resetModule("fire");
+    resetModule("dustbin");
+    resetModule("surveillance");
+    resetModule("sensors");
+    resetModule("drone");
+
+    /*
+       Force zero immediately before any backend responds.
+    */
+    render();
+    renderAlerts();
+    renderActivity();
+
+    /*
+       Start real connections.
+    */
+    connectRFID();
+    connectFire();
+    connectSurveillance();
+    connectSensorNetwork();
+    connectDrone();
+
+    /*
+       Real HTTP polling only where real endpoints exist.
+    */
+    setInterval(
+        pollDustbin,
+        5000
+    );
+
+    setInterval(
+        pollSurveillance,
+        3000
+    );
+
+    /*
+       Keep dashboard synchronized.
+       This prevents the old demo intervals in the original
+       file from leaving fake values visible.
+    */
+    setInterval(
+        render,
+        500
     );
 }
 
 
-/* Send immediately */
-broadcastEcoData();
+/* =========================================================
+   VOICE — NO FAKE DATA
+========================================================= */
+
+window.ecoGetLiveData = function() {
+    return JSON.parse(
+        JSON.stringify(live)
+    );
+};
+
+window.ecoLiveReady = function(module) {
+    return moduleOnline(module);
+};
+
+window.ecoVoiceStatus = function() {
+    const ready =
+        Object.keys(live.modules)
+            .filter(k => moduleOnline(k));
+
+    return ready.length
+        ? ready.join(", ")
+        : "no live modules";
+};
 
 
 /*
-   Send every second.
-   If your values are coming from ESP32/backend,
-   update ecoLiveData before this function runs.
+   The existing voice engine reads systemData.
+   We keep updating systemData from the real bus.
+   If no module is connected, voice answers 0/OFFLINE.
 */
-setInterval(broadcastEcoData, 1000);
+
+
+if (
+    document.readyState === "loading"
+) {
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeRealOnlyUI,
+        { once:true }
+    );
+} else {
+    initializeRealOnlyUI();
+}
+
+})();
 </script>
 
 </body>
