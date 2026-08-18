@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -758,7 +756,7 @@ body::after{
 /* WEATHER */
 
 .weather-panel{
-    min-height:180px;
+    min-height:220px;
 }
 
 .weather-main{
@@ -910,6 +908,32 @@ body::after{
     color:var(--green);
 }
 
+
+
+/* =========================================================
+   LIVE WEB ENVIRONMENT SOURCE
+========================================================= */
+
+.external-source-note{
+    padding:7px 12px 10px;
+    color:#557482;
+    font-family:'Space Mono',monospace;
+    font-size:7px;
+    letter-spacing:.5px;
+    border-top:1px solid rgba(255,255,255,.035);
+}
+
+.external-source-note::first-letter{
+    color:var(--cyan);
+}
+
+#airLabel{
+    transition:.25s;
+}
+
+#airCircle{
+    transition:.25s;
+}
 
 /* =========================================================
    CONTROL HUB
@@ -2721,7 +2745,7 @@ body::after{
                 class="kpi-value"
                 id="scanCounter"
             >
-                07
+                0
             </div>
 
             <div class="kpi-unit">
@@ -2986,60 +3010,105 @@ body::after{
 
 <section class="panel weather-panel">
 
-   <div id="temperature">0°C</div>
+    <div class="panel-title">
+        <span>WEATHER STATION</span>
+        <span class="live offline" id="weatherState">LOCATION REQUIRED</span>
+    </div>
 
-<div id="condition">
-    NO DATA
-</div>
+    <div class="weather-main">
 
-<strong id="humidity">0%</strong>
+        <div class="weather-icon" id="weatherIcon">🌤️</div>
 
-<strong id="wind">0 km/h</strong>
+        <div>
+            <div class="temperature" id="temperature">0°C</div>
+            <div class="weather-desc" id="condition">NO DATA</div>
+        </div>
 
-<strong id="rainfall">0 mm</strong>
+    </div>
 
-<span id="weatherState">
-    OFFLINE
-</span>
+    <div class="weather-data">
+
+        <div class="weather-item">
+            HUMIDITY
+            <strong id="humidity">0%</strong>
+        </div>
+
+        <div class="weather-item">
+            WIND
+            <strong id="wind">0 km/h</strong>
+        </div>
+
+        <div class="weather-item">
+            RAINFALL
+            <strong id="rainfall">0 mm</strong>
+        </div>
+
+        <div class="weather-item">
+            UV INDEX
+            <strong id="uv">0</strong>
+        </div>
+
+    </div>
+
+    <div class="external-source-note" id="weatherSource">
+        ● OPEN-METEO • LIVE WEB DATA
+    </div>
+
 </section>
 
 
 <section class="panel air-panel">
 
     <div class="panel-title">
-        AIR QUALITY
+        <span>AIR QUALITY</span>
+        <span class="live offline" id="airState">WAITING</span>
     </div>
-
 
     <div class="air-content">
 
-        <div class="air-circle">
+        <div class="air-circle" id="airCircle">
 
             <div class="air-value" id="aqi">0</div>
 
-            <div class="air-label">
-                GOOD
+            <div class="air-label" id="airLabel">
+                NO DATA
             </div>
 
         </div>
-
 
         <div class="air-values">
 
-            <div>CO₂ <strong id="airCo2">0 ppm</strong>
+            <div>
+                AQI
+                <strong id="aqiDetail">0</strong>
             </div>
 
-            <div>PM2.5 <strong id="pm25">0 μg/m³</strong>
+            <div>
+                PM2.5
+                <strong id="pm25">0 μg/m³</strong>
             </div>
 
-            <div>O₂ <strong id="oxygen">0%</strong>
+            <div>
+                CO₂
+                <strong id="airCo2">0 ppm</strong>
             </div>
 
-            <div>TVOC <strong id="tvoc">0 ppm</strong>
+            <div>
+                O₃
+                <strong id="ozone">0 μg/m³</strong>
+            </div>
+
+            <div>
+                UV
+                <strong id="airUv">0</strong>
             </div>
 
         </div>
 
+    </div>
+
+    <div class="external-source-note" id="airSource">
+        ● OPEN-METEO AIR QUALITY • LIVE WEB DATA
     </div>
 
 </section>
@@ -3058,8 +3127,8 @@ body::after{
 
     ECOGUARDIAN CONTROL HUB
 
-    <span class="live">
-        ● ONLINE
+    <span class="live offline">
+        ● OFFLINE
     </span>
 
 </div>
@@ -3304,7 +3373,7 @@ body::after{
         LAST SYNC:
 
         <strong id="hubSync">
-            JUST NOW
+            WAITING
         </strong>
 
     </div>
@@ -3330,112 +3399,21 @@ body::after{
             LIVE ALERTS
         </span>
 
-        <span>
-            VIEW ALL →
+        <span id="alertCount">
+            0 EVENTS
         </span>
 
     </div>
-
-
-    <div class="alert">
-
-        <div class="alert-icon">
-            ⚠
-        </div>
-
-        <div>
-
-            <div class="alert-title">
-                INTRUDER DETECTED
+    <div id="alertList">
+        <div class="alert ok">
+            <div class="alert-icon">✓</div>
+            <div>
+                <div class="alert-title">NO ACTIVE ALERTS</div>
+                <div class="alert-sub">Waiting for real sensor events</div>
             </div>
-
-            <div class="alert-sub">
-                North Perimeter Zone
-            </div>
-
+            <div class="alert-time">—</div>
         </div>
-
-        <div class="alert-time">
-            11:42
-        </div>
-
     </div>
-
-
-    <div class="alert">
-
-        <div class="alert-icon">
-            🔥
-        </div>
-
-        <div>
-
-            <div class="alert-title">
-                FIRE DETECTED
-            </div>
-
-            <div class="alert-sub">
-                Sensor Zone — Block B
-            </div>
-
-        </div>
-
-        <div class="alert-time">
-            11:38
-        </div>
-
-    </div>
-
-
-    <div class="alert warning">
-
-        <div class="alert-icon">
-            💧
-        </div>
-
-        <div>
-
-            <div class="alert-title">
-                LOW WATER LEVEL
-            </div>
-
-            <div class="alert-sub">
-                Water Tank 2
-            </div>
-
-        </div>
-
-        <div class="alert-time">
-            11:30
-        </div>
-
-    </div>
-
-
-    <div class="alert ok">
-
-        <div class="alert-icon">
-            ✓
-        </div>
-
-        <div>
-
-            <div class="alert-title">
-                SYSTEM CHECK
-            </div>
-
-            <div class="alert-sub">
-                All Systems Normal
-            </div>
-
-        </div>
-
-        <div class="alert-time">
-            11:20
-        </div>
-
-    </div>
-
 </section>
 
 
@@ -4080,110 +4058,11 @@ body::after{
     class="activity-grid"
     id="activityLog"
 >
-
-
-<div class="activity-row">
-
-    <span class="activity-time">
-        11:42 AM
-    </span>
-
-    <span class="activity-icon">
-        ⚠
-    </span>
-
-    <span class="activity-message">
-        Intruder Detected — North Perimeter
-    </span>
-
-</div>
-
-
-<div class="activity-row">
-
-    <span class="activity-time">
-        11:38 AM
-    </span>
-
-    <span class="activity-icon">
-        🔥
-    </span>
-
-    <span class="activity-message">
-        Fire Detection System Triggered
-    </span>
-
-</div>
-
-
-<div class="activity-row">
-
-    <span class="activity-time">
-        11:35 AM
-    </span>
-
-    <span class="activity-icon">
-        🪪
-    </span>
-
-    <span class="activity-message">
-        RFID Gate — Authorized Entry
-    </span>
-
-</div>
-
-
-<div class="activity-row">
-
-    <span class="activity-time">
-        11:30 AM
-    </span>
-
-    <span class="activity-icon">
-        💧
-    </span>
-
-    <span class="activity-message">
-        Water Level Warning — Tank 2
-    </span>
-
-</div>
-
-
-<div class="activity-row">
-
-    <span class="activity-time">
-        11:20 AM
-    </span>
-
-    <span class="activity-icon">
-        ✓
-    </span>
-
-    <span class="activity-message">
-        All Systems Normal
-    </span>
-
-</div>
-
-
-<div class="activity-row">
-
-    <span class="activity-time">
-        11:12 AM
-    </span>
-
-    <span class="activity-icon">
-        🛸
-    </span>
-
-    <span class="activity-message">
-        Drone-01 Patrol Completed
-    </span>
-
-</div>
-
-
+    <div class="activity-row">
+        <span class="activity-time">—</span>
+        <span class="activity-icon">○</span>
+        <span class="activity-message">Waiting for real project events...</span>
+    </div>
 </div>
 
 </section>
@@ -4203,7 +4082,7 @@ body::after{
 
         <span class="dot"></span>
 
-        ALL SYSTEMS OPERATIONAL
+        <span id="footerStatus">NO PROJECT CONNECTED</span>
 
     </span>
 
@@ -4463,7 +4342,9 @@ const systemData = {
         co2: 0,
         pm25: 0,
         oxygen: 0,
-        tvoc: 0
+        tvoc: 0,
+        ozone: 0,
+        uv: 0
     },
 
     weather: {
@@ -5810,22 +5691,11 @@ function resetModule(name) {
             recycled: 0
         };
 
-        live.air = {
-            aqi: 0,
-            co2: 0,
-            pm25: 0,
-            oxygen: 0,
-            tvoc: 0
-        };
-
-        live.weather = {
-            temperature: 0,
-            humidity: 0,
-            wind: 0,
-            rainfall: 0,
-            uv: 0,
-            condition: "NO DATA"
-        };
+        /*
+           Weather and air quality are now supplied independently
+           by Open-Meteo web APIs. Do not clear them when the
+           optional IoT sensor network disconnects.
+        */
     }
 
     if (name === "drone") {
@@ -6000,8 +5870,23 @@ function render() {
     setText("rainfall", live.weather.rainfall + " mm");
     setText("uv", live.weather.uv);
 
-    setText("weatherState",
-        moduleOnline("sensors") ? "LIVE" : "OFFLINE"
+    const externalEnv =
+        window.ecoExternalEnvironment || {
+            weatherOnline:false,
+            airOnline:false
+        };
+
+    setText(
+        "weatherState",
+        externalEnv.weatherOnline ? "LIVE WEB" :
+        moduleOnline("sensors") ? "LIVE IOT" :
+        "LOCATION REQUIRED"
+    );
+
+    setText(
+        "airState",
+        externalEnv.airOnline ? "LIVE WEB" :
+        "WAITING"
     );
 
     const components = [
@@ -6156,6 +6041,8 @@ function render() {
         systemData.air.pm25 = live.air.pm25;
         systemData.air.oxygen = live.air.oxygen;
         systemData.air.tvoc = live.air.tvoc;
+        systemData.air.ozone = live.air.ozone || 0;
+        systemData.air.uv = live.air.uv || 0;
 
         systemData.weather.temperature = live.weather.temperature;
         systemData.weather.humidity = live.weather.humidity;
@@ -7055,7 +6942,28 @@ function sync(){
         const e=$id(id); if(e) e.style.opacity="1";
     });
 
-    tx("weatherState", l.dataReceived.sensors ? "LIVE" : "OFFLINE");
+    const externalEnv =
+        window.ecoExternalEnvironment || {
+            weatherOnline:false,
+            airOnline:false
+        };
+
+    tx(
+        "weatherState",
+        externalEnv.weatherOnline ? "LIVE WEB" :
+        l.dataReceived.sensors ? "LIVE IOT" :
+        "LOCATION REQUIRED"
+    );
+
+    tx(
+        "airState",
+        externalEnv.airOnline ? "LIVE WEB" : "WAITING"
+    );
+
+    tx("aqiDetail", l.air.aqi);
+    tx("ozone", l.air.ozone !== undefined ? l.air.ozone + " μg/m³" : "0 μg/m³");
+    tx("airUv", l.air.uv !== undefined ? l.air.uv : "0");
+
     tx("feedLive", l.dataReceived.drone ? "● LIVE" : "OFFLINE");
     tx("feedNote", l.dataReceived.drone ? "LIVE DRONE SOURCE CONNECTED" : "NO DRONE DATA SOURCE CONNECTED");
 
@@ -7067,116 +6975,507 @@ document.addEventListener("DOMContentLoaded",sync);
 setTimeout(sync,100);
 })();
 </script>
-   <script>
-async function loadWeather() {
 
-    // Browser se location
-    navigator.geolocation.getCurrentPosition(async (position) => {
+<script>
+/* =========================================================
+   ECOGUARDIAN — OPEN-METEO ENVIRONMENT ENGINE
+   ---------------------------------------------------------
+   Weather + Air Quality are external web data.
 
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
+   This does NOT mark RFID / Fire / Dustbin / Surveillance /
+   Sensor / Drone as connected.
 
-        const url =
-            `https://api.open-meteo.com/v1/forecast` +
-            `?latitude=${lat}` +
-            `&longitude=${lon}` +
-            `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,weather_code` +
-            `&timezone=auto`;
+   No API key is required for these public Open-Meteo endpoints.
+========================================================= */
+(function(){
 
-        try {
+    "use strict";
 
-            const response = await fetch(url);
-            const data = await response.json();
-
-            console.log("WEATHER DATA:", data);
-
-            const current = data.current;
-
-            // Temperature
-            document.getElementById("temperature").textContent =
-                Math.round(current.temperature_2m) + "°C";
-
-            // Humidity
-            document.getElementById("humidity").textContent =
-                current.relative_humidity_2m + "%";
-
-            // Wind
-            document.getElementById("wind").textContent =
-                current.wind_speed_10m + " km/h";
-
-            // Rainfall
-            document.getElementById("rainfall").textContent =
-                current.precipitation + " mm";
-
-            // Weather condition
-            document.getElementById("condition").textContent =
-                getWeatherName(current.weather_code);
-
-            document.getElementById("weatherState").textContent =
-                "LIVE";
-
-        } catch (error) {
-
-            console.error("Weather API Error:", error);
-
-            document.getElementById("weatherState").textContent =
-                "OFFLINE";
-        }
-
-    }, (error) => {
-
-        console.error("Location Error:", error);
-
-        document.getElementById("weatherState").textContent =
-            "LOCATION REQUIRED";
-    });
-}
-
-
-function getWeatherName(code) {
-
-    const weather = {
-
-        0: "CLEAR SKY",
-
-        1: "MAINLY CLEAR",
-        2: "PARTLY CLOUDY",
-        3: "OVERCAST",
-
-        45: "FOG",
-        48: "DEPOSITING RIME FOG",
-
-        51: "LIGHT DRIZZLE",
-        53: "MODERATE DRIZZLE",
-        55: "DENSE DRIZZLE",
-
-        61: "LIGHT RAIN",
-        63: "MODERATE RAIN",
-        65: "HEAVY RAIN",
-
-        71: "LIGHT SNOW",
-        73: "MODERATE SNOW",
-        75: "HEAVY SNOW",
-
-        80: "RAIN SHOWERS",
-        81: "HEAVY RAIN SHOWERS",
-        82: "VIOLENT RAIN SHOWERS",
-
-        95: "THUNDERSTORM",
-        96: "THUNDERSTORM + HAIL",
-        99: "THUNDERSTORM + HEAVY HAIL"
+    window.ecoExternalEnvironment = {
+        weatherOnline:false,
+        airOnline:false,
+        latitude:null,
+        longitude:null,
+        lastWeatherSync:null,
+        lastAirSync:null
     };
 
-    return weather[code] || "UNKNOWN";
-}
+    const WEATHER_API =
+        "https://api.open-meteo.com/v1/forecast";
 
+    const AIR_API =
+        "https://air-quality-api.open-meteo.com/v1/air-quality";
 
-// Start
-loadWeather();
+    const REFRESH_MS = 10 * 60 * 1000;
 
-// Refresh every 10 minutes
-setInterval(loadWeather, 10 * 60 * 1000);
+    function el(id){
+        return document.getElementById(id);
+    }
 
+    function set(id,value){
+        const node = el(id);
+        if(node) node.textContent = value;
+    }
+
+    function setOfflineWeather(message){
+        window.ecoExternalEnvironment.weatherOnline = false;
+
+        set("temperature","0°C");
+        set("condition",message || "NO DATA");
+        set("humidity","0%");
+        set("wind","0 km/h");
+        set("rainfall","0 mm");
+        set("uv","0");
+        set("weatherState","LOCATION REQUIRED");
+        set("weatherSource","● OPEN-METEO • WAITING FOR LOCATION");
+
+        const icon = el("weatherIcon");
+        if(icon) icon.textContent = "🌐";
+    }
+
+    function setOfflineAir(){
+        window.ecoExternalEnvironment.airOnline = false;
+
+        set("aqi","0");
+        set("aqiDetail","0");
+        set("airCo2","0 ppm");
+        set("pm25","0 μg/m³");
+        set("ozone","0 μg/m³");
+        set("airUv","0");
+        set("airLabel","NO DATA");
+        set("airState","WAITING");
+        set("airSource","● OPEN-METEO AIR QUALITY • WAITING");
+
+        const circle = el("airCircle");
+        if(circle){
+            circle.style.borderColor = "var(--muted)";
+            circle.style.boxShadow = "none";
+        }
+
+        const value = el("aqi");
+        if(value) value.style.color = "var(--muted)";
+    }
+
+    function weatherName(code){
+        const map = {
+            0:"CLEAR SKY",
+            1:"MAINLY CLEAR",
+            2:"PARTLY CLOUDY",
+            3:"OVERCAST",
+            45:"FOG",
+            48:"RIME FOG",
+            51:"LIGHT DRIZZLE",
+            53:"MODERATE DRIZZLE",
+            55:"DENSE DRIZZLE",
+            56:"FREEZING DRIZZLE",
+            57:"DENSE FREEZING DRIZZLE",
+            61:"LIGHT RAIN",
+            63:"MODERATE RAIN",
+            65:"HEAVY RAIN",
+            66:"FREEZING RAIN",
+            67:"HEAVY FREEZING RAIN",
+            71:"LIGHT SNOW",
+            73:"MODERATE SNOW",
+            75:"HEAVY SNOW",
+            77:"SNOW GRAINS",
+            80:"RAIN SHOWERS",
+            81:"HEAVY RAIN SHOWERS",
+            82:"VIOLENT RAIN SHOWERS",
+            85:"SNOW SHOWERS",
+            86:"HEAVY SNOW SHOWERS",
+            95:"THUNDERSTORM",
+            96:"THUNDERSTORM + HAIL",
+            99:"THUNDERSTORM + HEAVY HAIL"
+        };
+
+        return map[Number(code)] || "LIVE WEATHER";
+    }
+
+    function weatherIcon(code){
+        code = Number(code);
+
+        if(code === 0) return "☀️";
+        if(code === 1 || code === 2) return "🌤️";
+        if(code === 3) return "☁️";
+        if(code === 45 || code === 48) return "🌫️";
+        if(code >= 51 && code <= 67) return "🌧️";
+        if(code >= 71 && code <= 86) return "🌨️";
+        if(code >= 95) return "⛈️";
+
+        return "🌤️";
+    }
+
+    function aqiLabel(value){
+        const n = Number(value);
+
+        if(!Number.isFinite(n)) return "NO DATA";
+        if(n <= 50) return "GOOD";
+        if(n <= 100) return "MODERATE";
+        if(n <= 150) return "SENSITIVE";
+        if(n <= 200) return "UNHEALTHY";
+        if(n <= 300) return "VERY UNHEALTHY";
+        return "HAZARDOUS";
+    }
+
+    function aqiColor(value){
+        const n = Number(value);
+
+        if(!Number.isFinite(n)) return "var(--muted)";
+        if(n <= 50) return "var(--green)";
+        if(n <= 100) return "var(--yellow)";
+        if(n <= 150) return "var(--orange)";
+        return "var(--red)";
+    }
+
+    function nearestHourlyValue(data,currentTime,key){
+        if(!data || !data.hourly) return 0;
+
+        const times = data.hourly.time || [];
+        const values = data.hourly[key] || [];
+
+        if(!times.length || !values.length) return 0;
+
+        let best = 0;
+        let distance = Infinity;
+
+        times.forEach((time,index)=>{
+            const d =
+                Math.abs(
+                    new Date(time) -
+                    new Date(currentTime)
+                );
+
+            if(d < distance){
+                distance = d;
+                best = index;
+            }
+        });
+
+        return Number(values[best]) || 0;
+    }
+
+    async function fetchWeather(lat,lon){
+
+        const url =
+            WEATHER_API +
+            `?latitude=${encodeURIComponent(lat)}` +
+            `&longitude=${encodeURIComponent(lon)}` +
+            "&current=" +
+            [
+                "temperature_2m",
+                "relative_humidity_2m",
+                "wind_speed_10m",
+                "precipitation",
+                "weather_code"
+            ].join(",") +
+            "&hourly=uv_index" +
+            "&timezone=auto";
+
+        const response =
+            await fetch(
+                url,
+                {cache:"no-store"}
+            );
+
+        if(!response.ok){
+            throw new Error(
+                "Weather API HTTP " +
+                response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        const current =
+            data.current || {};
+
+        const uv =
+            nearestHourlyValue(
+                data,
+                current.time,
+                "uv_index"
+            );
+
+        const weather = {
+            temperature:
+                Math.round(
+                    Number(current.temperature_2m) || 0
+                ),
+
+            humidity:
+                Math.round(
+                    Number(current.relative_humidity_2m) || 0
+                ),
+
+            wind:
+                Number(
+                    current.wind_speed_10m
+                ) || 0,
+
+            rainfall:
+                Number(
+                    current.precipitation
+                ) || 0,
+
+            uv:
+                Number(uv.toFixed(1)),
+
+            condition:
+                weatherName(current.weather_code)
+        };
+
+        window.ecoExternalEnvironment.weatherOnline = true;
+        window.ecoExternalEnvironment.lastWeatherSync = new Date();
+
+        if(window.ecoLive){
+            window.ecoLive.weather = {
+                ...window.ecoLive.weather,
+                ...weather
+            };
+        }
+
+        set(
+            "temperature",
+            weather.temperature + "°C"
+        );
+
+        set(
+            "humidity",
+            weather.humidity + "%"
+        );
+
+        set(
+            "wind",
+            weather.wind + " km/h"
+        );
+
+        set(
+            "rainfall",
+            weather.rainfall + " mm"
+        );
+
+        set("uv",weather.uv);
+        set("condition",weather.condition);
+        set("weatherState","LIVE WEB");
+        set(
+            "weatherSource",
+            "● OPEN-METEO • LIVE WEB DATA"
+        );
+
+        const icon = el("weatherIcon");
+        if(icon){
+            icon.textContent =
+                weatherIcon(current.weather_code);
+        }
+    }
+
+    async function fetchAirQuality(lat,lon){
+
+        const url =
+            AIR_API +
+            `?latitude=${encodeURIComponent(lat)}` +
+            `&longitude=${encodeURIComponent(lon)}` +
+            "&current=" +
+            [
+                "us_aqi",
+                "pm2_5",
+                "carbon_dioxide",
+                "ozone",
+                "uv_index"
+            ].join(",") +
+            "&timezone=auto";
+
+        const response =
+            await fetch(
+                url,
+                {cache:"no-store"}
+            );
+
+        if(!response.ok){
+            throw new Error(
+                "Air Quality API HTTP " +
+                response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        const current =
+            data.current || {};
+
+        const aqi =
+            Math.round(
+                Number(current.us_aqi) || 0
+            );
+
+        const pm25 =
+            Number(
+                current.pm2_5
+            ) || 0;
+
+        const co2 =
+            Number(
+                current.carbon_dioxide
+            ) || 0;
+
+        const ozone =
+            Number(
+                current.ozone
+            ) || 0;
+
+        const uv =
+            Number(
+                current.uv_index
+            ) || 0;
+
+        const air = {
+            aqi,
+            pm25,
+            co2,
+            ozone,
+            uv
+        };
+
+        window.ecoExternalEnvironment.airOnline = true;
+        window.ecoExternalEnvironment.lastAirSync = new Date();
+
+        if(window.ecoLive){
+            window.ecoLive.air = {
+                ...window.ecoLive.air,
+                ...air
+            };
+        }
+
+        const color =
+            aqiColor(aqi);
+
+        set("aqi",aqi);
+        set("aqiDetail",aqi);
+        set("pm25",pm25.toFixed(1) + " μg/m³");
+        set("airCo2",Math.round(co2) + " ppm");
+        set("ozone",ozone.toFixed(1) + " μg/m³");
+        set("airUv",uv.toFixed(1));
+        set("airLabel",aqiLabel(aqi));
+        set("airState","LIVE WEB");
+        set(
+            "airSource",
+            "● OPEN-METEO AIR QUALITY • LIVE WEB DATA"
+        );
+
+        const circle =
+            el("airCircle");
+
+        if(circle){
+            circle.style.borderColor = color;
+            circle.style.boxShadow =
+                `0 0 20px color-mix(in srgb, ${color} 18%, transparent)`;
+        }
+
+        const value =
+            el("aqi");
+
+        if(value){
+            value.style.color = color;
+        }
+
+        const label =
+            el("airLabel");
+
+        if(label){
+            label.style.color = color;
+        }
+    }
+
+    async function refresh(lat,lon){
+
+        window.ecoExternalEnvironment.latitude = lat;
+        window.ecoExternalEnvironment.longitude = lon;
+
+        const results =
+            await Promise.allSettled([
+                fetchWeather(lat,lon),
+                fetchAirQuality(lat,lon)
+            ]);
+
+        if(results[0].status === "rejected"){
+            console.error(
+                "Open-Meteo weather error:",
+                results[0].reason
+            );
+
+            setOfflineWeather(
+                "WEATHER UNAVAILABLE"
+            );
+        }
+
+        if(results[1].status === "rejected"){
+            console.error(
+                "Open-Meteo air-quality error:",
+                results[1].reason
+            );
+
+            setOfflineAir();
+        }
+
+        if(window.ecoRender){
+            window.ecoRender();
+        }
+    }
+
+    function requestLocation(){
+
+        if(!navigator.geolocation){
+            setOfflineWeather(
+                "GEOLOCATION UNSUPPORTED"
+            );
+            setOfflineAir();
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            position => {
+
+                const lat =
+                    position.coords.latitude;
+
+                const lon =
+                    position.coords.longitude;
+
+                refresh(lat,lon);
+
+                setInterval(
+                    () => refresh(lat,lon),
+                    REFRESH_MS
+                );
+            },
+
+            error => {
+
+                console.warn(
+                    "EcoGuardian location:",
+                    error.message
+                );
+
+                setOfflineWeather(
+                    "ALLOW LOCATION"
+                );
+
+                setOfflineAir();
+            },
+
+            {
+                enableHighAccuracy:false,
+                timeout:10000,
+                maximumAge:300000
+            }
+        );
+    }
+
+    requestLocation();
+
+})();
 </script>
 
 </body>
