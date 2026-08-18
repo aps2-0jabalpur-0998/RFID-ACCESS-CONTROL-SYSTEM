@@ -7088,6 +7088,117 @@ document.addEventListener("DOMContentLoaded",sync);
 setTimeout(sync,100);
 })();
 </script>
+   <script>
+async function loadWeather() {
+
+    // Browser se location
+    navigator.geolocation.getCurrentPosition(async (position) => {
+
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        const url =
+            `https://api.open-meteo.com/v1/forecast` +
+            `?latitude=${lat}` +
+            `&longitude=${lon}` +
+            `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,weather_code` +
+            `&timezone=auto`;
+
+        try {
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            console.log("WEATHER DATA:", data);
+
+            const current = data.current;
+
+            // Temperature
+            document.getElementById("temperature").textContent =
+                Math.round(current.temperature_2m) + "°C";
+
+            // Humidity
+            document.getElementById("humidity").textContent =
+                current.relative_humidity_2m + "%";
+
+            // Wind
+            document.getElementById("wind").textContent =
+                current.wind_speed_10m + " km/h";
+
+            // Rainfall
+            document.getElementById("rainfall").textContent =
+                current.precipitation + " mm";
+
+            // Weather condition
+            document.getElementById("condition").textContent =
+                getWeatherName(current.weather_code);
+
+            document.getElementById("weatherState").textContent =
+                "LIVE";
+
+        } catch (error) {
+
+            console.error("Weather API Error:", error);
+
+            document.getElementById("weatherState").textContent =
+                "OFFLINE";
+        }
+
+    }, (error) => {
+
+        console.error("Location Error:", error);
+
+        document.getElementById("weatherState").textContent =
+            "LOCATION REQUIRED";
+    });
+}
+
+
+function getWeatherName(code) {
+
+    const weather = {
+
+        0: "CLEAR SKY",
+
+        1: "MAINLY CLEAR",
+        2: "PARTLY CLOUDY",
+        3: "OVERCAST",
+
+        45: "FOG",
+        48: "DEPOSITING RIME FOG",
+
+        51: "LIGHT DRIZZLE",
+        53: "MODERATE DRIZZLE",
+        55: "DENSE DRIZZLE",
+
+        61: "LIGHT RAIN",
+        63: "MODERATE RAIN",
+        65: "HEAVY RAIN",
+
+        71: "LIGHT SNOW",
+        73: "MODERATE SNOW",
+        75: "HEAVY SNOW",
+
+        80: "RAIN SHOWERS",
+        81: "HEAVY RAIN SHOWERS",
+        82: "VIOLENT RAIN SHOWERS",
+
+        95: "THUNDERSTORM",
+        96: "THUNDERSTORM + HAIL",
+        99: "THUNDERSTORM + HEAVY HAIL"
+    };
+
+    return weather[code] || "UNKNOWN";
+}
+
+
+// Start
+loadWeather();
+
+// Refresh every 10 minutes
+setInterval(loadWeather, 10 * 60 * 1000);
+
+</script>
 
 </body>
 </html>
