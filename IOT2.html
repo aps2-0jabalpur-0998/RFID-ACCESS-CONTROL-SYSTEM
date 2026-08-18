@@ -609,5 +609,146 @@ tick();
 renderHistory();
 connect();
 </script>
+  <script>
+
+const ecoChannel = new BroadcastChannel("ecoguardian_live");
+
+function receiveEcoData(data) {
+
+    console.log("LIVE DATA RECEIVED:", data);
+
+    /* AIR QUALITY */
+    if (data.airQuality) {
+
+        setValue("airAQI", data.airQuality.aqi);
+        setValue("airCO2", data.airQuality.co2 + " ppm");
+        setValue("airPM25", data.airQuality.pm25 + " µg/m³");
+        setValue("airO2", data.airQuality.o2 + " %");
+        setValue("airTVOC", data.airQuality.tvoc + " ppm");
+    }
+
+
+    /* ENERGY */
+    if (data.energy) {
+
+        setValue("energyEfficiency", data.energy.efficiency + "%");
+        setValue("solarPower", data.energy.solar + " kW");
+        setValue("piezoPower", data.energy.piezo + " kW");
+        setValue("batteryLevel", data.energy.battery + "%");
+        setValue("totalEnergy", data.energy.total + " kWh");
+    }
+
+
+    /* WATER */
+    if (data.water) {
+
+        setValue("waterLevel", data.water.level + "%");
+        setValue("tank1", data.water.tank1 + "%");
+        setValue("tank2", data.water.tank2 + "%");
+        setValue("tank3", data.water.tank3 + "%");
+        setValue("waterConsumed", data.water.consumed + " L");
+        setValue("waterRecycled", data.water.recycled + " L");
+    }
+
+
+    /* WASTE */
+    if (data.waste) {
+
+        setValue("wasteCapacity", data.waste.capacity + "%");
+        setValue("dryWaste", data.waste.dry + "%");
+        setValue("wetWaste", data.waste.wet + "%");
+        setValue("hazardousWaste", data.waste.hazardous + "%");
+        setValue("recycledWaste", data.waste.recycled + " kg");
+        setValue("wasteRewards", data.waste.rewards);
+    }
+
+
+    /* GENERAL */
+    setValue("personnel", data.personnel);
+    setValue("visitors", data.visitors);
+    setValue("vehicles", data.vehicles);
+    setValue("drones", data.drones);
+    setValue("powerGenerated", data.powerGenerated + " kWh");
+    setValue("co2Captured", data.co2Captured + " kg");
+
+
+    /* SYSTEM STATUS */
+    if (data.systems) {
+
+        Object.entries(data.systems).forEach(([system, status]) => {
+
+            const el = document.getElementById("system-" + system);
+
+            if (!el) return;
+
+            el.classList.toggle("offline", !status);
+            el.classList.toggle("online", status);
+
+            el.innerHTML = status
+                ? "● ACTIVE"
+                : "● OFFLINE";
+        });
+    }
+}
+
+
+/* Safe DOM updater */
+
+function setValue(id, value) {
+
+    const el = document.getElementById(id);
+
+    if (el) {
+        el.textContent = value;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   LIVE CHANNEL
+   --------------------------------------------------------- */
+
+ecoChannel.onmessage = function(event) {
+
+    if (event.data?.type === "LIVE_DASHBOARD_UPDATE") {
+
+        receiveEcoData(event.data.data);
+
+        document.body.classList.add("live-update");
+
+        setTimeout(() => {
+            document.body.classList.remove("live-update");
+        }, 300);
+    }
+};
+
+
+/* ---------------------------------------------------------
+   GET LAST DATA WHEN PAGE OPENS
+   --------------------------------------------------------- */
+
+const saved = localStorage.getItem("ECOGUARDIAN_LIVE_DATA");
+
+if (saved) {
+
+    try {
+
+        const parsed = JSON.parse(saved);
+
+        if (parsed?.data) {
+            receiveEcoData(parsed.data);
+        }
+
+    } catch (error) {
+
+        console.error(
+            "EcoGuardian live data error:",
+            error
+        );
+
+    }
+}
+
+</script>
 </body>
 </html>
