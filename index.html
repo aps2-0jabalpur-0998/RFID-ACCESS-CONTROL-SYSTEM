@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -4657,11 +4658,12 @@ setInterval(
     8000
 );
 
-   // =========================================================
-// ECOGUARDIAN LIVE SYSTEM DATA
+// =========================================================
+// ECOGUARDIAN LIVE SYSTEM DATA + VOICE COMMAND ENGINE
 // =========================================================
 
 const systemData = {
+    health: 94.7,
 
     personnel: {
         present: 152,
@@ -4676,15 +4678,22 @@ const systemData = {
         inside: 12
     },
 
+    rfid: {
+        scansToday: 7,
+        status: "ACTIVE"
+    },
+
     drones: {
-        active: 2
+        active: 2,
+        status: "ACTIVE"
     },
 
     energy: {
         generatedToday: 18.6,
         solar: 8.2,
         piezo: 1.6,
-        battery: 78
+        battery: 78,
+        total: 11.0
     },
 
     water: {
@@ -4747,352 +4756,472 @@ const systemData = {
         piezoTiles: "ACTIVE",
         streetLights: "ACTIVE"
     }
-
 };
 
-   // =========================================================
-// ECOGUARDIAN VOICE COMMAND SYSTEM
+
+// =========================================================
+// VOICE ENGINE
 // =========================================================
 
 const SpeechRecognition =
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
 
-
 let recognition = null;
-
 let isListening = false;
 
+let voiceButton = null;
+let voiceStatus = null;
+let voiceResponse = null;
+let voiceText = null;
 
-const voiceButton =
-    document.getElementById(
-        "voiceButton"
-    );
+function initVoiceAssistant(){
 
-const voiceStatus =
-    document.getElementById(
-        "voiceStatus"
-    );
+    voiceButton = document.getElementById("voiceButton");
+    voiceStatus = document.getElementById("voiceStatus");
+    voiceResponse = document.getElementById("voiceResponse");
+    voiceText = document.getElementById("voiceText");
 
-const voiceDot =
-    document.getElementById(
-        "voiceDot"
-    );
+    if(!voiceButton || !voiceStatus || !voiceResponse || !voiceText){
+        console.error("Voice assistant UI not found.");
+        return;
+    }
 
-const voiceResponse =
-    document.getElementById(
-        "voiceResponse"
-    );
+    if(!SpeechRecognition){
 
-const voiceText =
-    document.getElementById(
-        "voiceText"
-    );
+        voiceStatus.textContent = "VOICE NOT SUPPORTED";
+        voiceButton.disabled = true;
 
+        showVoiceResponse(
+            "Voice recognition is not supported in this browser. Use the latest Chrome or Edge."
+        );
 
-/*
-=========================================================
-CHECK BROWSER SUPPORT
-=========================================================
-*/
+        return;
+    }
 
-if(!SpeechRecognition){
-
-    voiceStatus.textContent =
-        "VOICE NOT SUPPORTED";
-
-    voiceButton.disabled = true;
-
-}else{
-
-    recognition =
-        new SpeechRecognition();
+    recognition = new SpeechRecognition();
 
     recognition.continuous = false;
-
     recognition.interimResults = false;
-
     recognition.lang = "en-IN";
-
     recognition.maxAlternatives = 3;
-
 
     recognition.onstart = function(){
 
         isListening = true;
 
-        voiceButton.classList.add(
-            "listening"
+        voiceButton.classList.add("listening");
+        voiceStatus.classList.add("listening");
+
+        voiceStatus.textContent = "LISTENING...";
+
+        showVoiceResponse(
+            "Listening. Ask me about the EcoGuardian system."
         );
-
-        voiceStatus.textContent =
-            "LISTENING...";
-
     };
-
 
     recognition.onend = function(){
 
         isListening = false;
 
-        voiceButton.classList.remove(
-            "listening"
-        );
+        voiceButton.classList.remove("listening");
+        voiceStatus.classList.remove("listening");
 
-        voiceStatus.textContent =
-            "VOICE READY";
-
+        voiceStatus.textContent = "VOICE READY";
     };
-
 
     recognition.onerror = function(event){
 
         isListening = false;
 
-        voiceButton.classList.remove(
-            "listening"
-        );
+        voiceButton.classList.remove("listening");
+        voiceStatus.classList.remove("listening");
 
-        voiceStatus.textContent =
-            "VOICE ERROR";
+        voiceStatus.textContent = "VOICE READY";
 
-        showVoiceResponse(
-            "I couldn't understand that. Please try again."
-        );
+        let message = "I couldn't understand that. Please try again.";
 
-        console.log(
-            "Speech error:",
-            event.error
-        );
+        if(event.error === "not-allowed"){
+            message = "Microphone permission was denied. Allow microphone access and try again.";
+        }else if(event.error === "no-speech"){
+            message = "I didn't hear anything. Please speak again.";
+        }else if(event.error === "audio-capture"){
+            message = "No microphone was detected.";
+        }
 
+        showVoiceResponse(message);
+
+        console.warn("Speech recognition error:", event.error);
     };
 
+    recognition.onresult = function(event){
 
-    recognition.onresult =
-        function(event){
+        const transcript =
+            event.results[0][0].transcript.trim();
 
-            const transcript =
-                event.results[0][0]
-                    .transcript
-                    .toLowerCase()
-                    .trim();
+        showVoiceResponse(
+            `You said: "${transcript}"`
+        );
 
-            console.log(
-                "USER:",
-                transcript
-            );
-
-            processVoiceCommand(
-                transcript
-            );
-
-        };
-
+        processVoiceCommand(transcript);
+    };
 }
 
+document.addEventListener(
+    "DOMContentLoaded",
+    initVoiceAssistant
+);
 
-/*
-=========================================================
-START / STOP LISTENING
-=========================================================
-*/
+
+// =========================================================
+// START / STOP LISTENING
+// =========================================================
 
 function toggleVoiceAssistant(){
 
     if(!recognition){
 
         showVoiceResponse(
-            "Your browser does not support voice recognition."
+            "Voice recognition is not available. Use Chrome or Edge and allow microphone permission."
         );
 
         return;
-
     }
-
 
     if(isListening){
 
         recognition.stop();
 
-    }else{
+        return;
+    }
+
+    try{
 
         recognition.start();
 
-    }
+    }catch(error){
 
-}
-
-
-/*
-=========================================================
-SHOW RESPONSE
-=========================================================
-*/
-
-function showVoiceResponse(
-    message
-){
-
-    voiceText.textContent =
-        message;
-
-    voiceResponse.classList.add(
-        "show"
-    );
-
-}
-
-
-/*
-=========================================================
-SPEAK
-=========================================================
-*/
-
-function speak(
-    message
-){
-
-    if(
-        "speechSynthesis"
-        in window
-    ){
-
-        speechSynthesis.cancel();
-
-
-        const speech =
-            new SpeechSynthesisUtterance(
-                message
-            );
-
-
-        speech.rate = 0.95;
-
-        speech.pitch = 1;
-
-        speech.volume = 1;
-
-        speech.lang = "en-IN";
-
-
-        speechSynthesis.speak(
-            speech
+        console.warn(
+            "Recognition start error:",
+            error
         );
 
     }
-
 }
 
 
-/*
-=========================================================
-ANSWER FUNCTION
-=========================================================
-*/
+// =========================================================
+// UI RESPONSE
+// =========================================================
 
-function answer(
-    message
-){
+function showVoiceResponse(message){
 
-    showVoiceResponse(
-        message
+    if(!voiceText || !voiceResponse){
+        console.log(message);
+        return;
+    }
+
+    voiceText.textContent = message;
+
+    voiceResponse.classList.add("show");
+
+    clearTimeout(
+        showVoiceResponse.timer
     );
 
-    speak(
-        message
+    showVoiceResponse.timer = setTimeout(
+        function(){
+            voiceResponse.classList.remove("show");
+        },
+        10000
     );
-
 }
 
 
-/*
-=========================================================
-NORMALIZE TEXT
-=========================================================
-*/
+// =========================================================
+// TEXT TO SPEECH
+// =========================================================
 
-function normalize(
-    text
-){
+function speak(message){
+
+    if(!("speechSynthesis" in window)){
+        return;
+    }
+
+    speechSynthesis.cancel();
+
+    const speech =
+        new SpeechSynthesisUtterance(message);
+
+    speech.rate = 0.95;
+    speech.pitch = 1;
+    speech.volume = 1;
+    speech.lang = "en-IN";
+
+    speechSynthesis.speak(speech);
+}
+
+
+function answer(message){
+
+    showVoiceResponse(message);
+
+    speak(message);
+}
+
+
+// =========================================================
+// TEXT NORMALIZATION
+// =========================================================
+
+function normalize(text){
 
     return text
         .toLowerCase()
-        .replace(/[?!.,]/g,"")
-        .replace(/\s+/g," ")
+        .replace(/[?!.,]/g, " ")
+        .replace(/\s+/g, " ")
         .trim();
-
 }
 
 
-/*
-=========================================================
-VOICE COMMAND ENGINE
-=========================================================
-*/
+function hasAny(text, words){
 
-function processVoiceCommand(
-    originalText
+    return words.some(
+        word => text.includes(word)
+    );
+}
+
+
+// =========================================================
+// OPEN MODULE
+// =========================================================
+
+function voiceOpen(
+    name,
+    fn
 ){
 
-    const text =
-        normalize(
-            originalText
-        );
+    answer(
+        `Opening ${name} dashboard.`
+    );
 
+    setTimeout(
+        fn,
+        500
+    );
+}
+
+
+// =========================================================
+// VOICE COMMAND ENGINE
+// =========================================================
+
+function processVoiceCommand(originalText){
+
+    const text = normalize(originalText);
 
     console.log(
-        "COMMAND:",
+        "VOICE COMMAND:",
         text
     );
 
 
-    // ====================================================
-    // GREETING
-    // ====================================================
+    // -----------------------------------------------------
+    // DASHBOARD ACTIONS FIRST
+    // -----------------------------------------------------
 
     if(
-        text.includes("hello") ||
-        text.includes("hi") ||
-        text.includes("hey") ||
-        text.includes("namaste")
+        hasAny(text, [
+            "open rfid",
+            "show rfid",
+            "rfid dashboard",
+            "access control dashboard"
+        ])
     ){
 
-        answer(
-            "Hello. EcoGuardian command center is online and ready."
+        voiceOpen(
+            "RFID access control",
+            openRFID
         );
 
         return;
     }
 
 
-    // ====================================================
+    if(
+        hasAny(text, [
+            "open fire",
+            "show fire",
+            "fire dashboard",
+            "fire protection dashboard"
+        ])
+    ){
+
+        voiceOpen(
+            "fire protection",
+            openFire
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "open dustbin",
+            "show dustbin",
+            "dustbin dashboard",
+            "waste dashboard",
+            "open waste"
+        ])
+    ){
+
+        voiceOpen(
+            "smart waste",
+            openDust
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "open intruder",
+            "show intruder",
+            "intruder dashboard",
+            "open security dashboard",
+            "show security dashboard"
+        ])
+    ){
+
+        voiceOpen(
+            "security",
+            openIntruder
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "open sensors",
+            "show sensors",
+            "sensor dashboard",
+            "open sensor network"
+        ])
+    ){
+
+        voiceOpen(
+            "sensor network",
+            openSensors
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "open drone",
+            "show drone",
+            "drone dashboard",
+            "open drone system"
+        ])
+    ){
+
+        voiceOpen(
+            "drone surveillance",
+            openDrone
+        );
+
+        return;
+    }
+
+
+    // -----------------------------------------------------
+    // GREETINGS
+    // -----------------------------------------------------
+
+    if(
+        hasAny(text, [
+            "hello",
+            "hi",
+            "hey",
+            "namaste",
+            "good morning",
+            "good evening"
+        ])
+    ){
+
+        answer(
+            "Hello. EcoGuardian AI command center is online and ready."
+        );
+
+        return;
+    }
+
+
+    // -----------------------------------------------------
+    // COMPLETE STATUS
+    // -----------------------------------------------------
+
+    if(
+        hasAny(text, [
+            "complete status",
+            "full status",
+            "status report",
+            "give me a report",
+            "overall status",
+            "camp status",
+            "system report"
+        ])
+    ){
+
+        answer(
+            `EcoGuardian status: ${systemData.personnel.present} personnel inside, ${systemData.visitors.today} visitors today, ${systemData.vehicles.inside} vehicles inside, ${systemData.drones.active} drones active, water level ${systemData.water.level} percent, battery ${systemData.energy.battery} percent, air quality index ${systemData.air.aqi}, security ${systemData.security.status}, and fire protection ${systemData.fire.status}.`
+        );
+
+        return;
+    }
+
+
+    // -----------------------------------------------------
     // PERSONNEL
-    // ====================================================
+    // -----------------------------------------------------
 
     if(
-        text.includes("how many people") ||
-        text.includes("how many personnel") ||
-        text.includes("people inside") ||
-        text.includes("personnel inside") ||
-        text.includes("staff inside")
+        hasAny(text, [
+            "how many people",
+            "how many personnel",
+            "people inside",
+            "personnel inside",
+            "staff inside",
+            "how many persons",
+            "camp population"
+        ])
     ){
 
         answer(
-            `There are currently ${systemData.personnel.present} personnel inside the camp, out of a capacity of ${systemData.personnel.capacity}.`
+            `There are ${systemData.personnel.present} personnel inside the camp, out of a capacity of ${systemData.personnel.capacity}.`
         );
 
         return;
     }
 
 
-    // ====================================================
+    // -----------------------------------------------------
     // VISITORS
-    // ====================================================
+    // -----------------------------------------------------
 
     if(
-        text.includes("visitor") ||
-        text.includes("visitors today")
+        hasAny(text, [
+            "visitor",
+            "visitors",
+            "visitors today",
+            "how many visitors"
+        ])
     ){
 
         answer(
@@ -5103,32 +5232,83 @@ function processVoiceCommand(
     }
 
 
-    // ====================================================
+    // -----------------------------------------------------
     // VEHICLES
-    // ====================================================
+    // -----------------------------------------------------
 
     if(
-        text.includes("vehicle") ||
-        text.includes("vehicles inside") ||
-        text.includes("cars inside")
+        hasAny(text, [
+            "vehicle",
+            "vehicles",
+            "vehicles inside",
+            "cars inside"
+        ])
     ){
 
         answer(
-            `There are currently ${systemData.vehicles.inside} vehicles inside the camp.`
+            `There are ${systemData.vehicles.inside} vehicles inside the camp.`
         );
 
         return;
     }
 
 
-    // ====================================================
-    // WATER
-    // ====================================================
+    // -----------------------------------------------------
+    // WATER — SPECIFIC TANKS FIRST
+    // -----------------------------------------------------
 
     if(
-        text.includes("water level") ||
-        text.includes("water") ||
-        text.includes("tank level")
+        hasAny(text, [
+            "tank one",
+            "tank 1"
+        ])
+    ){
+
+        answer(
+            `Tank one is at ${systemData.water.tank1} percent.`
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "tank two",
+            "tank 2"
+        ])
+    ){
+
+        answer(
+            `Tank two is at ${systemData.water.tank2} percent.`
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "tank three",
+            "tank 3"
+        ])
+    ){
+
+        answer(
+            `Tank three is at ${systemData.water.tank3} percent.`
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "water level",
+            "water status",
+            "water",
+            "tank level"
+        ])
     ){
 
         answer(
@@ -5139,148 +5319,107 @@ function processVoiceCommand(
     }
 
 
-    // ====================================================
-    // TANK 1
-    // ====================================================
-
-    if(
-        text.includes("tank one") ||
-        text.includes("tank 1")
-    ){
-
-        answer(
-            `Tank one is currently at ${systemData.water.tank1} percent.`
-        );
-
-        return;
-    }
-
-
-    // ====================================================
-    // TANK 2
-    // ====================================================
-
-    if(
-        text.includes("tank two") ||
-        text.includes("tank 2")
-    ){
-
-        answer(
-            `Tank two is currently at ${systemData.water.tank2} percent.`
-        );
-
-        return;
-    }
-
-
-    // ====================================================
-    // TANK 3
-    // ====================================================
-
-    if(
-        text.includes("tank three") ||
-        text.includes("tank 3")
-    ){
-
-        answer(
-            `Tank three is currently at ${systemData.water.tank3} percent.`
-        );
-
-        return;
-    }
-
-
-    // ====================================================
+    // -----------------------------------------------------
     // ENERGY
-    // ====================================================
+    // -----------------------------------------------------
 
     if(
-        text.includes("power") ||
-        text.includes("energy") ||
-        text.includes("electricity")
+        hasAny(text, [
+            "battery",
+            "battery level"
+        ])
     ){
 
         answer(
-            `Today's power generation is ${systemData.energy.generatedToday} kilowatt hours. Solar is generating ${systemData.energy.solar} kilowatts, piezo power is ${systemData.energy.piezo} kilowatts, and the battery is at ${systemData.energy.battery} percent.`
+            `Battery level is ${systemData.energy.battery} percent.`
         );
 
         return;
     }
 
 
-    // ====================================================
-    // SOLAR
-    // ====================================================
-
     if(
-        text.includes("solar")
+        hasAny(text, [
+            "solar power",
+            "solar generation",
+            "solar"
+        ])
     ){
 
         answer(
-            `Solar power generation is currently ${systemData.energy.solar} kilowatts.`
+            `Solar power generation is ${systemData.energy.solar} kilowatts.`
         );
 
         return;
     }
 
 
-    // ====================================================
-    // BATTERY
-    // ====================================================
-
     if(
-        text.includes("battery")
+        hasAny(text, [
+            "power generated",
+            "power generation",
+            "energy generated",
+            "electricity generated",
+            "energy",
+            "electricity",
+            "power"
+        ])
     ){
 
         answer(
-            `The current battery level is ${systemData.energy.battery} percent.`
+            `Today's power generation is ${systemData.energy.generatedToday} kilowatt hours. Solar is ${systemData.energy.solar} kilowatts and piezo power is ${systemData.energy.piezo} kilowatts.`
         );
 
         return;
     }
 
 
-    // ====================================================
+    // -----------------------------------------------------
     // DRONES
-    // ====================================================
+    // -----------------------------------------------------
 
     if(
-        text.includes("drone") ||
-        text.includes("drones")
+        hasAny(text, [
+            "how many drones",
+            "drones active",
+            "active drones",
+            "drone status"
+        ])
     ){
 
         answer(
-            `There are currently ${systemData.drones.active} active drones.`
+            `There are ${systemData.drones.active} active drones. The drone system is ${systemData.drones.status}.`
         );
 
         return;
     }
 
 
-    // ====================================================
+    // -----------------------------------------------------
     // WEATHER
-    // ====================================================
+    // -----------------------------------------------------
 
     if(
-        text.includes("weather") ||
-        text.includes("temperature") ||
-        text.includes("how hot")
+        hasAny(text, [
+            "weather",
+            "temperature",
+            "how hot",
+            "how cold"
+        ])
     ){
 
         answer(
-            `Current temperature is ${systemData.weather.temperature} degrees Celsius with ${systemData.weather.condition}. Humidity is ${systemData.weather.humidity} percent and wind speed is ${systemData.weather.wind} kilometers per hour.`
+            `The current temperature is ${systemData.weather.temperature} degrees Celsius with ${systemData.weather.condition}. Humidity is ${systemData.weather.humidity} percent and wind speed is ${systemData.weather.wind} kilometers per hour.`
         );
 
         return;
     }
 
 
-    // ====================================================
-    // HUMIDITY
-    // ====================================================
-
     if(
-        text.includes("humidity")
+        hasAny(text, [
+            "humidity"
+        ])
     ){
 
         answer(
@@ -5291,31 +5430,61 @@ function processVoiceCommand(
     }
 
 
-    // ====================================================
-    // AIR QUALITY
-    // ====================================================
-
     if(
-        text.includes("air quality") ||
-        text.includes("aqi") ||
-        text.includes("pollution")
+        hasAny(text, [
+            "wind",
+            "wind speed"
+        ])
     ){
 
         answer(
-            `Current air quality index is ${systemData.air.aqi}, which is considered good. PM2.5 is ${systemData.air.pm25} micrograms per cubic meter.`
+            `Current wind speed is ${systemData.weather.wind} kilometers per hour.`
         );
 
         return;
     }
 
 
-    // ====================================================
-    // CO2
-    // ====================================================
+    if(
+        hasAny(text, [
+            "rain",
+            "rainfall"
+        ])
+    ){
+
+        answer(
+            `Today's recorded rainfall is ${systemData.weather.rainfall} millimeters.`
+        );
+
+        return;
+    }
+
+
+    // -----------------------------------------------------
+    // AIR QUALITY
+    // -----------------------------------------------------
 
     if(
-        text.includes("co2") ||
-        text.includes("carbon dioxide")
+        hasAny(text, [
+            "air quality",
+            "aqi",
+            "pollution"
+        ])
+    ){
+
+        answer(
+            `Current air quality index is ${systemData.air.aqi}, which is good. PM2.5 is ${systemData.air.pm25} micrograms per cubic meter.`
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "co2",
+            "carbon dioxide"
+        ])
     ){
 
         answer(
@@ -5326,46 +5495,43 @@ function processVoiceCommand(
     }
 
 
-    // ====================================================
-    // SECURITY
-    // ====================================================
-
     if(
-        text.includes("security") ||
-        text.includes("security status") ||
-        text.includes("secure")
+        hasAny(text, [
+            "oxygen",
+            "o2"
+        ])
     ){
 
         answer(
-            `Security status is ${systemData.security.status}. The perimeter is currently ${systemData.security.perimeter}.`
+            `Current oxygen level is ${systemData.air.oxygen} percent.`
         );
 
         return;
     }
 
 
-    // ====================================================
-    // INTRUDER
-    // ====================================================
+    // -----------------------------------------------------
+    // SECURITY
+    // -----------------------------------------------------
 
     if(
-        text.includes("intruder") ||
-        text.includes("intrusion") ||
-        text.includes("someone entered")
+        hasAny(text, [
+            "intruder",
+            "intrusion",
+            "someone entered"
+        ])
     ){
 
-        if(
-            systemData.security.intruder
-        ){
+        if(systemData.security.intruder){
 
             answer(
-                "Warning. An intruder has been detected."
+                "Warning. An intruder is currently detected."
             );
 
         }else{
 
             answer(
-                "No active intruder has been detected. The perimeter is secure."
+                "No active intruder is detected. The perimeter is secure."
             );
 
         }
@@ -5374,18 +5540,39 @@ function processVoiceCommand(
     }
 
 
-    // ====================================================
-    // FIRE
-    // ====================================================
-
     if(
-        text.includes("fire") ||
-        text.includes("smoke")
+        hasAny(text, [
+            "security status",
+            "security",
+            "perimeter status",
+            "is it secure",
+            "are we secure"
+        ])
     ){
 
-        if(
-            systemData.fire.alert
-        ){
+        answer(
+            `Security status is ${systemData.security.status}. The perimeter is ${systemData.security.perimeter}.`
+        );
+
+        return;
+    }
+
+
+    // -----------------------------------------------------
+    // FIRE
+    // -----------------------------------------------------
+
+    if(
+        hasAny(text, [
+            "fire alert",
+            "fire detected",
+            "smoke detected",
+            "fire status",
+            "fire"
+        ])
+    ){
+
+        if(systemData.fire.alert){
 
             answer(
                 "Warning. A fire alert is currently active."
@@ -5394,7 +5581,7 @@ function processVoiceCommand(
         }else{
 
             answer(
-                "Fire protection system is active and there is currently no fire alert."
+                `Fire protection is ${systemData.fire.status} and there is currently no active fire alert.`
             );
 
         }
@@ -5403,68 +5590,57 @@ function processVoiceCommand(
     }
 
 
-    // ====================================================
+    // -----------------------------------------------------
     // WASTE
-    // ====================================================
+    // -----------------------------------------------------
 
     if(
-        text.includes("waste") ||
-        text.includes("dustbin") ||
-        text.includes("recycling")
+        hasAny(text, [
+            "waste",
+            "dustbin",
+            "recycling",
+            "garbage"
+        ])
     ){
 
         answer(
-            `Waste system is currently at ${systemData.waste.capacity} percent capacity. ${systemData.waste.recycled} kilograms of waste has been recycled and ${systemData.waste.rewards} reward points have been issued.`
+            `Waste capacity is ${systemData.waste.capacity} percent. Recycled waste is ${systemData.waste.recycled} kilograms and the current reward points are ${systemData.waste.rewards}.`
         );
 
         return;
     }
 
 
-    // ====================================================
+    // -----------------------------------------------------
     // RFID
-    // ====================================================
+    // -----------------------------------------------------
 
     if(
-        text.includes("rfid") ||
-        text.includes("access gate") ||
-        text.includes("gate")
+        hasAny(text, [
+            "rfid status",
+            "rfid scans",
+            "rfid"
+        ])
     ){
 
         answer(
-            `RFID access control system is currently ${systemData.systems.rfid}.`
+            `RFID access control is ${systemData.rfid.status}. There have been ${systemData.rfid.scansToday} scans today.`
         );
 
         return;
     }
 
 
-    // ====================================================
-    // SYSTEM STATUS
-    // ====================================================
+    // -----------------------------------------------------
+    // SYSTEMS
+    // -----------------------------------------------------
 
     if(
-        text.includes("system status") ||
-        text.includes("all systems") ||
-        text.includes("are systems working") ||
-        text.includes("everything okay")
-    ){
-
-        answer(
-            "All major EcoGuardian systems are currently operational."
-        );
-
-        return;
-    }
-
-
-    // ====================================================
-    // ACTIVE SYSTEMS
-    // ====================================================
-
-    if(
-        text.includes("active systems") ||
-        text.includes("which systems are active")
+        hasAny(text, [
+            "active systems",
+            "which systems are active",
+            "what systems are active"
+        ])
     ){
 
         answer(
@@ -5475,170 +5651,52 @@ function processVoiceCommand(
     }
 
 
-    // ====================================================
-    // OPEN RFID
-    // ====================================================
-
     if(
-        text.includes("open rfid") ||
-        text.includes("show rfid") ||
-        text.includes("rfid dashboard")
+        hasAny(text, [
+            "system status",
+            "all systems",
+            "are systems working",
+            "everything okay",
+            "is everything working"
+        ])
     ){
 
         answer(
-            "Opening RFID access control dashboard."
-        );
-
-        setTimeout(
-            openRFID,
-            500
+            "All major EcoGuardian systems are currently operational."
         );
 
         return;
     }
 
 
-    // ====================================================
-    // OPEN FIRE
-    // ====================================================
-
-    if(
-        text.includes("open fire") ||
-        text.includes("show fire") ||
-        text.includes("fire dashboard")
-    ){
-
-        answer(
-            "Opening fire protection dashboard."
-        );
-
-        setTimeout(
-            openFire,
-            500
-        );
-
-        return;
-    }
-
-
-    // ====================================================
-    // OPEN DRONE
-    // ====================================================
-
-    if(
-        text.includes("open drone") ||
-        text.includes("show drone") ||
-        text.includes("drone dashboard")
-    ){
-
-        answer(
-            "Opening drone surveillance dashboard."
-        );
-
-        setTimeout(
-            openDrone,
-            500
-        );
-
-        return;
-    }
-
-
-    // ====================================================
-    // OPEN SECURITY
-    // ====================================================
-
-    if(
-        text.includes("open security") ||
-        text.includes("show security") ||
-        text.includes("security dashboard")
-    ){
-
-        answer(
-            "Opening security dashboard."
-        );
-
-        setTimeout(
-            openIntruder,
-            500
-        );
-
-        return;
-    }
-
-
-    // ====================================================
-    // OPEN SENSORS
-    // ====================================================
-
-    if(
-        text.includes("open sensors") ||
-        text.includes("show sensors") ||
-        text.includes("sensor dashboard")
-    ){
-
-        answer(
-            "Opening sensor network dashboard."
-        );
-
-        setTimeout(
-            openSensors,
-            500
-        );
-
-        return;
-    }
-
-
-    // ====================================================
-    // OPEN DUSTBIN
-    // ====================================================
-
-    if(
-        text.includes("open dustbin") ||
-        text.includes("show dustbin") ||
-        text.includes("waste dashboard")
-    ){
-
-        answer(
-            "Opening smart waste management dashboard."
-        );
-
-        setTimeout(
-            openDust,
-            500
-        );
-
-        return;
-    }
-
-
-    // ====================================================
+    // -----------------------------------------------------
     // HELP
-    // ====================================================
+    // -----------------------------------------------------
 
     if(
-        text.includes("what can you do") ||
-        text.includes("help") ||
-        text.includes("commands")
+        hasAny(text, [
+            "what can you do",
+            "help",
+            "commands",
+            "what do you know"
+        ])
     ){
 
         answer(
-            "I can report personnel, visitors, vehicles, water, energy, battery, drones, weather, air quality, security, fire, waste and system status. I can also open your RFID, fire, security, sensor, waste and drone dashboards."
+            "I can report personnel, visitors, vehicles, water tanks, energy, solar, battery, drones, weather, air quality, security, fire, waste, RFID and system status. I can also open your RFID, fire, waste, security, sensor and drone dashboards."
         );
 
         return;
     }
 
 
-    // ====================================================
+    // -----------------------------------------------------
     // UNKNOWN
-    // ====================================================
+    // -----------------------------------------------------
 
     answer(
-        `I heard "${originalText}", but I don't have enough system data to answer that yet.`
+        `I heard "${originalText}", but that question is not connected to the dashboard data yet.`
     );
-
 }
 
 </script>
