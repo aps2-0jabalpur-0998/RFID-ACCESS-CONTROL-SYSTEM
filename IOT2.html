@@ -2,388 +2,612 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EcoGuardian AI</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#07090d">
+<title>EcoGuardian AI — Fire Protection Command Center</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 :root{
---bg:#0a0a0f;
---surface:#111118;
---surface2:#1a1a24;
---border:rgba(255,255,255,0.07);
---text:#f0f0f5;
---muted:#6b6b80;
---accent:#e05a1e;
---safe:#22c55e;
---danger:#ef4444;
+  --bg:#05070a;
+  --panel:#0b0f14;
+  --panel2:#10161d;
+  --panel3:#151d26;
+  --line:rgba(255,255,255,.09);
+  --line2:rgba(255,112,67,.24);
+  --text:#f5f7fa;
+  --muted:#718091;
+  --fire:#ff5a36;
+  --fire2:#ff9f43;
+  --red:#ff3b4f;
+  --green:#32d583;
+  --yellow:#f8c24a;
+  --cyan:#49c6ff;
+  --shadow:0 22px 80px rgba(0,0,0,.42);
+  --radius:20px;
 }
-
-*{margin:0;padding:0;box-sizing:border-box;}
-
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 body{
-background:var(--bg);
-color:var(--text);
-font-family:'Syne',sans-serif;
-padding:2rem;
+  min-height:100vh;
+  color:var(--text);
+  font-family:Inter,system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 80% -10%,rgba(255,90,54,.12),transparent 32%),
+    radial-gradient(circle at 10% 30%,rgba(255,159,67,.045),transparent 28%),
+    var(--bg);
+  overflow-x:hidden;
 }
+body:before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+body:after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(circle at 50% 40%,transparent 0,rgba(255,90,54,.025) 45%,transparent 70%);
+}
+.shell{width:min(1450px,calc(100% - 34px));margin:auto;padding:18px 0 35px}
 
-.wrapper{
-max-width:1200px;
-margin:auto;
+.topbar{
+  min-height:76px;display:flex;align-items:center;justify-content:space-between;
+  gap:20px;border-bottom:1px solid var(--line);margin-bottom:20px;
 }
+.brand{display:flex;align-items:center;gap:13px}
+.brand-mark{
+  width:47px;height:47px;border-radius:14px;display:grid;place-items:center;
+  font-size:22px;border:1px solid rgba(255,90,54,.28);
+  background:linear-gradient(145deg,rgba(255,90,54,.15),rgba(255,90,54,.025));
+  box-shadow:0 0 30px rgba(255,90,54,.08);
+}
+.brand h1{font-size:18px;letter-spacing:.11em;font-weight:900}
+.brand h1 span{color:var(--fire)}
+.brand p{margin-top:4px;color:var(--muted);font:9px "Space Mono",monospace;letter-spacing:.17em}
+.top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.pill{
+  height:35px;padding:0 12px;border:1px solid var(--line);border-radius:999px;
+  background:rgba(255,255,255,.025);display:flex;align-items:center;gap:8px;
+  color:var(--muted);font:9px "Space Mono",monospace;letter-spacing:.07em;
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+.dot.live{background:var(--green);box-shadow:0 0 13px rgba(50,213,131,.75);animation:pulse 1.8s infinite}
+@keyframes pulse{50%{opacity:.35;transform:scale(.8)}}
 
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:30px;
+.commandbar{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:11px 14px;margin-bottom:15px;border:1px solid var(--line);
+  background:rgba(11,15,20,.8);border-radius:13px;backdrop-filter:blur(15px);
 }
+.mono{font:9px "Space Mono",monospace;color:var(--muted);letter-spacing:.11em}
+.mono b{color:var(--fire2)}
 
-.logo{
-font-size:2rem;
-font-weight:800;
+.hero{
+  display:grid;grid-template-columns:1.35fr .65fr;gap:15px;margin-bottom:15px;
 }
+.hero-main,.hero-side{
+  position:relative;overflow:hidden;border:1px solid var(--line);border-radius:23px;
+  background:linear-gradient(145deg,rgba(20,25,31,.96),rgba(7,10,14,.98));
+  box-shadow:var(--shadow);
+}
+.hero-main{padding:29px}
+.hero-main:after{
+  content:"FIRE";
+  position:absolute;right:-15px;bottom:-62px;font-size:185px;font-weight:900;
+  color:rgba(255,90,54,.025);letter-spacing:-.08em;pointer-events:none;
+}
+.eyebrow{color:var(--fire);font:9px "Space Mono",monospace;letter-spacing:.2em;margin-bottom:13px}
+.hero-title{font-size:clamp(31px,4vw,55px);line-height:.96;letter-spacing:-.06em;max-width:850px}
+.hero-title span{color:var(--fire2)}
+.hero-copy{max-width:800px;color:var(--muted);font-size:13px;line-height:1.75;margin-top:15px}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:19px}
+.tag{
+  padding:7px 10px;border:1px solid rgba(255,90,54,.2);border-radius:999px;
+  color:#c4cbd2;background:rgba(255,90,54,.035);font:8px "Space Mono",monospace;
+}
+.hero-side{padding:20px}
+.side-head{display:flex;justify-content:space-between;align-items:center}
+.side-head strong{font-size:11px;letter-spacing:.1em}
+.fire-core{
+  width:164px;height:164px;margin:14px auto 15px;border-radius:50%;display:grid;place-items:center;
+  background:
+    radial-gradient(circle,rgba(255,90,54,.14) 0 28%,transparent 29%),
+    conic-gradient(var(--fire) 0 342deg,rgba(255,255,255,.055) 342deg);
+  position:relative;box-shadow:0 0 55px rgba(255,90,54,.08);
+}
+.fire-core:before{
+  content:"";position:absolute;inset:11px;border-radius:50%;background:var(--panel);
+  border:1px solid rgba(255,90,54,.15);
+}
+.fire-core-content{position:relative;text-align:center}
+.fire-value{font-size:30px;font-weight:900}
+.fire-label{font:8px "Space Mono",monospace;color:var(--muted);letter-spacing:.14em;margin-top:3px}
+.health-row{
+  display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line);
+  font:8px "Space Mono",monospace;color:var(--muted);
+}
+.health-row span:last-child{color:var(--green)}
 
-.logo span{
-color:var(--accent);
+.section{
+  display:flex;justify-content:space-between;align-items:center;margin:18px 0 9px;
 }
+.section h2{font-size:11px;letter-spacing:.14em}.section span{font:8px "Space Mono",monospace;color:var(--muted)}
 
-.system-status{
-padding:12px 20px;
-border-radius:30px;
-background:rgba(34,197,94,.1);
-border:1px solid var(--safe);
-color:var(--safe);
-font-family:'Space Mono';
+.status-banner{
+  position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr auto;
+  gap:20px;align-items:center;padding:23px;border-radius:21px;
+  background:linear-gradient(135deg,rgba(14,19,24,.98),rgba(7,10,14,.98));
+  border:1px solid rgba(50,213,131,.25);box-shadow:var(--shadow);
+  transition:.35s;
 }
+.status-banner.alert{border-color:rgba(255,59,79,.7);box-shadow:0 0 60px rgba(255,59,79,.1)}
+.status-icon{
+  width:82px;height:82px;border-radius:50%;display:grid;place-items:center;
+  font-size:32px;background:rgba(50,213,131,.07);border:1px solid rgba(50,213,131,.25);
+  position:relative;
+}
+.status-banner.alert .status-icon{background:rgba(255,59,79,.08);border-color:var(--red);animation:dangerPulse 1s infinite}
+@keyframes dangerPulse{50%{box-shadow:0 0 35px rgba(255,59,79,.25);transform:scale(1.03)}}
+.status-kicker{font:8px "Space Mono",monospace;color:var(--muted);letter-spacing:.18em;margin-bottom:7px}
+.status-title{font-size:28px;font-weight:900;letter-spacing:-.04em;color:var(--green)}
+.status-banner.alert .status-title{color:var(--red);animation:blinkText .9s infinite}
+@keyframes blinkText{50%{opacity:.55}}
+.status-sub{font:10px "Space Mono",monospace;color:var(--muted);margin-top:7px}
+.status-time{text-align:right;font:9px/1.8 "Space Mono",monospace;color:var(--muted)}
 
-.system-status.alert-mode{
-background:rgba(239,68,68,.1);
-border:1px solid var(--danger);
-color:var(--danger);
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:13px}
+.metric{
+  min-height:112px;padding:16px;border:1px solid var(--line);border-radius:16px;
+  background:linear-gradient(145deg,var(--panel2),var(--panel));position:relative;overflow:hidden;
 }
+.metric:after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--fire))}
+.metric-top{display:flex;justify-content:space-between;color:var(--muted);font:8px "Space Mono",monospace;letter-spacing:.1em}
+.metric-icon{font-size:15px}
+.metric-value{font-size:30px;font-weight:900;letter-spacing:-.05em;margin-top:18px}
+.metric-note{font:8px "Space Mono",monospace;color:var(--muted);margin-top:4px}
 
-.ws-bar{
-padding:14px;
-background:var(--surface);
-border:1px solid var(--border);
-border-radius:10px;
-margin-bottom:25px;
-font-family:'Space Mono';
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.zone{
+  position:relative;overflow:hidden;padding:19px;border:1px solid var(--line);
+  border-radius:19px;background:linear-gradient(145deg,var(--panel2),var(--panel));
+  transition:.3s;
 }
+.zone:hover{transform:translateY(-3px);border-color:rgba(255,90,54,.25)}
+.zone.alert{border-color:rgba(255,59,79,.75);background:linear-gradient(145deg,rgba(43,13,17,.95),rgba(13,9,11,.98));box-shadow:0 0 45px rgba(255,59,79,.08)}
+.zone-top{display:flex;justify-content:space-between;align-items:center}
+.zone-number{font:8px "Space Mono",monospace;color:var(--muted);letter-spacing:.18em}
+.zone-state{
+  display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;
+  border:1px solid rgba(50,213,131,.22);color:var(--green);background:rgba(50,213,131,.05);
+  font:8px "Space Mono",monospace;
+}
+.zone.alert .zone-state{color:var(--red);border-color:rgba(255,59,79,.3);background:rgba(255,59,79,.06)}
+.zone-state i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.zone-name{font-size:19px;font-weight:800;margin-top:20px}
+.zone-type{font:9px "Space Mono",monospace;color:var(--muted);margin-top:5px}
+.zone-visual{
+  height:88px;margin-top:18px;border-radius:13px;background:var(--panel3);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.zone-visual:before{
+  content:"";position:absolute;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--green),transparent);
+  animation:radar 2.8s linear infinite;
+}
+.zone.alert .zone-visual:before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+@keyframes radar{0%{top:0;opacity:0}15%{opacity:1}100%{top:100%;opacity:0}}
+.sensor-glyph{font-size:29px;filter:drop-shadow(0 0 12px rgba(255,159,67,.18))}
+.zone-status{margin-top:13px;padding:10px;border-radius:11px;background:rgba(50,213,131,.045);border:1px solid rgba(50,213,131,.12);color:var(--green);font:9px "Space Mono",monospace}
+.zone.alert .zone-status{background:rgba(255,59,79,.055);border-color:rgba(255,59,79,.18);color:var(--red);font-weight:700}
 
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:15px;
-margin-bottom:30px;
+.lower{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(300px,.6fr);gap:13px;margin-top:13px}
+.panel{
+  border:1px solid var(--line);border-radius:19px;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)
 }
+.panel-head{
+  padding:15px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center
+}
+.panel-head strong{font-size:11px;letter-spacing:.08em}.panel-head span{font:8px "Space Mono",monospace;color:var(--muted)}
+.clear{
+  color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:7px;
+  padding:5px 8px;cursor:pointer;font:8px "Space Mono",monospace
+}
+.clear:hover{color:var(--text);border-color:var(--line2)}
+.history{max-height:390px;overflow:auto}
+.history::-webkit-scrollbar{width:4px}.history::-webkit-scrollbar-thumb{background:#28323c;border-radius:8px}
+.event{
+  display:grid;grid-template-columns:8px 1fr 90px 105px;gap:12px;align-items:center;
+  padding:13px 17px;border-bottom:1px solid rgba(255,255,255,.045);transition:.2s
+}
+.event:hover{background:rgba(255,90,54,.025)}
+.event-dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 8px rgba(255,59,79,.6)}
+.event-sensor{font-size:11px;font-weight:700}.event-zone{font:8px "Space Mono",monospace;color:var(--muted);margin-top:3px}
+.event-access{font:8px "Space Mono",monospace;color:var(--red);font-weight:700}
+.event-time{text-align:right;font:8px/1.7 "Space Mono",monospace;color:var(--muted)}
+.empty{padding:48px 18px;text-align:center;color:var(--muted);font:9px/1.8 "Space Mono",monospace}
 
-.zone-card{
-background:var(--surface);
-padding:20px;
-border-radius:15px;
-border:1px solid var(--border);
-}
+.protocol{padding:17px}
+.protocol-row{display:grid;grid-template-columns:9px 1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.protocol-row:last-child{border-bottom:0}
+.protocol-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 9px rgba(50,213,131,.5)}
+.protocol-row b{font-size:10px}.protocol-row small{display:block;font:7px "Space Mono",monospace;color:var(--muted);margin-top:3px}
+.protocol-row span{font:8px "Space Mono",monospace;color:var(--green)}
 
-.zone-card.alert{
-border-color:var(--danger);
-background:#1a0f0f;
+.arch{
+  margin-top:13px;padding:17px;border:1px solid var(--line);border-radius:19px;
+  background:linear-gradient(145deg,rgba(255,90,54,.03),rgba(255,255,255,.01))
 }
+.arch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}
+.arch-item{padding:13px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.015)}
+.arch-item b{font-size:10px}.arch-item p{font:7px/1.65 "Space Mono",monospace;color:var(--muted);margin-top:5px}
+.flow{text-align:center;color:var(--fire2);font:8px "Space Mono",monospace;margin-top:12px;letter-spacing:.06em}
 
-.zone-label{
-font-size:12px;
-color:var(--muted);
-margin-bottom:10px;
+.footer{
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  margin-top:18px;padding:14px 2px;color:var(--muted);font:8px "Space Mono",monospace;letter-spacing:.07em
 }
+.footer b{color:var(--green)}
 
-.zone-name{
-font-size:20px;
-font-weight:700;
-margin-bottom:15px;
+@media(max-width:1050px){
+  .hero{grid-template-columns:1fr}.lower{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}
 }
-
-.sensor-status{
-padding:10px;
-border-radius:10px;
-background:var(--surface2);
-color:var(--safe);
+@media(max-width:760px){
+  .zones{grid-template-columns:1fr}.arch-grid{grid-template-columns:1fr 1fr}
+  .status-banner{grid-template-columns:auto 1fr}.status-time{grid-column:2;text-align:left}
 }
-
-.sensor-status.alert{
-background:rgba(239,68,68,.08);
-color:var(--danger);
-}
-
-.history-card{
-background:var(--surface);
-border-radius:15px;
-overflow:hidden;
-}
-
-.card-head{
-padding:20px;
-font-weight:700;
-border-bottom:1px solid var(--border);
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-th,td{
-padding:15px;
-text-align:left;
-font-family:'Space Mono';
-}
-
-th{
-background:var(--surface2);
-color:var(--muted);
-}
-
-.alertText{
-color:var(--danger);
-font-weight:700;
-}
-
-.zone-badge{
-padding:5px 10px;
-border-radius:20px;
-border:1px solid var(--danger);
-color:var(--danger);
-}
-
-.empty-state{
-padding:40px;
-text-align:center;
-color:var(--muted);
-}
-
-@media(max-width:900px){
-.grid{
-grid-template-columns:1fr 1fr;
-}
+@media(max-width:520px){
+  .shell{width:min(100% - 20px,1450px)}.topbar{flex-direction:column;align-items:flex-start;padding-bottom:15px}
+  .metrics{grid-template-columns:1fr}.arch-grid{grid-template-columns:1fr}
+  .event{grid-template-columns:7px 1fr 95px}.event-time{display:none}
+  .hero-main{padding:22px}.hero-title{font-size:35px}.commandbar{flex-direction:column;align-items:flex-start}
 }
 </style>
 </head>
 
 <body>
+<div class="shell">
 
-<div class="wrapper">
-
-<header>
-<div class="logo">
-ECOGUARDIAN <span>AI</span>
-</div>
-
-<div class="system-status" id="systemStatus">
-<span id="statusText">ALL SYSTEMS SAFE</span>
-</div>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">🔥</div>
+    <div>
+      <h1>ECOGUARDIAN <span>AI</span></h1>
+      <p>FIRE PROTECTION / EMERGENCY COMMAND CENTER</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <div class="pill"><span class="dot" id="wsDot"></span><span id="wsLabel">CONNECTING</span></div>
+    <div class="pill">IR · FLAME · MQ2</div>
+    <div class="pill" id="clock">--:--:--</div>
+  </div>
 </header>
 
-<div class="ws-bar" id="wsLabel">
-DISCONNECTED
+<div class="commandbar">
+  <div class="mono">ECOGUARDIAN / IOT / <b>FIRE PROTECTION</b> / LIVE ZONE MONITOR</div>
+  <div class="mono">EMERGENCY CHANNEL · <b>READY</b></div>
 </div>
 
-<h3>ZONE STATUS</h3>
-<br>
+<section class="hero">
+  <div class="hero-main">
+    <div class="eyebrow">01 / THREAT DETECTION</div>
+    <h2 class="hero-title">Detect early.<br><span>Respond instantly.</span></h2>
+    <p class="hero-copy">
+      Multi-zone fire protection monitoring using IR sensors, flame sensors and gas detection.
+      Incoming hardware events are streamed to this command center for immediate visualization and incident logging.
+    </p>
+    <div class="tags">
+      <span class="tag">IR SENSORS</span><span class="tag">FLAME SENSORS</span>
+      <span class="tag">MQ2 GAS</span><span class="tag">SERVO / SPRINKLER</span><span class="tag">WEBSOCKET</span>
+    </div>
+  </div>
 
-<div class="grid">
+  <div class="hero-side">
+    <div class="side-head"><strong>FIRE SYSTEM HEALTH</strong><span class="pill" style="height:28px;padding:0 9px"><span class="dot live"></span>ACTIVE</span></div>
+    <div class="fire-core">
+      <div class="fire-core-content"><div class="fire-value" id="healthValue">99.9%</div><div class="fire-label">MONITORING</div></div>
+    </div>
+    <div class="health-row"><span>SENSOR NETWORK</span><span>READY</span></div>
+    <div class="health-row"><span>EMERGENCY LOGIC</span><span>ACTIVE</span></div>
+    <div class="health-row"><span>EVENT CHANNEL</span><span id="healthWs">WAITING</span></div>
+  </div>
+</section>
 
-<div class="zone-card" id="cardA">
-<div class="zone-label">ZONE A</div>
-<div class="zone-name">IR Sensor 1</div>
-<div class="sensor-status" id="zoneA">SAFE — No Detection</div>
+<div class="section"><h2>LIVE PROTECTION STATUS</h2><span>REAL-TIME FIRE EVENT STATE</span></div>
+
+<section class="status-banner" id="systemStatus">
+  <div class="status-icon" id="statusIcon">🛡️</div>
+  <div>
+    <div class="status-kicker">GLOBAL SYSTEM STATE</div>
+    <div class="status-title" id="statusText">ALL SYSTEMS SAFE</div>
+    <div class="status-sub" id="statusSub">No active fire detection across monitored zones</div>
+  </div>
+  <div class="status-time" id="statusTime">LIVE<br>MONITORING</div>
+</section>
+
+<section class="metrics">
+  <div class="metric" style="--accent:var(--red)">
+    <div class="metric-top"><span>ALERT STATE</span><span>⚠</span></div>
+    <div class="metric-value" id="alertCount">0</div><div class="metric-note">ACTIVE INCIDENTS</div>
+  </div>
+  <div class="metric" style="--accent:var(--green)">
+    <div class="metric-top"><span>ZONES ONLINE</span><span>◉</span></div>
+    <div class="metric-value">03</div><div class="metric-note">MONITORED ZONES</div>
+  </div>
+  <div class="metric" style="--accent:var(--fire2)">
+    <div class="metric-top"><span>SENSORS</span><span>⌁</span></div>
+    <div class="metric-value">03</div><div class="metric-note">LIVE INPUT SOURCES</div>
+  </div>
+  <div class="metric" style="--accent:var(--cyan)">
+    <div class="metric-top"><span>EVENTS</span><span>◷</span></div>
+    <div class="metric-value" id="eventCount">0</div><div class="metric-note">SESSION ALERT LOG</div>
+  </div>
+</section>
+
+<div class="section"><h2>ZONE STATUS</h2><span>3-CHANNEL SENSOR MATRIX</span></div>
+
+<section class="zones">
+  <article class="zone" id="cardA">
+    <div class="zone-top"><span class="zone-number">ZONE A / CHANNEL 01</span><span class="zone-state"><i></i><span id="zoneStateA">SAFE</span></span></div>
+    <div class="zone-name">IR Sensor 1</div>
+    <div class="zone-type">INFRARED PRESENCE / FIRE INPUT</div>
+    <div class="zone-visual"><div class="sensor-glyph">◉</div></div>
+    <div class="zone-status" id="zoneA">SAFE — No Detection</div>
+  </article>
+
+  <article class="zone" id="cardB">
+    <div class="zone-top"><span class="zone-number">ZONE B / CHANNEL 02</span><span class="zone-state"><i></i><span id="zoneStateB">SAFE</span></span></div>
+    <div class="zone-name">Flame Sensor 1</div>
+    <div class="zone-type">FLAME / HEAT DETECTION INPUT</div>
+    <div class="zone-visual"><div class="sensor-glyph">△</div></div>
+    <div class="zone-status" id="zoneB">SAFE — No Detection</div>
+  </article>
+
+  <article class="zone" id="cardC">
+    <div class="zone-top"><span class="zone-number">ZONE C / CHANNEL 03</span><span class="zone-state"><i></i><span id="zoneStateC">SAFE</span></span></div>
+    <div class="zone-name">Flame Sensor 2</div>
+    <div class="zone-type">FLAME / HEAT DETECTION INPUT</div>
+    <div class="zone-visual"><div class="sensor-glyph">△</div></div>
+    <div class="zone-status" id="zoneC">SAFE — No Detection</div>
+  </article>
+</section>
+
+<div class="lower">
+  <section class="panel">
+    <div class="panel-head">
+      <strong>DETECTION HISTORY</strong>
+      <div style="display:flex;align-items:center;gap:8px"><span id="historyCount">0 EVENTS</span><button class="clear" onclick="clearHistory()">CLEAR</button></div>
+    </div>
+    <div class="history" id="historyBody">
+      <div class="empty">NO ALERTS YET<br><br>SYSTEM NOMINAL · WAITING FOR SENSOR EVENTS</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><strong>RESPONSE PROTOCOL</strong><span>AUTOMATED</span></div>
+    <div class="protocol">
+      <div class="protocol-row"><i class="protocol-dot"></i><div><b>ZONE MONITORING</b><small>Continuous sensor state tracking</small></div><span>ACTIVE</span></div>
+      <div class="protocol-row"><i class="protocol-dot"></i><div><b>EMERGENCY ALERT</b><small>Live dashboard notification</small></div><span>READY</span></div>
+      <div class="protocol-row"><i class="protocol-dot"></i><div><b>SPRINKLER CONTROL</b><small>Servo-based response layer</small></div><span>READY</span></div>
+      <div class="protocol-row"><i class="protocol-dot"></i><div><b>EVENT HISTORY</b><small>Sensor, zone, time and date</small></div><span>LOGGING</span></div>
+    </div>
+  </section>
 </div>
 
-<div class="zone-card" id="cardB">
-<div class="zone-label">ZONE B</div>
-<div class="zone-name">Flame Sensor 1</div>
-<div class="sensor-status" id="zoneC">SAFE — No Detection</div>
-</div>
+<section class="arch">
+  <div class="panel-head" style="padding:0 0 11px;border:0"><strong>FIRE RESPONSE DATA PATH</strong><span>HARDWARE → DASHBOARD</span></div>
+  <div class="arch-grid">
+    <div class="arch-item"><b>01 · SENSORS</b><p>IR and flame detection channels monitor the protected zones.</p></div>
+    <div class="arch-item"><b>02 · CONTROLLER</b><p>Embedded hardware evaluates the incoming sensor state.</p></div>
+    <div class="arch-item"><b>03 · EVENT BRIDGE</b><p>Live events are delivered to the dashboard through WebSocket.</p></div>
+    <div class="arch-item"><b>04 · COMMAND UI</b><p>Alerts, zones and detection history update immediately.</p></div>
+  </div>
+  <div class="flow">SENSORS → CONTROLLER → WEBSOCKET → ECOGUARDIAN FIRE COMMAND CENTER</div>
+</section>
 
-<div class="zone-card" id="cardC">
-<div class="zone-label">ZONE C</div>
-<div class="zone-name">Flame Sensor 2</div>
-<div class="sensor-status" id="zoneD">SAFE — No Detection</div>
-</div>
-
-</div>
-
-<h3>DETECTION HISTORY</h3>
-<br>
-
-<div class="history-card">
-
-<div class="card-head">
-Alert Log
-</div>
-
-<table>
-<thead>
-<tr>
-<th>SENSOR</th>
-<th>ZONE</th>
-<th>TIME</th>
-<th>DATE</th>
-</tr>
-</thead>
-
-<tbody id="historyBody">
-<tr>
-<td colspan="4" class="empty-state">
-No alerts yet — system nominal
-</td>
-</tr>
-</tbody>
-
-</table>
-
-</div>
+<footer class="footer">
+  <span>ECOGUARDIAN AI · FIRE PROTECTION SYSTEM</span>
+  <span><b>● EMERGENCY MONITORING ACTIVE</b></span>
+  <span id="footerTime">--:--:--</span>
+</footer>
 
 </div>
 
 <script>
-const historyBody = document.getElementById("historyBody");
-let hasHistory = false;
+/*
+  IMPORTANT:
+  Existing WebSocket endpoint intentionally preserved exactly.
+*/
+const FIRE_WS_URL = "wss://nacho-plunder-oblivion.ngrok-free.dev";
+
+let hasHistory=false;
+let historyItems=[];
+let activeAlerts=0;
+
+const zoneMap={
+  A:{card:"cardA",box:"zoneA",state:"zoneStateA"},
+  B:{card:"cardB",box:"zoneB",state:"zoneStateB"},
+  C:{card:"cardC",box:"zoneC",state:"zoneStateC"}
+};
 
 function setSafe(){
+  document.getElementById("systemStatus").className="status-banner";
+  document.getElementById("statusIcon").textContent="🛡️";
+  document.getElementById("statusText").textContent="ALL SYSTEMS SAFE";
+  document.getElementById("statusSub").textContent="No active fire detection across monitored zones";
+  document.getElementById("statusTime").innerHTML="LIVE<br>MONITORING";
 
-document.getElementById("systemStatus").className="system-status";
-document.getElementById("statusText").innerText="ALL SYSTEMS SAFE";
+  Object.keys(zoneMap).forEach(z=>{
+    const m=zoneMap[z];
+    const card=document.getElementById(m.card);
+    const box=document.getElementById(m.box);
+    const state=document.getElementById(m.state);
 
-["A","B","C"].forEach(z=>{
+    if(card)card.classList.remove("alert");
+    if(box){box.className="zone-status";box.innerHTML="SAFE — No Detection";}
+    if(state)state.textContent="SAFE";
+  });
 
-    const card=document.getElementById("card"+z);
-    const sensor=document.getElementById("zone"+z);
-
-    if(card)
-        card.classList.remove("alert");
-
-    if(sensor){
-        sensor.className="sensor-status";
-        sensor.innerHTML="SAFE — No Detection";
-    }
-
-});
-
+  activeAlerts=0;
+  document.getElementById("alertCount").textContent="0";
 }
 
 function triggerAlert(sensor,zone){
+  zone=String(zone).trim().toUpperCase();
 
-document.getElementById("systemStatus").className="system-status alert-mode";
-document.getElementById("statusText").innerText="⚠ FIRE DETECTED";
+  const map=zoneMap[zone];
+  document.getElementById("systemStatus").className="status-banner alert";
+  document.getElementById("statusIcon").textContent="⚠️";
+  document.getElementById("statusText").textContent="FIRE DETECTED";
+  document.getElementById("statusSub").textContent="Emergency sensor event received — investigate immediately";
+  document.getElementById("statusTime").innerHTML="<span style='color:var(--red);font-weight:700'>ACTIVE ALERT</span>";
 
-zone = zone.toString().trim().toUpperCase();
+  if(map){
+    const card=document.getElementById(map.card);
+    const box=document.getElementById(map.box);
+    const state=document.getElementById(map.state);
 
-const card = document.getElementById("card"+zone);
-const sensorBox = document.getElementById("zone"+zone);
+    if(card)card.classList.add("alert");
+    if(box){box.className="zone-status";box.innerText=(sensor||"SENSOR")+" ACTIVE — FIRE DETECTED";}
+    if(state)state.textContent="ALERT";
+  }
 
-if(card){
-    card.classList.add("alert");
-}
+  activeAlerts=Math.max(1,activeAlerts+1);
+  document.getElementById("alertCount").textContent=activeAlerts;
 
-if(sensorBox){
-    sensorBox.className="sensor-status alert";
-    sensorBox.innerText=sensor + " ACTIVE";
-}
-
-console.log("LIVE ALERT:", zone, sensor);
+  console.log("LIVE FIRE ALERT:",zone,sensor);
 }
 
 function addHistory(sensor,zone,time,date){
-if(!hasHistory){
-historyBody.innerHTML="";
-hasHistory=true;
+  if(!hasHistory){
+    document.getElementById("historyBody").innerHTML="";
+    hasHistory=true;
+  }
+
+  const item={
+    sensor:sensor||"Unknown Sensor",
+    zone:String(zone||"—").trim().toUpperCase(),
+    time:time||"—",
+    date:date||"—"
+  };
+
+  historyItems.unshift(item);
+  if(historyItems.length>50)historyItems.pop();
+
+  renderHistory();
 }
 
-const row=document.createElement("tr");
+function renderHistory(){
+  const body=document.getElementById("historyBody");
 
-row.innerHTML=`
-<td class="alertText">${sensor}</td>
-<td><span class="zone-badge">ZONE ${zone}</span></td>
-<td>${time}</td>
-<td>${date}</td>
-`;
+  if(!historyItems.length){
+    body.innerHTML='<div class="empty">NO ALERTS YET<br><br>SYSTEM NOMINAL · WAITING FOR SENSOR EVENTS</div>';
+    document.getElementById("historyCount").textContent="0 EVENTS";
+    document.getElementById("eventCount").textContent="0";
+    return;
+  }
 
-historyBody.prepend(row);
+  body.innerHTML=historyItems.slice(0,20).map(h=>`
+    <div class="event">
+      <span class="event-dot"></span>
+      <div>
+        <div class="event-sensor">${escapeHTML(h.sensor)}</div>
+        <div class="event-zone">ZONE ${escapeHTML(h.zone)}</div>
+      </div>
+      <div class="event-access">FIRE ALERT</div>
+      <div class="event-time">${escapeHTML(h.date)}<br>${escapeHTML(h.time)}</div>
+    </div>
+  `).join("");
+
+  document.getElementById("historyCount").textContent=historyItems.length+" EVENTS";
+  document.getElementById("eventCount").textContent=historyItems.length;
+}
+
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
 }
 
 function resetFireSystem(){
-
-    document.getElementById("systemStatus").className="system-status";
-    document.getElementById("statusText").innerText="SAFE";
-
-    ["A","B","C"].forEach(z=>{
-
-        const card=document.getElementById("card"+z);
-        const sensor=document.getElementById("zone"+z);
-
-        if(card)
-            card.classList.remove("alert");
-
-        if(sensor){
-            sensor.className="sensor-status safe";
-            sensor.innerHTML="SAFE";
-        }
-
-    });
-
+  setSafe();
 }
+
+function clearHistory(){
+  historyItems=[];
+  hasHistory=false;
+  setSafe();
+  renderHistory();
+}
+
+function setConnection(online,label){
+  const dot=document.getElementById("wsDot");
+  dot.className="dot"+(online?" live":"");
+  document.getElementById("wsLabel").textContent=label;
+  document.getElementById("healthWs").textContent=online?"CONNECTED":"RECONNECTING";
+}
+
+let reconnectTimer=null;
 
 function connect(){
+  try{
+    const ws=new WebSocket(FIRE_WS_URL);
 
-const ws=new WebSocket("wss://nacho-plunder-oblivion.ngrok-free.dev");
+    ws.onopen=()=>{
+      setConnection(true,"LIVE / CONNECTED");
+    };
 
-ws.onopen=()=>{
-document.getElementById("wsLabel").innerText="CONNECTED — LIVE SERVER";
-};
+    ws.onmessage=(event)=>{
+      try{
+        const data=JSON.parse(event.data);
+        console.log(data);
 
-ws.onclose=()=>{
-document.getElementById("wsLabel").innerText="DISCONNECTED — RETRYING...";
-setTimeout(connect,3000);
-};
-ws.onmessage=(event)=>{
-const data=JSON.parse(event.data);
+        if(data.project==="fire" && data.type==="safe"){
+          setSafe();
+        }
 
-console.log(data);
+        if(data.project==="fire" && data.type==="alert"){
+          triggerAlert(data.sensor,data.zone);
+          addHistory(data.sensor,data.zone,data.time,data.date);
+        }
 
-if(data.project==="fire" && data.type==="safe"){
-    setSafe();
+        if(data.type==="history" && Array.isArray(data.data)){
+          data.data.forEach(h=>{
+            addHistory(h.sensor,h.zone,h.time,h.date);
+          });
+        }
+      }catch(err){
+        console.error("Fire event parse error:",err);
+      }
+    };
+
+    ws.onclose=()=>{
+      setConnection(false,"DISCONNECTED / RETRYING");
+      clearTimeout(reconnectTimer);
+      reconnectTimer=setTimeout(connect,3000);
+    };
+
+    ws.onerror=()=>{
+      setConnection(false,"CONNECTION ERROR");
+      ws.close();
+    };
+  }catch(err){
+    setConnection(false,"CONNECTION ERROR");
+    reconnectTimer=setTimeout(connect,3000);
+  }
 }
 
-if(data.project==="fire" && data.type==="alert"){
-
-    triggerAlert(
-        data.sensor,
-        data.zone
-    );
-
-    addHistory(
-        data.sensor,
-        data.zone,
-        data.time,
-        data.date
-    );
-
+function tick(){
+  const t=new Date().toLocaleTimeString("en-IN",{hour12:false});
+  document.getElementById("clock").textContent=t;
+  document.getElementById("footerTime").textContent=t;
 }
 
-if(data.type==="history"){
-data.data.forEach(h=>{
-addHistory(h.sensor,h.zone,h.time,h.date);
-});
-}
-};
-
-}
-
+setInterval(tick,1000);
+tick();
+renderHistory();
 connect();
 </script>
-
 </body>
 </html>
