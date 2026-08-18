@@ -5749,6 +5749,110 @@ function processVoiceCommand(originalText){
 
 </div>
 
+   <script>
+/* =========================================================
+   ECOGUARDIAN LIVE DATA BUS
+   Main Dashboard → All Module Dashboards
+   ========================================================= */
+
+const ecoLiveData = {
+    airQuality: {
+        aqi: 38,
+        co2: 412,
+        pm25: 18,
+        o2: 21.4,
+        tvoc: 0.21
+    },
+
+    energy: {
+        efficiency: 78,
+        solar: 8.2,
+        piezo: 1.6,
+        battery: 78,
+        total: 11.0
+    },
+
+    water: {
+        level: 65,
+        tank1: 65,
+        tank2: 40,
+        tank3: 80,
+        consumed: 12.5,
+        recycled: 4.8
+    },
+
+    waste: {
+        capacity: 45,
+        dry: 45,
+        wet: 40,
+        hazardous: 30,
+        recycled: 18.6,
+        rewards: 245
+    },
+
+    personnel: 152,
+    visitors: 7,
+    vehicles: 12,
+    drones: 2,
+    powerGenerated: 18.6,
+    co2Captured: 2.35,
+
+    systems: {
+        laserFence: true,
+        pirSensors: true,
+        cctv: true,
+        rfid: true,
+        fireSensors: true,
+        gasSensors: true,
+        drone: true,
+        solar: true,
+        water: true,
+        communication: true,
+        piezo: true,
+        streetLights: true
+    }
+};
+
+
+/* ---------------------------------------------------------
+   BroadcastChannel = REAL-TIME SAME-SITE COMMUNICATION
+   --------------------------------------------------------- */
+
+const ecoChannel = new BroadcastChannel("ecoguardian_live");
+
+function broadcastEcoData() {
+
+    ecoChannel.postMessage({
+        type: "LIVE_DASHBOARD_UPDATE",
+        timestamp: Date.now(),
+        data: ecoLiveData
+    });
+
+    /*
+      localStorage backup
+      so newly opened dashboards get latest data.
+    */
+    localStorage.setItem(
+        "ECOGUARDIAN_LIVE_DATA",
+        JSON.stringify({
+            timestamp: Date.now(),
+            data: ecoLiveData
+        })
+    );
+}
+
+
+/* Send immediately */
+broadcastEcoData();
+
+
+/*
+   Send every second.
+   If your values are coming from ESP32/backend,
+   update ecoLiveData before this function runs.
+*/
+setInterval(broadcastEcoData, 1000);
+</script>
 
 </body>
 </html>
