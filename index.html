@@ -2503,6 +2503,15 @@ body::after{
 }
 
 </style>
+
+<style>
+.system-status.offline { border-color:rgba(255,72,72,.25)!important; background:rgba(255,72,72,.04)!important; }
+.system-status.offline strong { color:var(--red)!important; }
+.hub-status.offline { color:var(--muted)!important; border-color:rgba(255,255,255,.10)!important; background:rgba(255,255,255,.02)!important; }
+.hardware-status.offline { color:var(--muted)!important; }
+.live.offline { color:var(--muted)!important; }
+</style>
+
 </head>
 
 
@@ -2573,14 +2582,14 @@ body::after{
         </div>
 
 
-        <div class="system-status">
+        <div class="system-status offline" id="globalStatus">
 
             <small>
                 SYSTEM STATUS
             </small>
 
-            <strong>
-                ● ALL SYSTEMS OPERATIONAL
+            <strong id="globalStatusText">
+                ● NO LIVE DATA
             </strong>
 
         </div>
@@ -2687,11 +2696,8 @@ body::after{
                 PERSONNEL
             </div>
 
-            <div class="kpi-value">
-                152
-                <span class="kpi-unit">
-                    / 200
-                </span>
+            <div class="kpi-value" id="personnel">0
+                <span class="kpi-unit" id="personnelSub">/ 0</span>
             </div>
 
         </div>
@@ -2739,9 +2745,7 @@ body::after{
                 VEHICLES
             </div>
 
-            <div class="kpi-value">
-                12
-            </div>
+            <div class="kpi-value" id="vehicles">0</div>
 
             <div class="kpi-unit">
                 INSIDE
@@ -2764,9 +2768,7 @@ body::after{
                 DRONES
             </div>
 
-            <div class="kpi-value">
-                02
-            </div>
+            <div class="kpi-value" id="drones">0</div>
 
             <div class="kpi-unit">
                 ACTIVE
@@ -2789,11 +2791,8 @@ body::after{
                 POWER
             </div>
 
-            <div class="kpi-value">
-                18.6
-                <span class="kpi-unit">
-                    kWh
-                </span>
+            <div class="kpi-value"><span id="power">0</span>
+                <span class="kpi-unit"> kWh</span>
             </div>
 
             <div class="kpi-unit">
@@ -2817,9 +2816,7 @@ body::after{
                 WATER
             </div>
 
-            <div class="kpi-value">
-                76%
-            </div>
+            <div class="kpi-value" id="water">0%</div>
 
             <div class="kpi-unit">
                 LEVEL
@@ -2842,9 +2839,7 @@ body::after{
                 CO₂ CAPTURED
             </div>
 
-            <div class="kpi-value">
-                2.35
-            </div>
+            <div class="kpi-value" id="co2Captured">0</div>
 
             <div class="kpi-unit">
                 KG TODAY
@@ -2877,8 +2872,8 @@ body::after{
 
         CAMP HEALTH INDEX
 
-        <span class="live">
-            ● LIVE
+        <span class="live" id="healthLive">
+            OFFLINE
         </span>
 
     </div>
@@ -2892,12 +2887,10 @@ body::after{
                 class="gauge-number"
                 id="healthValue"
             >
-                94.7%
+                0%
             </div>
 
-            <div class="gauge-grade">
-                EXCELLENT
-            </div>
+            <div class="gauge-grade" id="healthGrade">OFFLINE</div>
 
         </div>
 
@@ -2919,15 +2912,10 @@ body::after{
             </span>
 
             <div class="health-bar">
-                <div
-                    class="health-fill"
-                    style="width:96%"
-                ></div>
+                <div id="barSecurity" class="health-fill" style="width:0%"></div>
             </div>
 
-            <span class="health-percent">
-                96%
-            </span>
+            <span class="health-percent" id="healthSecurity">0%</span>
 
         </div>
 
@@ -2939,15 +2927,10 @@ body::after{
             </span>
 
             <div class="health-bar">
-                <div
-                    class="health-fill"
-                    style="width:92%"
-                ></div>
+                <div id="barEnergy" class="health-fill" style="width:0%"></div>
             </div>
 
-            <span class="health-percent">
-                92%
-            </span>
+            <span class="health-percent" id="healthEnergy">0%</span>
 
         </div>
 
@@ -2959,15 +2942,10 @@ body::after{
             </span>
 
             <div class="health-bar">
-                <div
-                    class="health-fill"
-                    style="width:91%"
-                ></div>
+                <div id="barEnvironment" class="health-fill" style="width:0%"></div>
             </div>
 
-            <span class="health-percent">
-                91%
-            </span>
+            <span class="health-percent" id="healthEnvironment">0%</span>
 
         </div>
 
@@ -2979,15 +2957,10 @@ body::after{
             </span>
 
             <div class="health-bar">
-                <div
-                    class="health-fill"
-                    style="width:95%"
-                ></div>
+                <div id="barWater" class="health-fill" style="width:0%"></div>
             </div>
 
-            <span class="health-percent">
-                95%
-            </span>
+            <span class="health-percent" id="healthWater">0%</span>
 
         </div>
 
@@ -2999,15 +2972,10 @@ body::after{
             </span>
 
             <div class="health-bar">
-                <div
-                    class="health-fill"
-                    style="width:97%"
-                ></div>
+                <div id="barEmergency" class="health-fill" style="width:0%"></div>
             </div>
 
-            <span class="health-percent">
-                97%
-            </span>
+            <span class="health-percent" id="healthEmergency">0%</span>
 
         </div>
 
@@ -3018,9 +2986,7 @@ body::after{
 
 <section class="panel weather-panel">
 
-    <div class="panel-title">
-        WEATHER STATION
-    </div>
+    <div class="panel-title">WEATHER STATION <span class="live" id="weatherState">OFFLINE</span></div>
 
 
     <div class="weather-main">
@@ -3031,13 +2997,9 @@ body::after{
 
         <div>
 
-            <div class="temperature">
-                28°C
-            </div>
+            <div class="temperature" id="temperature">0°C</div>
 
-            <div class="weather-desc">
-                CLEAR SKY
-            </div>
+            <div class="weather-desc" id="condition">NO DATA</div>
 
         </div>
 
@@ -3046,24 +3008,16 @@ body::after{
 
     <div class="weather-data">
 
-        <div class="weather-item">
-            HUMIDITY
-            <strong>43%</strong>
+        <div class="weather-item">HUMIDITY <strong id="humidity">0%</strong>
         </div>
 
-        <div class="weather-item">
-            WIND
-            <strong>12 km/h</strong>
+        <div class="weather-item">WIND <strong id="wind">0 km/h</strong>
         </div>
 
-        <div class="weather-item">
-            RAINFALL
-            <strong>0 mm</strong>
+        <div class="weather-item">RAINFALL <strong id="rainfall">0 mm</strong>
         </div>
 
-        <div class="weather-item">
-            UV INDEX
-            <strong>6 HIGH</strong>
+        <div class="weather-item">UV INDEX <strong id="uv">0</strong>
         </div>
 
     </div>
@@ -3082,9 +3036,7 @@ body::after{
 
         <div class="air-circle">
 
-            <div class="air-value">
-                38
-            </div>
+            <div class="air-value" id="aqi">0</div>
 
             <div class="air-label">
                 GOOD
@@ -3095,24 +3047,16 @@ body::after{
 
         <div class="air-values">
 
-            <div>
-                CO₂
-                <strong>412 ppm</strong>
+            <div>CO₂ <strong id="airCo2">0 ppm</strong>
             </div>
 
-            <div>
-                PM2.5
-                <strong>18 μg/m³</strong>
+            <div>PM2.5 <strong id="pm25">0 μg/m³</strong>
             </div>
 
-            <div>
-                O₂
-                <strong>21.4%</strong>
+            <div>O₂ <strong id="oxygen">0%</strong>
             </div>
 
-            <div>
-                TVOC
-                <strong>0.21 ppm</strong>
+            <div>TVOC <strong id="tvoc">0 ppm</strong>
             </div>
 
         </div>
@@ -3157,11 +3101,11 @@ body::after{
     </div>
 
 
-    <div class="hub-status">
+    <div class="hub-status offline" id="moduleReady">
 
         <span></span>
 
-        6 MODULES READY
+        <span id="moduleReadyText">0 MODULES READY</span>
 
     </div>
 
@@ -3368,11 +3312,11 @@ body::after{
 
 <div class="hub-footer">
 
-    <div>
+    <div id="hubConnection">
 
         <span class="green-dot"></span>
 
-        ALL MODULES CONNECTED
+        NO LIVE DATA MODULES
 
     </div>
 
@@ -3531,14 +3475,14 @@ body::after{
 
     <div class="feed-screen">
 
-        <div class="live-tag">
-            ● LIVE
-        </div>
+        <div class="live-tag" id="feedLive">OFFLINE</div>
 
         <div class="feed-cross"></div>
 
     </div>
 
+
+    <div class="feed-note" id="feedNote" style="padding:6px 10px;text-align:center;color:#607987;font:8px Space Mono,monospace;border-top:1px solid rgba(255,255,255,.04);">NO DRONE DATA SOURCE CONNECTED</div>
 
     <div class="feed-bottom">
 
@@ -3650,11 +3594,9 @@ body::after{
 
         <div class="donut-wrap">
 
-            <div class="donut"></div>
+            <div class="donut" id="energyDonut"></div>
 
-            <div class="donut-value">
-                78%
-            </div>
+            <div class="donut-value" id="energyEfficiency">0%</div>
 
         </div>
 
@@ -3665,22 +3607,22 @@ body::after{
 
                 <div class="metric">
                     SOLAR POWER
-                    <strong>8.2 kW</strong>
+                    <strong id="solarPower">0 kW</strong>
                 </div>
 
                 <div class="metric">
                     PIEZO POWER
-                    <strong>1.6 kW</strong>
+                    <strong id="piezoPower">0 kW</strong>
                 </div>
 
                 <div class="metric">
                     BATTERY
-                    <strong>78%</strong>
+                    <strong id="battery">0%</strong>
                 </div>
 
                 <div class="metric">
                     TOTAL
-                    <strong>11.0 kWh</strong>
+                    <strong id="energyTotal">0 kWh</strong>
                 </div>
 
             </div>
@@ -3746,22 +3688,9 @@ body::after{
 
         <div class="donut-wrap">
 
-            <div
-                class="donut"
-                style="
-                background:
-                conic-gradient(
-                    var(--cyan) 0 235deg,
-                    #12303a 235deg
-                )"
-            ></div>
+            <div class="donut" id="waterDonut"></div>
 
-            <div
-                class="donut-value"
-                style="color:var(--cyan)"
-            >
-                65%
-            </div>
+            <div class="donut-value" id="waterDonutValue" style="color:var(--cyan)">0%</div>
 
         </div>
 
@@ -3772,27 +3701,27 @@ body::after{
 
                 <div class="metric">
                     TANK 1
-                    <strong>65%</strong>
+                    <strong id="tank1">0%</strong>
                 </div>
 
                 <div class="metric">
                     TANK 2
-                    <strong>40%</strong>
+                    <strong id="tank2">0%</strong>
                 </div>
 
                 <div class="metric">
                     TANK 3
-                    <strong>80%</strong>
+                    <strong id="tank3">0%</strong>
                 </div>
 
                 <div class="metric">
                     CONSUMED
-                    <strong>12.5 L</strong>
+                    <strong id="waterConsumed">0 L</strong>
                 </div>
 
                 <div class="metric">
                     RECYCLED
-                    <strong>4.8 L</strong>
+                    <strong id="waterRecycled">0 L</strong>
                 </div>
 
             </div>
@@ -3841,19 +3770,9 @@ body::after{
 
         <div class="donut-wrap">
 
-            <div
-                class="donut"
-                style="
-                background:
-                conic-gradient(
-                    var(--green) 0 160deg,
-                    #12303a 160deg
-                )"
-            ></div>
+            <div class="donut" id="wasteDonut"></div>
 
-            <div class="donut-value">
-                45%
-            </div>
+            <div class="donut-value" id="wasteCapacity">0%</div>
 
         </div>
 
@@ -3864,27 +3783,27 @@ body::after{
 
                 <div class="metric">
                     DRY WASTE
-                    <strong>45%</strong>
+                    <strong id="dryWaste">0%</strong>
                 </div>
 
                 <div class="metric">
                     WET WASTE
-                    <strong>40%</strong>
+                    <strong id="wetWaste">0%</strong>
                 </div>
 
                 <div class="metric">
                     HAZARDOUS
-                    <strong>30%</strong>
+                    <strong id="hazardousWaste">0%</strong>
                 </div>
 
                 <div class="metric">
                     RECYCLED
-                    <strong>18.6 kg</strong>
+                    <strong id="recycledWaste">0 kg</strong>
                 </div>
 
                 <div class="metric">
                     REWARDS
-                    <strong>245</strong>
+                    <strong id="wasteRewards">0</strong>
                 </div>
 
             </div>
@@ -3946,7 +3865,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-laserFence">● OFFLINE</span>
     </div>
 
 </div>
@@ -3963,7 +3882,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-pirSensors">● OFFLINE</span>
     </div>
 
 </div>
@@ -3983,7 +3902,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-cctv">● OFFLINE</span>
     </div>
 
 </div>
@@ -4003,7 +3922,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-rfid">● OFFLINE</span>
     </div>
 
 </div>
@@ -4023,7 +3942,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-fireSensors">● OFFLINE</span>
     </div>
 
 </div>
@@ -4040,7 +3959,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-gasSensors">● OFFLINE</span>
     </div>
 
 </div>
@@ -4060,7 +3979,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-droneSystem">● OFFLINE</span>
     </div>
 
 </div>
@@ -4077,7 +3996,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-solarSystem">● OFFLINE</span>
     </div>
 
 </div>
@@ -4097,7 +4016,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-waterSystem">● OFFLINE</span>
     </div>
 
 </div>
@@ -4117,7 +4036,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-communication">● OFFLINE</span>
     </div>
 
 </div>
@@ -4134,7 +4053,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-piezoTiles">● OFFLINE</span>
     </div>
 
 </div>
@@ -4151,7 +4070,7 @@ body::after{
     </div>
 
     <div class="hardware-status">
-        ● ACTIVE
+        <span id="hw-streetLights">● OFFLINE</span>
     </div>
 
 </div>
@@ -4509,82 +4428,82 @@ function executeAI(){
 // =========================================================
 
 const systemData = {
-    health: 94.7,
+    health: 0,
 
     personnel: {
-        present: 152,
-        capacity: 200
+        present: 0,
+        capacity: 0
     },
 
     visitors: {
-        today: 7
+        today: 0
     },
 
     vehicles: {
-        inside: 12
+        inside: 0
     },
 
     rfid: {
-        scansToday: 7,
-        status: "ACTIVE"
+        scansToday: 0,
+        status: "OFFLINE"
     },
 
     drones: {
-        active: 2,
-        status: "ACTIVE"
+        active: 0,
+        status: "OFFLINE"
     },
 
     energy: {
-        generatedToday: 18.6,
-        solar: 8.2,
-        piezo: 1.6,
-        battery: 78,
-        total: 11.0
+        generatedToday: 0,
+        solar: 0,
+        piezo: 0,
+        battery: 0,
+        total: 0
     },
 
     water: {
-        level: 76,
-        tank1: 65,
-        tank2: 40,
-        tank3: 80,
-        consumed: 12.5,
-        recycled: 4.8
+        level: 0,
+        tank1: 0,
+        tank2: 0,
+        tank3: 0,
+        consumed: 0,
+        recycled: 0
     },
 
     waste: {
-        capacity: 45,
-        dry: 45,
-        wet: 40,
-        hazardous: 30,
-        recycled: 18.6,
-        rewards: 245
+        capacity: 0,
+        dry: 0,
+        wet: 0,
+        hazardous: 0,
+        recycled: 0,
+        rewards: 0
     },
 
     air: {
-        aqi: 38,
-        co2: 412,
-        pm25: 18,
-        oxygen: 21.4,
-        tvoc: 0.21
+        aqi: 0,
+        co2: 0,
+        pm25: 0,
+        oxygen: 0,
+        tvoc: 0
     },
 
     weather: {
-        temperature: 28,
-        humidity: 43,
-        wind: 12,
+        temperature: 0,
+        humidity: 0,
+        wind: 0,
         rainfall: 0,
-        uv: 6,
-        condition: "Clear Sky"
+        uv: 0,
+        condition: "NO DATA"
     },
 
     security: {
-        status: "NORMAL",
+        status: "OFFLINE",
         intruder: false,
-        perimeter: "SECURE"
+        perimeter: "NO DATA"
     },
 
     fire: {
-        status: "ACTIVE",
+        status: "OFFLINE",
         alert: false
     },
 
@@ -7052,6 +6971,121 @@ if (
     initializeRealOnlyUI();
 }
 
+
+/* Expose the live state for the dashboard DOM bridge. */
+window.ecoLive = live;
+window.ecoRender = render;
+
+})();
+</script>
+
+
+<script>
+/* =========================================================
+   FINAL DOM REAL-DATA BRIDGE
+   Prevents any leftover template numbers from remaining visible.
+========================================================= */
+(function(){
+"use strict";
+
+function $id(id){ return document.getElementById(id); }
+function tx(id,v){ const e=$id(id); if(e) e.textContent=v; }
+
+function sync(){
+    const l=window.ecoLive;
+    if(!l) return;
+
+    tx("personnel", l.personnel);
+    tx("personnelSub", "/ " + l.capacity);
+    tx("scanCounter", l.rfidScans);
+    tx("vehicles", l.vehicles);
+    tx("drones", l.drones);
+    tx("power", l.power);
+    tx("water", l.water.level + "%");
+    tx("co2Captured", l.co2Captured);
+
+    tx("temperature", l.weather.temperature + "°C");
+    tx("condition", l.weather.condition);
+    tx("humidity", l.weather.humidity + "%");
+    tx("wind", l.weather.wind + " km/h");
+    tx("rainfall", l.weather.rainfall + " mm");
+    tx("uv", l.weather.uv);
+
+    tx("aqi", l.air.aqi);
+    tx("airCo2", l.air.co2 + " ppm");
+    tx("pm25", l.air.pm25 + " μg/m³");
+    tx("oxygen", l.air.oxygen + "%");
+    tx("tvoc", l.air.tvoc + " ppm");
+
+    tx("solarPower", l.energy.solar + " kW");
+    tx("piezoPower", l.energy.piezo + " kW");
+    tx("battery", l.energy.battery + "%");
+    tx("energyTotal", l.energy.total + " kWh");
+    tx("energyEfficiency", l.energy.efficiency + "%");
+
+    tx("tank1", l.water.tank1 + "%");
+    tx("tank2", l.water.tank2 + "%");
+    tx("tank3", l.water.tank3 + "%");
+    tx("waterConsumed", l.water.consumed + " L");
+    tx("waterRecycled", l.water.recycled + " L");
+    tx("waterDonutValue", l.water.level + "%");
+
+    tx("wasteCapacity", l.waste.capacity + "%");
+    tx("dryWaste", l.waste.dry + "%");
+    tx("wetWaste", l.waste.wet + "%");
+    tx("hazardousWaste", l.waste.hazardous + "%");
+    tx("recycledWaste", l.waste.recycled + " kg");
+    tx("wasteRewards", l.waste.rewards);
+
+    const online = Object.values(l.dataReceived).some(Boolean);
+    tx("globalStatusText", online ? "● LIVE DATA OPERATIONAL" : "● NO LIVE DATA");
+    tx("footerStatus", online ? "LIVE DATA CONNECTED" : "NO PROJECT CONNECTED");
+
+    const gs=$id("globalStatus");
+    if(gs) gs.classList.toggle("offline", !online);
+
+    const grade=$id("healthGrade");
+    const hv=$id("healthValue");
+    if(hv){
+        const active = [
+            l.modules.rfid && l.dataReceived.rfid,
+            l.modules.sensors && l.dataReceived.sensors,
+            l.modules.fire && l.dataReceived.fire,
+            l.modules.surveillance && l.dataReceived.surveillance,
+            l.modules.drone && l.dataReceived.drone
+        ].filter(Boolean).length;
+        const health = Math.round(active / 5 * 100);
+        hv.textContent=health+"%";
+        if(grade) grade.textContent=health ? (health >= 80 ? "EXCELLENT" : health >= 60 ? "GOOD" : "DEGRADED") : "OFFLINE";
+    }
+
+    const bars = {
+        Security: l.dataReceived.rfid || l.dataReceived.surveillance,
+        Energy: l.dataReceived.sensors,
+        Environment: l.dataReceived.sensors,
+        Water: l.dataReceived.sensors,
+        Emergency: l.dataReceived.fire || l.dataReceived.surveillance
+    };
+    Object.entries(bars).forEach(([k,on])=>{
+        const val=on?100:0;
+        tx("health"+k,val+"%");
+        const b=$id("bar"+k); if(b) b.style.width=val+"%";
+    });
+
+    ["energyDonut","waterDonut","wasteDonut"].forEach((id)=>{
+        const e=$id(id); if(e) e.style.opacity="1";
+    });
+
+    tx("weatherState", l.dataReceived.sensors ? "LIVE" : "OFFLINE");
+    tx("feedLive", l.dataReceived.drone ? "● LIVE" : "OFFLINE");
+    tx("feedNote", l.dataReceived.drone ? "LIVE DRONE SOURCE CONNECTED" : "NO DRONE DATA SOURCE CONNECTED");
+
+    if(window.ecoRender) window.ecoRender();
+}
+
+setInterval(sync,500);
+document.addEventListener("DOMContentLoaded",sync);
+setTimeout(sync,100);
 })();
 </script>
 
