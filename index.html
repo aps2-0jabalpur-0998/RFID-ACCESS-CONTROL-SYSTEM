@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2280,7 +2281,119 @@ body::after{
 ::-webkit-scrollbar-thumb:hover{
     background:#23718e;
 }
-   /* =========================================================
+   
+/* =========================================================
+   HIGH-TECH VOICE ASSISTANT ENHANCEMENTS
+========================================================= */
+.voice-assistant{
+    position:fixed;
+    left:24px;
+    right:auto;
+    bottom:24px;
+    z-index:1000;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.voice-button{
+    position:relative;
+    overflow:hidden;
+}
+
+.voice-button::before{
+    content:"";
+    position:absolute;
+    inset:4px;
+    border:1px solid rgba(57,202,255,.16);
+    border-radius:50%;
+    pointer-events:none;
+}
+
+.voice-button::after{
+    content:"";
+    position:absolute;
+    width:90px;
+    height:90px;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    border:1px solid rgba(57,202,255,.08);
+    animation:voiceOrbit 4s linear infinite;
+    pointer-events:none;
+}
+
+@keyframes voiceOrbit{
+    from{transform:translate(-50%,-50%) rotate(0deg);}
+    to{transform:translate(-50%,-50%) rotate(360deg);}
+}
+
+.voice-status{
+    min-width:115px;
+    transition:.25s;
+}
+
+.voice-status.processing{
+    color:var(--cyan);
+    border-color:rgba(57,202,255,.35);
+    box-shadow:0 0 18px rgba(57,202,255,.08);
+}
+
+.voice-status.speaking{
+    color:var(--purple);
+    border-color:rgba(173,98,255,.35);
+    box-shadow:0 0 18px rgba(173,98,255,.08);
+}
+
+.voice-response{
+    left:24px;
+    right:auto;
+    bottom:105px;
+    width:min(430px,calc(100vw - 30px));
+    backdrop-filter:blur(14px);
+}
+
+.voice-response-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:9px;
+    color:#5e7f8e;
+    font-family:'Space Mono',monospace;
+    font-size:7px;
+    letter-spacing:1px;
+}
+
+.voice-response-meta span:last-child{
+    color:var(--green);
+}
+
+.voice-transcript{
+    margin-bottom:10px;
+    padding:8px 10px;
+    color:#7f9eac;
+    background:rgba(255,255,255,.025);
+    border-left:2px solid rgba(57,202,255,.35);
+    font-family:'Space Mono',monospace;
+    font-size:8px;
+    line-height:1.6;
+}
+
+@media(max-width:600px){
+    .voice-response{
+        left:15px;
+        right:auto;
+        bottom:100px;
+    }
+    .voice-assistant{
+        left:15px;
+        right:auto;
+        bottom:15px;
+    }
+}
+
+/* =========================================================
    AI VOICE ASSISTANT
 ========================================================= */
 
@@ -4387,7 +4500,18 @@ const systemData = {
 
 
 // =========================================================
-// VOICE ENGINE
+// =========================================================
+// ECOGUARDIAN HIGH-TECH VOICE ENGINE
+// Hybrid:
+// 1) Live EcoGuardian data for IoT/environment questions
+// 2) Local math/time/help commands
+// 3) Optional general-AI backend for unrestricted general questions
+//
+// GENERAL AI CONFIG:
+// Set window.ECO_AI_ENDPOINT to your own backend endpoint.
+// Example response accepted:
+//   { "answer": "..." }
+// The frontend deliberately does NOT contain a secret API key.
 // =========================================================
 
 const SpeechRecognition =
@@ -4396,11 +4520,18 @@ const SpeechRecognition =
 
 let recognition = null;
 let isListening = false;
+let isSpeaking = false;
 
 let voiceButton = null;
 let voiceStatus = null;
 let voiceResponse = null;
 let voiceText = null;
+let voiceMeta = null;
+let voiceTranscript = null;
+
+const ECO_AI_ENDPOINT =
+    window.ECO_AI_ENDPOINT ||
+    "/api/ai";
 
 function initVoiceAssistant(){
 
@@ -4408,6 +4539,8 @@ function initVoiceAssistant(){
     voiceStatus = document.getElementById("voiceStatus");
     voiceResponse = document.getElementById("voiceResponse");
     voiceText = document.getElementById("voiceText");
+    voiceMeta = document.getElementById("voiceMeta");
+    voiceTranscript = document.getElementById("voiceTranscript");
 
     if(!voiceButton || !voiceStatus || !voiceResponse || !voiceText){
         console.error("Voice assistant UI not found.");
@@ -4420,7 +4553,8 @@ function initVoiceAssistant(){
         voiceButton.disabled = true;
 
         showVoiceResponse(
-            "Voice recognition is not supported in this browser. Use the latest Chrome or Edge."
+            "Voice recognition is not supported here. Use the latest Chrome or Edge.",
+            "SYSTEM"
         );
 
         return;
@@ -4429,7 +4563,7 @@ function initVoiceAssistant(){
     recognition = new SpeechRecognition();
 
     recognition.continuous = false;
-    recognition.interimResults = false;
+    recognition.interimResults = true;
     recognition.lang = "en-IN";
     recognition.maxAlternatives = 3;
 
@@ -4437,60 +4571,78 @@ function initVoiceAssistant(){
 
         isListening = true;
 
-        voiceButton.classList.add("listening");
-        voiceStatus.classList.add("listening");
-
-        voiceStatus.textContent = "LISTENING...";
+        setVoiceState("LISTENING...", "LISTENING");
 
         showVoiceResponse(
-            "Listening. Ask me about the EcoGuardian system."
+            "Listening. Ask me anything about EcoGuardian or ask a general question.",
+            "LISTENING"
         );
+    };
+
+    recognition.onresult = function(event){
+
+        let finalText = "";
+        let interimText = "";
+
+        for(let i = event.resultIndex; i < event.results.length; i++){
+
+            const transcript =
+                event.results[i][0].transcript;
+
+            if(event.results[i].isFinal){
+                finalText += transcript;
+            }else{
+                interimText += transcript;
+            }
+        }
+
+        const shown =
+            (finalText || interimText).trim();
+
+        if(voiceTranscript){
+            voiceTranscript.textContent =
+                shown
+                    ? `HEARD: "${shown}"`
+                    : "HEARD: —";
+        }
+
+        if(finalText.trim()){
+            processVoiceCommand(finalText.trim());
+        }
     };
 
     recognition.onend = function(){
 
         isListening = false;
 
-        voiceButton.classList.remove("listening");
-        voiceStatus.classList.remove("listening");
-
-        voiceStatus.textContent = "VOICE READY";
+        if(!isSpeaking){
+            setVoiceState("VOICE READY", "READY");
+        }
     };
 
     recognition.onerror = function(event){
 
         isListening = false;
 
-        voiceButton.classList.remove("listening");
-        voiceStatus.classList.remove("listening");
-
-        voiceStatus.textContent = "VOICE READY";
-
-        let message = "I couldn't understand that. Please try again.";
+        let message =
+            "I couldn't understand that. Please try again.";
 
         if(event.error === "not-allowed"){
-            message = "Microphone permission was denied. Allow microphone access and try again.";
+            message =
+                "Microphone permission was denied. Allow microphone access and try again.";
         }else if(event.error === "no-speech"){
-            message = "I didn't hear anything. Please speak again.";
+            message =
+                "I didn't hear anything. Please speak again.";
         }else if(event.error === "audio-capture"){
-            message = "No microphone was detected.";
+            message =
+                "No microphone was detected.";
+        }else if(event.error === "network"){
+            message =
+                "Speech recognition needs a network connection in this browser.";
         }
 
-        showVoiceResponse(message);
-
-        console.warn("Speech recognition error:", event.error);
-    };
-
-    recognition.onresult = function(event){
-
-        const transcript =
-            event.results[0][0].transcript.trim();
-
-        showVoiceResponse(
-            `You said: "${transcript}"`
-        );
-
-        processVoiceCommand(transcript);
+        setVoiceState("VOICE READY", "READY");
+        showVoiceResponse(message, "SYSTEM");
     };
 }
 
@@ -4501,7 +4653,37 @@ document.addEventListener(
 
 
 // =========================================================
-// START / STOP LISTENING
+// VOICE STATE
+// =========================================================
+
+function setVoiceState(text, mode){
+
+    if(!voiceStatus) return;
+
+    voiceStatus.textContent = text;
+
+    voiceStatus.classList.remove(
+        "listening",
+        "processing",
+        "speaking"
+    );
+
+    if(mode === "LISTENING"){
+        voiceStatus.classList.add("listening");
+    }
+
+    if(mode === "PROCESSING"){
+        voiceStatus.classList.add("processing");
+    }
+
+    if(mode === "SPEAKING"){
+        voiceStatus.classList.add("speaking");
+    }
+}
+
+
+// =========================================================
+// START / STOP
 // =========================================================
 
 function toggleVoiceAssistant(){
@@ -4509,7 +4691,8 @@ function toggleVoiceAssistant(){
     if(!recognition){
 
         showVoiceResponse(
-            "Voice recognition is not available. Use Chrome or Edge and allow microphone permission."
+            "Voice recognition is unavailable. Use Chrome or Edge and allow microphone access.",
+            "SYSTEM"
         );
 
         return;
@@ -4523,6 +4706,8 @@ function toggleVoiceAssistant(){
     }
 
     try{
+
+        speechSynthesis.cancel();
 
         recognition.start();
 
@@ -4541,7 +4726,7 @@ function toggleVoiceAssistant(){
 // UI RESPONSE
 // =========================================================
 
-function showVoiceResponse(message){
+function showVoiceResponse(message, mode = "ECOGUARDIAN"){
 
     if(!voiceText || !voiceResponse){
         console.log(message);
@@ -4549,6 +4734,10 @@ function showVoiceResponse(message){
     }
 
     voiceText.textContent = message;
+
+    if(voiceMeta){
+        voiceMeta.textContent = mode;
+    }
 
     voiceResponse.classList.add("show");
 
@@ -4558,15 +4747,17 @@ function showVoiceResponse(message){
 
     showVoiceResponse.timer = setTimeout(
         function(){
+
             voiceResponse.classList.remove("show");
+
         },
-        10000
+        12000
     );
 }
 
 
 // =========================================================
-// TEXT TO SPEECH
+// SPEECH
 // =========================================================
 
 function speak(message){
@@ -4578,20 +4769,82 @@ function speak(message){
     speechSynthesis.cancel();
 
     const speech =
-        new SpeechSynthesisUtterance(message);
+        new SpeechSynthesisUtterance(
+            cleanForSpeech(message)
+        );
 
-    speech.rate = 0.95;
+    speech.rate = 0.96;
     speech.pitch = 1;
     speech.volume = 1;
     speech.lang = "en-IN";
 
+    const voices =
+        speechSynthesis.getVoices();
+
+    const preferred =
+        voices.find(v =>
+            /en-IN/i.test(v.lang)
+        ) ||
+        voices.find(v =>
+            /en-US|en-GB/i.test(v.lang)
+        );
+
+    if(preferred){
+        speech.voice = preferred;
+    }
+
+    speech.onstart = function(){
+
+        isSpeaking = true;
+
+        setVoiceState(
+            "SPEAKING...",
+            "SPEAKING"
+        );
+    };
+
+    speech.onend = function(){
+
+        isSpeaking = false;
+
+        if(!isListening){
+            setVoiceState(
+                "VOICE READY",
+                "READY"
+            );
+        }
+    };
+
+    speech.onerror = function(){
+
+        isSpeaking = false;
+
+        if(!isListening){
+            setVoiceState(
+                "VOICE READY",
+                "READY"
+            );
+        }
+    };
+
     speechSynthesis.speak(speech);
 }
 
+function cleanForSpeech(message){
 
-function answer(message){
+    return String(message)
+        .replace(/[*_`#]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
 
-    showVoiceResponse(message);
+
+function answer(message, source = "ECOGUARDIAN"){
+
+    showVoiceResponse(
+        message,
+        source
+    );
 
     speak(message);
 }
@@ -4603,7 +4856,7 @@ function answer(message){
 
 function normalize(text){
 
-    return text
+    return String(text)
         .toLowerCase()
         .replace(/[?!.,]/g, " ")
         .replace(/\s+/g, " ")
@@ -4620,16 +4873,103 @@ function hasAny(text, words){
 
 
 // =========================================================
-// OPEN MODULE
+// LIVE DATA HELPERS
 // =========================================================
 
-function voiceOpen(
-    name,
-    fn
-){
+function liveSnapshot(){
+
+    if(typeof window.ecoGetLiveData === "function"){
+        return window.ecoGetLiveData();
+    }
+
+    return systemData;
+}
+
+
+function moduleIsOnline(name){
+
+    if(typeof window.ecoLiveReady === "function"){
+        return !!window.ecoLiveReady(name);
+    }
+
+    return false;
+}
+
+
+function safeNumber(value){
+
+    return Number.isFinite(Number(value))
+        ? Number(value)
+        : 0;
+}
+
+
+function formatNumber(value){
+
+    const n = safeNumber(value);
+
+    return Number.isInteger(n)
+        ? String(n)
+        : n.toFixed(1);
+}
+
+
+function airQualityLabel(aqi){
+
+    const n = safeNumber(aqi);
+
+    if(n <= 0) return "NO DATA";
+    if(n <= 50) return "GOOD";
+    if(n <= 100) return "MODERATE";
+    if(n <= 150) return "UNHEALTHY";
+    if(n <= 200) return "VERY UNHEALTHY";
+    return "HAZARDOUS";
+}
+
+
+function moduleSummary(){
+
+    const names = {
+        rfid: "RFID",
+        fire: "Fire",
+        dustbin: "Smart Dustbin",
+        surveillance: "Security",
+        sensors: "Sensor Network",
+        drone: "Drone"
+    };
+
+    const modules =
+        ["rfid","fire","dustbin","surveillance","sensors","drone"];
+
+    const online = [];
+    const offline = [];
+
+    modules.forEach(module => {
+
+        if(moduleIsOnline(module)){
+            online.push(names[module]);
+        }else{
+            offline.push(names[module]);
+        }
+
+    });
+
+    return {
+        online,
+        offline
+    };
+}
+
+
+// =========================================================
+// DASHBOARD OPENING
+// =========================================================
+
+function voiceOpen(name, fn){
 
     answer(
-        `Opening ${name} dashboard.`
+        `Opening ${name} dashboard.`,
+        "COMMAND"
     );
 
     setTimeout(
@@ -4640,12 +4980,258 @@ function voiceOpen(
 
 
 // =========================================================
+// LOCAL MATH ENGINE
+// Supports normal arithmetic without sending it anywhere.
+// =========================================================
+
+function trySolveMath(originalText){
+
+    let expression =
+        originalText
+            .toLowerCase()
+            .replace(/what is|calculate|solve|equals|equal to/g, "")
+            .replace(/multiplied by/g, "*")
+            .replace(/times/g, "*")
+            .replace(/divided by/g, "/")
+            .replace(/plus/g, "+")
+            .replace(/minus/g, "-")
+            .replace(/percent of/g, "%")
+            .replace(/x/g, "*")
+            .replace(/,/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
+
+    if(!/[0-9]/.test(expression)){
+        return null;
+    }
+
+    if(!/^[0-9+\-*/().%\s]+$/.test(expression)){
+        return null;
+    }
+
+    try{
+
+        if(expression.includes("%")){
+
+            const match =
+                expression.match(
+                    /^([0-9.]+)\s*%\s*([0-9.]+)$/
+                );
+
+            if(match){
+
+                const result =
+                    (Number(match[1]) / 100) *
+                    Number(match[2]);
+
+                return result;
+            }
+        }
+
+        // Arithmetic expression contains only a safe character set.
+        const result =
+            Function(
+                `"use strict"; return (${expression})`
+            )();
+
+        if(
+            typeof result === "number" &&
+            Number.isFinite(result)
+        ){
+            return result;
+        }
+
+    }catch(error){
+        return null;
+    }
+
+    return null;
+}
+
+
+// =========================================================
+// GENERAL AI BACKEND
+//
+// Expected POST body:
+// {
+//   "message": "...",
+//   "context": {...}
+// }
+//
+// Expected JSON:
+// { "answer": "..." }
+//
+// Keep API keys on the backend, never inside this HTML.
+// =========================================================
+
+async function askGeneralAI(originalText){
+
+    const snapshot =
+        liveSnapshot();
+
+    const context = {
+
+        role:
+            "EcoGuardian AI assistant",
+
+        task:
+            "Answer the user's general question clearly. If the question asks for live EcoGuardian data, prefer the supplied context and never invent disconnected IoT values.",
+
+        liveData:
+            snapshot,
+
+        onlineModules:
+            moduleSummary(),
+
+        currentPage:
+            location.href
+    };
+
+    const controller =
+        new AbortController();
+
+    const timeout =
+        setTimeout(
+            () => controller.abort(),
+            15000
+        );
+
+    try{
+
+        const response =
+            await fetch(
+                ECO_AI_ENDPOINT,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        message:
+                            originalText,
+
+                        context:
+                            context
+                    }),
+
+                    signal:
+                        controller.signal
+                }
+            );
+
+        clearTimeout(timeout);
+
+        if(!response.ok){
+
+            throw new Error(
+                `AI backend returned ${response.status}`
+            );
+        }
+
+        const data =
+            await response.json();
+
+        const result =
+            data.answer ||
+            data.response ||
+            data.message;
+
+        if(!result){
+
+            throw new Error(
+                "AI backend returned no answer."
+            );
+        }
+
+        return String(result).trim();
+
+    }catch(error){
+
+        clearTimeout(timeout);
+
+        console.warn(
+            "General AI unavailable:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+// =========================================================
+// CONTEXTUAL GENERAL ANSWERS
+// =========================================================
+
+function localGeneralAnswer(originalText){
+
+    const text =
+        normalize(originalText);
+
+    if(
+        hasAny(text, [
+            "who are you",
+            "what are you",
+            "your name"
+        ])
+    ){
+
+        return "I am EcoGuardian AI, the intelligent voice interface for your EcoGuardian command center.";
+    }
+
+    if(
+        hasAny(text, [
+            "what can you do",
+            "what can u do"
+        ])
+    ){
+
+        return "I can answer general questions, calculate values, report live EcoGuardian data, read weather and air quality, check system status, and open your project dashboards.";
+    }
+
+    if(
+        hasAny(text, [
+            "thank you",
+            "thanks"
+        ])
+    ){
+
+        return "You're welcome.";
+    }
+
+    if(
+        hasAny(text, [
+            "good morning"
+        ])
+    ){
+
+        return "Good morning. EcoGuardian AI is ready.";
+    }
+
+    if(
+        hasAny(text, [
+            "good evening"
+        ])
+    ){
+
+        return "Good evening. EcoGuardian AI is ready.";
+    }
+
+    return null;
+}
+
+
+// =========================================================
 // VOICE COMMAND ENGINE
 // =========================================================
 
-function processVoiceCommand(originalText){
+async function processVoiceCommand(originalText){
 
-    const text = normalize(originalText);
+    const text =
+        normalize(originalText);
 
     console.log(
         "VOICE COMMAND:",
@@ -4662,7 +5248,8 @@ function processVoiceCommand(originalText){
             "open rfid",
             "show rfid",
             "rfid dashboard",
-            "access control dashboard"
+            "access control dashboard",
+            "open access control"
         ])
     ){
 
@@ -4680,7 +5267,8 @@ function processVoiceCommand(originalText){
             "open fire",
             "show fire",
             "fire dashboard",
-            "fire protection dashboard"
+            "fire protection dashboard",
+            "open fire protection"
         ])
     ){
 
@@ -4699,7 +5287,8 @@ function processVoiceCommand(originalText){
             "show dustbin",
             "dustbin dashboard",
             "waste dashboard",
-            "open waste"
+            "open waste",
+            "open smart dustbin"
         ])
     ){
 
@@ -4718,7 +5307,8 @@ function processVoiceCommand(originalText){
             "show intruder",
             "intruder dashboard",
             "open security dashboard",
-            "show security dashboard"
+            "show security dashboard",
+            "open security"
         ])
     ){
 
@@ -4736,7 +5326,8 @@ function processVoiceCommand(originalText){
             "open sensors",
             "show sensors",
             "sensor dashboard",
-            "open sensor network"
+            "open sensor network",
+            "open sensors dashboard"
         ])
     ){
 
@@ -4754,7 +5345,8 @@ function processVoiceCommand(originalText){
             "open drone",
             "show drone",
             "drone dashboard",
-            "open drone system"
+            "open drone system",
+            "open drone surveillance"
         ])
     ){
 
@@ -4778,12 +5370,32 @@ function processVoiceCommand(originalText){
             "hey",
             "namaste",
             "good morning",
+            "good afternoon",
             "good evening"
         ])
     ){
 
         answer(
-            "Hello. EcoGuardian AI command center is online and ready."
+            "Hello. EcoGuardian AI command center is online and ready.",
+            "ECOGUARDIAN"
+        );
+
+        return;
+    }
+
+
+    // -----------------------------------------------------
+    // MATH
+    // -----------------------------------------------------
+
+    const mathResult =
+        trySolveMath(originalText);
+
+    if(mathResult !== null){
+
+        answer(
+            `The answer is ${formatNumber(mathResult)}.`,
+            "CALCULATOR"
         );
 
         return;
@@ -4802,12 +5414,49 @@ function processVoiceCommand(originalText){
             "give me a report",
             "overall status",
             "camp status",
-            "system report"
+            "system report",
+            "complete system status"
         ])
     ){
 
+        const d =
+            liveSnapshot();
+
+        const modules =
+            moduleSummary();
+
         answer(
-            `EcoGuardian status: ${systemData.personnel.present} personnel inside, ${systemData.visitors.today} visitors today, ${systemData.vehicles.inside} vehicles inside, ${systemData.drones.active} drones active, water level ${systemData.water.level} percent, battery ${systemData.energy.battery} percent, air quality index ${systemData.air.aqi}, security ${systemData.security.status}, and fire protection ${systemData.fire.status}.`
+            `EcoGuardian status: ${d.personnel.present} personnel inside, ${d.visitors.today} visitors today, ${d.vehicles.inside} vehicles inside, ${d.drones.active} drones active, water level ${d.water.level} percent, battery ${d.energy.battery} percent, air quality index ${d.air.aqi}, security ${d.security.status}, and fire protection ${d.fire.status}. Online modules: ${modules.online.length ? modules.online.join(", ") : "none"}.`,
+            "LIVE SYSTEM"
+        );
+
+        return;
+    }
+
+
+    // -----------------------------------------------------
+    // MODULE STATUS
+    // -----------------------------------------------------
+
+    if(
+        hasAny(text, [
+            "which modules are online",
+            "which modules are offline",
+            "module status",
+            "modules status",
+            "what is connected",
+            "what's connected",
+            "what is online",
+            "what's online"
+        ])
+    ){
+
+        const modules =
+            moduleSummary();
+
+        answer(
+            `Online modules: ${modules.online.length ? modules.online.join(", ") : "none"}. Offline modules: ${modules.offline.length ? modules.offline.join(", ") : "none"}.`,
+            "LIVE SYSTEM"
         );
 
         return;
@@ -4830,8 +5479,12 @@ function processVoiceCommand(originalText){
         ])
     ){
 
+        const d =
+            liveSnapshot();
+
         answer(
-            `There are ${systemData.personnel.present} personnel inside the camp, out of a capacity of ${systemData.personnel.capacity}.`
+            `There are ${d.personnel.present} personnel inside the camp, out of a capacity of ${d.personnel.capacity}.`,
+            "LIVE RFID"
         );
 
         return;
@@ -4852,7 +5505,8 @@ function processVoiceCommand(originalText){
     ){
 
         answer(
-            `There are ${systemData.visitors.today} visitors recorded today.`
+            `There are ${liveSnapshot().visitors.today} visitors recorded today.`,
+            "LIVE DATA"
         );
 
         return;
@@ -4873,7 +5527,8 @@ function processVoiceCommand(originalText){
     ){
 
         answer(
-            `There are ${systemData.vehicles.inside} vehicles inside the camp.`
+            `There are ${liveSnapshot().vehicles.inside} vehicles inside the camp.`,
+            "LIVE DATA"
         );
 
         return;
@@ -4881,18 +5536,16 @@ function processVoiceCommand(originalText){
 
 
     // -----------------------------------------------------
-    // WATER — SPECIFIC TANKS FIRST
+    // WATER
     // -----------------------------------------------------
 
     if(
-        hasAny(text, [
-            "tank one",
-            "tank 1"
-        ])
+        hasAny(text, ["tank one","tank 1"])
     ){
 
         answer(
-            `Tank one is at ${systemData.water.tank1} percent.`
+            `Tank one is at ${liveSnapshot().water.tank1} percent.`,
+            "LIVE WATER"
         );
 
         return;
@@ -4900,14 +5553,12 @@ function processVoiceCommand(originalText){
 
 
     if(
-        hasAny(text, [
-            "tank two",
-            "tank 2"
-        ])
+        hasAny(text, ["tank two","tank 2"])
     ){
 
         answer(
-            `Tank two is at ${systemData.water.tank2} percent.`
+            `Tank two is at ${liveSnapshot().water.tank2} percent.`,
+            "LIVE WATER"
         );
 
         return;
@@ -4915,14 +5566,12 @@ function processVoiceCommand(originalText){
 
 
     if(
-        hasAny(text, [
-            "tank three",
-            "tank 3"
-        ])
+        hasAny(text, ["tank three","tank 3"])
     ){
 
         answer(
-            `Tank three is at ${systemData.water.tank3} percent.`
+            `Tank three is at ${liveSnapshot().water.tank3} percent.`,
+            "LIVE WATER"
         );
 
         return;
@@ -4938,8 +5587,12 @@ function processVoiceCommand(originalText){
         ])
     ){
 
+        const w =
+            liveSnapshot().water;
+
         answer(
-            `Current water level is ${systemData.water.level} percent. Tank one is ${systemData.water.tank1} percent, tank two is ${systemData.water.tank2} percent, and tank three is ${systemData.water.tank3} percent.`
+            `Current water level is ${w.level} percent. Tank one is ${w.tank1} percent, tank two is ${w.tank2} percent, and tank three is ${w.tank3} percent.`,
+            "LIVE WATER"
         );
 
         return;
@@ -4958,7 +5611,8 @@ function processVoiceCommand(originalText){
     ){
 
         answer(
-            `Battery level is ${systemData.energy.battery} percent.`
+            `Battery level is ${liveSnapshot().energy.battery} percent.`,
+            "LIVE ENERGY"
         );
 
         return;
@@ -4974,7 +5628,8 @@ function processVoiceCommand(originalText){
     ){
 
         answer(
-            `Solar power generation is ${systemData.energy.solar} kilowatts.`
+            `Solar power generation is ${liveSnapshot().energy.solar} kilowatts.`,
+            "LIVE ENERGY"
         );
 
         return;
@@ -4993,8 +5648,12 @@ function processVoiceCommand(originalText){
         ])
     ){
 
+        const e =
+            liveSnapshot().energy;
+
         answer(
-            `Today's power generation is ${systemData.energy.generatedToday} kilowatt hours. Solar is ${systemData.energy.solar} kilowatts and piezo power is ${systemData.energy.piezo} kilowatts.`
+            `Today's power generation is ${e.generatedToday} kilowatt hours. Solar is ${e.solar} kilowatts and piezo power is ${e.piezo} kilowatts.`,
+            "LIVE ENERGY"
         );
 
         return;
@@ -5014,8 +5673,12 @@ function processVoiceCommand(originalText){
         ])
     ){
 
+        const d =
+            liveSnapshot().drones;
+
         answer(
-            `There are ${systemData.drones.active} active drones. The drone system is ${systemData.drones.status}.`
+            `There are ${d.active} active drones. The drone system is ${d.status}.`,
+            "LIVE DRONE"
         );
 
         return;
@@ -5031,56 +5694,62 @@ function processVoiceCommand(originalText){
             "weather",
             "temperature",
             "how hot",
-            "how cold"
+            "how cold",
+            "how warm",
+            "outside temperature"
         ])
     ){
 
+        const w =
+            liveSnapshot().weather;
+
         answer(
-            `The current temperature is ${systemData.weather.temperature} degrees Celsius with ${systemData.weather.condition}. Humidity is ${systemData.weather.humidity} percent and wind speed is ${systemData.weather.wind} kilometers per hour.`
+            `The current temperature is ${formatNumber(w.temperature)} degrees Celsius with ${w.condition}. Humidity is ${formatNumber(w.humidity)} percent and wind speed is ${formatNumber(w.wind)} kilometers per hour.`,
+            "OPEN-METEO"
         );
 
         return;
     }
 
 
-    if(
-        hasAny(text, [
-            "humidity"
-        ])
-    ){
+    if(hasAny(text, ["humidity","humid"])){
 
         answer(
-            `Current humidity is ${systemData.weather.humidity} percent.`
+            `Current humidity is ${formatNumber(liveSnapshot().weather.humidity)} percent.`,
+            "OPEN-METEO"
         );
 
         return;
     }
 
 
-    if(
-        hasAny(text, [
-            "wind",
-            "wind speed"
-        ])
-    ){
+    if(hasAny(text, ["wind","wind speed","windy"])){
 
         answer(
-            `Current wind speed is ${systemData.weather.wind} kilometers per hour.`
+            `Current wind speed is ${formatNumber(liveSnapshot().weather.wind)} kilometers per hour.`,
+            "OPEN-METEO"
         );
 
         return;
     }
 
 
-    if(
-        hasAny(text, [
-            "rain",
-            "rainfall"
-        ])
-    ){
+    if(hasAny(text, ["rain","rainfall","raining"])){
 
         answer(
-            `Today's recorded rainfall is ${systemData.weather.rainfall} millimeters.`
+            `Current recorded precipitation is ${formatNumber(liveSnapshot().weather.rainfall)} millimeters.`,
+            "OPEN-METEO"
+        );
+
+        return;
+    }
+
+
+    if(hasAny(text, ["uv index","uv level","ultraviolet"])){
+
+        answer(
+            `The current UV index is ${formatNumber(liveSnapshot().weather.uv)}.`,
+            "OPEN-METEO"
         );
 
         return;
@@ -5095,12 +5764,50 @@ function processVoiceCommand(originalText){
         hasAny(text, [
             "air quality",
             "aqi",
-            "pollution"
+            "pollution",
+            "is the air safe"
+        ])
+    ){
+
+        const a =
+            liveSnapshot().air;
+
+        answer(
+            `Current air quality index is ${formatNumber(a.aqi)}, rated ${airQualityLabel(a.aqi)}. PM2.5 is ${formatNumber(a.pm25)} micrograms per cubic meter.`,
+            "OPEN-METEO AIR"
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "pm2.5",
+            "pm 2.5",
+            "particulate matter"
         ])
     ){
 
         answer(
-            `Current air quality index is ${systemData.air.aqi}, which is good. PM2.5 is ${systemData.air.pm25} micrograms per cubic meter.`
+            `Current PM2.5 is ${formatNumber(liveSnapshot().air.pm25)} micrograms per cubic meter.`,
+            "OPEN-METEO AIR"
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "ozone",
+            "o3"
+        ])
+    ){
+
+        answer(
+            `Current ozone level is ${formatNumber(liveSnapshot().air.ozone)} micrograms per cubic meter.`,
+            "OPEN-METEO AIR"
         );
 
         return;
@@ -5114,24 +5821,27 @@ function processVoiceCommand(originalText){
         ])
     ){
 
-        answer(
-            `Current carbon dioxide level is ${systemData.air.co2} parts per million.`
-        );
+        const co2 =
+            liveSnapshot().air.co2;
 
-        return;
-    }
+        if(
+            !moduleIsOnline("sensors") &&
+            safeNumber(co2) === 0
+        ){
 
+            answer(
+                "The CO2 sensor is offline, so I don't have a real CO2 reading.",
+                "LIVE SENSOR"
+            );
 
-    if(
-        hasAny(text, [
-            "oxygen",
-            "o2"
-        ])
-    ){
+        }else{
 
-        answer(
-            `Current oxygen level is ${systemData.air.oxygen} percent.`
-        );
+            answer(
+                `Current carbon dioxide level is ${formatNumber(co2)} parts per million.`,
+                "LIVE SENSOR"
+            );
+
+        }
 
         return;
     }
@@ -5149,16 +5859,30 @@ function processVoiceCommand(originalText){
         ])
     ){
 
-        if(systemData.security.intruder){
+        const s =
+            liveSnapshot().security;
+
+        if(s.intruder){
 
             answer(
-                "Warning. An intruder is currently detected."
+                "Warning. An intruder is currently detected.",
+                "LIVE SECURITY"
+            );
+
+        }else if(
+            moduleIsOnline("surveillance")
+        ){
+
+            answer(
+                "No active intruder is detected by the connected security system.",
+                "LIVE SECURITY"
             );
 
         }else{
 
             answer(
-                "No active intruder is detected. The perimeter is secure."
+                "The security system is offline, so I cannot confirm the current perimeter status.",
+                "LIVE SECURITY"
             );
 
         }
@@ -5177,8 +5901,12 @@ function processVoiceCommand(originalText){
         ])
     ){
 
+        const s =
+            liveSnapshot().security;
+
         answer(
-            `Security status is ${systemData.security.status}. The perimeter is ${systemData.security.perimeter}.`
+            `Security status is ${s.status}. Perimeter status is ${s.perimeter}.`,
+            "LIVE SECURITY"
         );
 
         return;
@@ -5199,16 +5927,30 @@ function processVoiceCommand(originalText){
         ])
     ){
 
-        if(systemData.fire.alert){
+        const f =
+            liveSnapshot().fire;
+
+        if(f.alert){
 
             answer(
-                "Warning. A fire alert is currently active."
+                "Warning. A live fire alert is currently active.",
+                "LIVE FIRE"
+            );
+
+        }else if(
+            moduleIsOnline("fire")
+        ){
+
+            answer(
+                "The fire protection system is connected and there is currently no active fire alert.",
+                "LIVE FIRE"
             );
 
         }else{
 
             answer(
-                `Fire protection is ${systemData.fire.status} and there is currently no active fire alert.`
+                "The fire protection system is offline, so I cannot confirm the current fire status.",
+                "LIVE FIRE"
             );
 
         }
@@ -5230,9 +5972,24 @@ function processVoiceCommand(originalText){
         ])
     ){
 
-        answer(
-            `Waste capacity is ${systemData.waste.capacity} percent. Recycled waste is ${systemData.waste.recycled} kilograms and the current reward points are ${systemData.waste.rewards}.`
-        );
+        const w =
+            liveSnapshot().waste;
+
+        if(moduleIsOnline("dustbin")){
+
+            answer(
+                `Waste capacity is ${w.capacity} percent. Recycled waste is ${w.recycled} kilograms and current reward points are ${w.rewards}.`,
+                "LIVE WASTE"
+            );
+
+        }else{
+
+            answer(
+                "The Smart Dustbin system is offline, so I don't have a real waste reading.",
+                "LIVE WASTE"
+            );
+
+        }
 
         return;
     }
@@ -5250,8 +6007,12 @@ function processVoiceCommand(originalText){
         ])
     ){
 
+        const r =
+            liveSnapshot().rfid;
+
         answer(
-            `RFID access control is ${systemData.rfid.status}. There have been ${systemData.rfid.scansToday} scans today.`
+            `RFID access control is ${r.status}. There have been ${r.scansToday} scans today.`,
+            "LIVE RFID"
         );
 
         return;
@@ -5270,8 +6031,14 @@ function processVoiceCommand(originalText){
         ])
     ){
 
+        const modules =
+            moduleSummary();
+
         answer(
-            "Laser fence, PIR sensors, CCTV, RFID gate, fire sensors, gas sensors, drone system, solar system, water system, communication, piezo tiles and street lights are active."
+            modules.online.length
+                ? `Currently connected: ${modules.online.join(", ")}.`
+                : "No IoT modules are currently connected.",
+            "LIVE SYSTEM"
         );
 
         return;
@@ -5288,8 +6055,14 @@ function processVoiceCommand(originalText){
         ])
     ){
 
+        const modules =
+            moduleSummary();
+
         answer(
-            "All major EcoGuardian systems are currently operational."
+            modules.online.length
+                ? `${modules.online.length} IoT module${modules.online.length === 1 ? "" : "s"} connected: ${modules.online.join(", ")}.`
+                : "No IoT modules are connected right now. I will not report them as operational without live data.",
+            "LIVE SYSTEM"
         );
 
         return;
@@ -5310,7 +6083,8 @@ function processVoiceCommand(originalText){
     ){
 
         answer(
-            "I can report personnel, visitors, vehicles, water tanks, energy, solar, battery, drones, weather, air quality, security, fire, waste, RFID and system status. I can also open your RFID, fire, waste, security, sensor and drone dashboards."
+            "I can answer general questions through the configured AI backend, calculate values, report live EcoGuardian data, read weather and air quality, check connected modules, and open your RFID, fire, waste, security, sensor and drone dashboards.",
+            "ECOGUARDIAN"
         );
 
         return;
@@ -5318,14 +6092,42 @@ function processVoiceCommand(originalText){
 
 
     // -----------------------------------------------------
-    // UNKNOWN
+    // GENERAL AI FALLBACK
     // -----------------------------------------------------
 
+    setVoiceState(
+        "THINKING...",
+        "PROCESSING"
+    );
+
+    showVoiceResponse(
+        `Processing: "${originalText}"`,
+        "GENERAL AI"
+    );
+
+    const aiAnswer =
+        await askGeneralAI(
+            originalText
+        );
+
+    if(aiAnswer){
+
+        answer(
+            aiAnswer,
+            "GENERAL AI"
+        );
+
+        return;
+    }
+
+
     answer(
-        `I heard "${originalText}", but that question is not connected to the dashboard data yet.`
+        `I heard "${originalText}". The general AI service is not connected yet. Configure ECO_AI_ENDPOINT to enable general questions.`,
+        "GENERAL AI"
     );
 }
 
+</script>
 </script>
 
 
@@ -5365,6 +6167,18 @@ function processVoiceCommand(originalText){
 
     <div class="voice-response-title">
         ◈ AI COMMAND CENTER
+    </div>
+
+    <div class="voice-response-meta">
+        <span id="voiceMeta">ECOGUARDIAN</span>
+        <span>● LIVE</span>
+    </div>
+
+    <div
+        id="voiceTranscript"
+        class="voice-transcript"
+    >
+        HEARD: —
     </div>
 
     <div
