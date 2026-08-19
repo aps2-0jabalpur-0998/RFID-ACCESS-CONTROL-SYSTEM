@@ -424,35 +424,128 @@ function processData(state,evidence,newFiles){
 let reconnectTimer=null;
 
 function connect(){
- const ws=new WebSocket('ws://localhost:8767');
- const dot=document.getElementById('wsDot');
- const lbl=document.getElementById('wsLabel');
 
- ws.onopen=()=>{
-  dot.className='ws-dot on';
-  lbl.textContent='LIVE — ws://localhost:8768';
-  addLog('safe','System connected','Live');
+ const ws = new WebSocket('ws://localhost:8767');
+
+ const dot = document.getElementById('wsDot');
+ const lbl = document.getElementById('wsLabel');
+
+ ws.onopen = () => {
+
+  dot.className = 'ws-dot on';
+
+  lbl.textContent = 'LIVE — ws://localhost:8767';
+
+  addLog(
+    'safe',
+    'Master Bridge connected',
+    'Live'
+  );
  };
 
- ws.onmessage=e=>{
-  try{
-   const data=JSON.parse(e.data);
-   if(data.type==='init'||data.type==='update'){
-    processData(data.state,data.evidence,data.new||[]);
-   }
-  }catch(err){
-   console.error('Surveillance event parse error:',err);
+ ws.onmessage = e => {
+
+  try {
+
+    const data = JSON.parse(e.data);
+
+    console.log('[MASTER BRIDGE]', data);
+
+    /*
+       Master Bridge se:
+       RFID
+       FIRE
+       SMART DUSTBIN
+       INTRUDER
+       sab isi WebSocket se aayega.
+    */
+
+    if (
+      data.type === 'init' ||
+      data.type === 'update'
+    ) {
+
+      processData(
+        data.state,
+        data.evidence,
+        data.new || []
+      );
+
+    }
+
+    /*
+       Existing Smart Dustbin / RFID data
+    */
+
+    else if (data.type === 'users') {
+
+      console.log(
+        '[SMART DUSTBIN USERS]',
+        data.data
+      );
+
+      // Yahan tera existing
+      // Smart Dustbin UI handler rahega.
+    }
+
+    /*
+       RFID
+    */
+
+    else if (data.project === 'rfid') {
+
+      console.log(
+        '[RFID]',
+        data
+      );
+
+      // RFID UI handler yahan.
+    }
+
+    /*
+       FIRE
+    */
+
+    else if (data.project === 'fire') {
+
+      console.log(
+        '[FIRE]',
+        data
+      );
+
+      // Fire UI handler yahan.
+    }
+
+  } catch(err) {
+
+    console.error(
+      'Master Bridge data error:',
+      err
+    );
+
   }
  };
 
- ws.onclose=()=>{
-  dot.className='ws-dot';
-  lbl.textContent='DISCONNECTED — Retrying...';
+ ws.onclose = () => {
+
+  dot.className = 'ws-dot';
+
+  lbl.textContent =
+    'DISCONNECTED — Retrying...';
+
   clearTimeout(reconnectTimer);
-  reconnectTimer=setTimeout(connect,3000);
+
+  reconnectTimer =
+    setTimeout(connect, 3000);
  };
 
- ws.onerror=()=>ws.close();
+ ws.onerror = () => {
+
+  try {
+    ws.close();
+  } catch(err) {}
+
+ };
 }
 
 async function pollHTTP(){
