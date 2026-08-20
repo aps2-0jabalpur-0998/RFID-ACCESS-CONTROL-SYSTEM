@@ -503,6 +503,54 @@ function addToHistory(data){
   document.getElementById("historyCount").textContent=history.length+" EVENTS";
 }
 
+async function sendJarvisAlert(
+    project,
+    title,
+    message,
+    severity = "warning"
+) {
+
+    try {
+
+        const response = await fetch(
+            "http://localhost:5000/send-alert",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    project: project,
+
+                    title: title,
+
+                    message: message,
+
+                    severity: severity
+
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        console.log(
+            "🚨 Jarvis alert sent:",
+            result
+        );
+
+    } catch (error) {
+
+        console.error(
+            "❌ Could not send Jarvis alert:",
+            error
+        );
+    }
+}
+  
 function updateStats(data){
   stats.total++;
   if(data.access==="GRANTED")stats.granted++;
