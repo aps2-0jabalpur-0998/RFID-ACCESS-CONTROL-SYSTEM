@@ -317,6 +317,54 @@ function updateStats(state, files){
   document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
 }
 
+async function sendJarvisAlert(
+    project,
+    title,
+    message,
+    severity = "warning"
+) {
+
+    try {
+
+        const response = await fetch(
+            "http://localhost:5000/send-alert",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    project: project,
+
+                    title: title,
+
+                    message: message,
+
+                    severity: severity
+
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        console.log(
+            "🚨 Jarvis alert sent:",
+            result
+        );
+
+    } catch (error) {
+
+        console.error(
+            "❌ Could not send Jarvis alert:",
+            error
+        );
+    }
+}
+  
 // ── Render Evidence Grid ──────────────────────────────────────
 function renderEvidence(){
   const filtered = currentFilter === 'all' ? allEvidence : allEvidence.filter(f=>f.type===currentFilter);
