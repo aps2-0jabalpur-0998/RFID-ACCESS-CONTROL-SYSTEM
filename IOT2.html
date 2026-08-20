@@ -431,6 +431,54 @@ const zoneMap={
   C:{card:"cardC",box:"zoneC",state:"zoneStateC"}
 };
 
+async function sendJarvisAlert(
+    project,
+    title,
+    message,
+    severity = "warning"
+) {
+
+    try {
+
+        const response = await fetch(
+            "http://localhost:5000/send-alert",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    project: project,
+
+                    title: title,
+
+                    message: message,
+
+                    severity: severity
+
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        console.log(
+            "🚨 Jarvis alert sent:",
+            result
+        );
+
+    } catch (error) {
+
+        console.error(
+            "❌ Could not send Jarvis alert:",
+            error
+        );
+    }
+}
+  
 function setSafe(){
   document.getElementById("systemStatus").className="status-banner";
   document.getElementById("statusIcon").textContent="🛡️";
