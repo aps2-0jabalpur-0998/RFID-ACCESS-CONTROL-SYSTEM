@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GuardianEye — JARVIS Web</title>
+
+<style>
+:root {
+    --bg: #04080d;
+    --panel: rgba(8, 18, 28, 0.88);
+    --line: rgba(70, 220, 255, 0.28);
+    --cyan: #42e8ff;
+    --cyan2: #0aa9d2;
+    --green: #53ff9d;
+    --red: #ff4b61;
+    --amber: #ffd166;
+    --text: #e9fbff;
+    --muted: #7f9da8;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 80% 20%, rgba(0, 190, 255, 0.08), transparent 25%),
+        radial-gradient(circle at 15% 80%, rgba(0, 255, 170, 0.05), transparent 25%),
+        var(--bg);
+    color: var(--text);
+    font-family: Inter, Segoe UI, Arial, sans-serif;
+    overflow: hidden;
+}
+
+.dashboard {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+.grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(80, 220, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(80, 220, 255, 0.035) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+}
+
+.header {
+    position: absolute;
+    top: 24px;
+    left: 32px;
+    right: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 2;
+}
+
+.brand {
+    letter-spacing: 0.18em;
+    font-size: 14px;
+    color: var(--cyan);
+    text-transform: uppercase;
+}
+
+.status {
+    font-size: 12px;
+    color: var(--green);
+    border: 1px solid rgba(83, 255, 157, 0.35);
+    border-radius: 999px;
+    padding: 7px 12px;
+    background: rgba(83, 255, 157, 0.06);
+}
+
+.center {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+}
+
+.jarvis {
+    width: min(35vw, 420px);
+    min-width: 300px;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.face-ring {
+    width: 76%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    box-shadow:
+        0 0 30px rgba(66, 232, 255, 0.10),
+        inset 0 0 30px rgba(66, 232, 255, 0.05);
+    position: relative;
+}
+
+.face-ring::before,
+.face-ring::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    border-radius: 50%;
+    border: 1px solid rgba(66, 232, 255, 0.10);
+}
+
+.face-ring::before {
+    width: 84%;
+    height: 84%;
+}
+
+.face-ring::after {
+    width: 92%;
+    height: 92%;
+}
+
+.eye {
+    position: absolute;
+    top: 38%;
+    width: 14%;
+    height: 7%;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 18px rgba(66, 232, 255, 0.8);
+    transition: 0.25s;
+}
+
+.eye.left {
+    left: 27%;
+}
+
+.eye.right {
+    right: 27%;
+}
+
+.mouth {
+    position: absolute;
+    left: 50%;
+    bottom: 28%;
+    translate: -50% 0;
+    width: 26%;
+    height: 5%;
+    border: 2px solid var(--cyan);
+    border-top: none;
+    border-radius: 0 0 999px 999px;
+    transition: height 0.08s ease, width 0.08s ease;
+    box-shadow: 0 0 12px rgba(66, 232, 255, 0.35);
+}
+
+.jarvis.speaking .mouth {
+    width: 32%;
+    height: 16%;
+    animation: talk 0.16s infinite alternate;
+}
+
+@keyframes talk {
+    from { transform: translateX(-50%) scaleY(0.35); }
+    to   { transform: translateX(-50%) scaleY(1); }
+}
+
+.jarvis.alert .face-ring {
+    border-color: rgba(255, 75, 97, 0.7);
+    box-shadow:
+        0 0 45px rgba(255, 75, 97, 0.22),
+        inset 0 0 35px rgba(255, 75, 97, 0.08);
+}
+
+.jarvis.alert .eye,
+.jarvis.alert .mouth {
+    border-color: var(--red);
+    background: var(--red);
+    box-shadow: 0 0 18px rgba(255, 75, 97, 0.75);
+}
+
+.jarvis.safe .face-ring {
+    border-color: rgba(83, 255, 157, 0.55);
+}
+
+.jarvis.safe .eye {
+    background: var(--green);
+    box-shadow: 0 0 18px rgba(83, 255, 157, 0.65);
+}
+
+.jarvis.safe .mouth {
+    border-color: var(--green);
+}
+
+.message {
+    margin-top: 26px;
+    text-align: center;
+    width: min(760px, 90vw);
+}
+
+.message .title {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+
+.message .speech {
+    font-size: clamp(18px, 2vw, 26px);
+    line-height: 1.45;
+    color: var(--text);
+    text-shadow: 0 0 20px rgba(66, 232, 255, 0.12);
+}
+
+.side {
+    position: absolute;
+    left: 28px;
+    bottom: 28px;
+    width: min(360px, 33vw);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+    backdrop-filter: blur(12px);
+}
+
+.side .label {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.type {
+    margin-top: 8px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.raw {
+    margin-top: 12px;
+    max-height: 120px;
+    overflow: auto;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #a9c5ce;
+    white-space: pre-wrap;
+}
+
+.time {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.hint {
+    position: absolute;
+    right: 28px;
+    bottom: 28px;
+    color: var(--muted);
+    font-size: 11px;
+    text-align: right;
+    line-height: 1.6;
+}
+
+button {
+    margin-top: 10px;
+    background: transparent;
+    color: var(--cyan);
+    border: 1px solid rgba(66, 232, 255, 0.35);
+    border-radius: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: rgba(66, 232, 255, 0.08);
+}
+</style>
+</head>
+
+<body>
+<div class="dashboard">
+    <div class="grid"></div>
+
+    <div class="header">
+        <div class="brand">GUARDIANEYE / JARVIS WEB</div>
+        <div id="status" class="status">CONNECTING</div>
+    </div>
+
+    <div class="center">
+        <div id="jarvis" class="jarvis">
+            <div class="face-ring">
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+                <div class="mouth"></div>
+            </div>
+
+            <div class="message">
+                <div class="title">JARVIS STATUS</div>
+                <div id="speech" class="speech">
+                    Waiting for GuardianEye alert…
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="side">
+        <div class="label">Latest Event</div>
+        <div id="type" class="type">NONE</div>
+        <div id="raw" class="raw">No alert received yet.</div>
+        <div id="time" class="time">—</div>
+        <button id="enableVoice">Enable browser voice</button>
+    </div>
+
+    <div class="hint">
+        Web-only JARVIS<br>
+        No physical servo required
+    </div>
+</div>
+
+<script>
+let lastAlertId = 0;
+let voiceEnabled = false;
+let speaking = false;
+
+const jarvis = document.getElementById("jarvis");
+const statusEl = document.getElementById("status");
+const speechEl = document.getElementById("speech");
+const typeEl = document.getElementById("type");
+const rawEl = document.getElementById("raw");
+const timeEl = document.getElementById("time");
+const enableVoiceBtn = document.getElementById("enableVoice");
+
+enableVoiceBtn.addEventListener("click", () => {
+    voiceEnabled = true;
+
+    const utterance = new SpeechSynthesisUtterance(
+        "JARVIS web voice enabled."
+    );
+
+    utterance.rate = 0.95;
+    utterance.pitch = 0.9;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+
+    enableVoiceBtn.textContent = "Voice enabled";
+});
+
+
+function setMode(type) {
+    jarvis.classList.remove(
+        "alert",
+        "safe"
+    );
+
+    if (
+        type === "INTRUDER" ||
+        type === "UNKNOWN_VEHICLE" ||
+        type === "DANGEROUS"
+    ) {
+        jarvis.classList.add("alert");
+    }
+
+    if (
+        type === "KNOWN_PERSON" ||
+        type === "KNOWN_VEHICLE"
+    ) {
+        jarvis.classList.add("safe");
+    }
+}
+
+
+function speakBrowser(text) {
+    if (!voiceEnabled) {
+        return;
+    }
+
+    if (!("speechSynthesis" in window)) {
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(
+        text
+    );
+
+    utterance.rate = 0.92;
+    utterance.pitch = 0.86;
+    utterance.volume = 1.0;
+
+    utterance.onstart = () => {
+        speaking = true;
+        jarvis.classList.add("speaking");
+    };
+
+    utterance.onend = () => {
+        speaking = false;
+        jarvis.classList.remove("speaking");
+    };
+
+    utterance.onerror = () => {
+        speaking = false;
+        jarvis.classList.remove("speaking");
+    };
+
+    window.speechSynthesis.speak(
+        utterance
+    );
+}
+
+
+function processAlert(alert) {
+    if (!alert || !alert.id) {
+        return;
+    }
+
+    if (alert.id <= lastAlertId) {
+        return;
+    }
+
+    lastAlertId = alert.id;
+
+    statusEl.textContent = "ALERT RECEIVED";
+
+    typeEl.textContent = (
+        alert.type || "ALERT"
+    );
+
+    rawEl.textContent = (
+        alert.raw_message || ""
+    );
+
+    timeEl.textContent = (
+        alert.received_at || ""
+    );
+
+    speechEl.textContent = (
+        alert.speech || ""
+    );
+
+    setMode(
+        alert.type
+    );
+
+    speakBrowser(
+        alert.speech || alert.raw_message
+    );
+
+    setTimeout(
+        () => {
+            if (!speaking) {
+                statusEl.textContent = "JARVIS ONLINE";
+            }
+        },
+        1500
+    );
+}
+
+
+async function pollAlerts() {
+    try {
+        const response = await fetch(
+            "/api/alert",
+            {
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "API unavailable"
+            );
+        }
+
+        const alert = await response.json();
+
+        statusEl.textContent = "JARVIS ONLINE";
+
+        processAlert(
+            alert
+        );
+
+    } catch (error) {
+        statusEl.textContent = "BRIDGE OFFLINE";
+    }
+}
+
+
+setInterval(
+    pollAlerts,
+    500
+);
+
+pollAlerts();
+</script>
+</body>
+</html>
