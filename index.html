@@ -2664,8 +2664,12 @@ body::after{
     right:24px;
     bottom:24px;
     width:320px;
+    display:block;
+    visibility:visible;
+    opacity:1;
+    pointer-events:auto;
     padding:14px;
-    z-index:3000;
+    z-index:10000;
     border:1px solid rgba(57,202,255,.28);
     background:
         linear-gradient(
@@ -2834,6 +2838,124 @@ body::after{
     }
 }
 </style>
+
+<style id="mini-jarvis-style">
+/* Compact JARVIS icon beside the microphone */
+.voice-assistant{
+    gap:10px;
+}
+
+.mini-jarvis-button{
+    width:50px;
+    height:50px;
+    flex:0 0 50px;
+    border-radius:50%;
+    border:1px solid rgba(57,202,255,.45);
+    background:
+        radial-gradient(circle at 50% 42%,
+            rgba(57,202,255,.16),
+            rgba(5,18,28,.98) 72%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:
+        0 0 16px rgba(57,202,255,.16),
+        inset 0 0 14px rgba(57,202,255,.05);
+    transition:.2s ease;
+    padding:0;
+}
+
+.mini-jarvis-button:hover{
+    transform:scale(1.06);
+    border-color:rgba(57,202,255,.75);
+    box-shadow:
+        0 0 22px rgba(57,202,255,.28),
+        inset 0 0 16px rgba(57,202,255,.08);
+}
+
+.mini-jarvis-face{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:1px solid rgba(57,202,255,.30);
+    position:relative;
+    display:block;
+}
+
+.mini-jarvis-eye{
+    position:absolute;
+    top:10px;
+    width:6px;
+    height:3px;
+    border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 6px rgba(57,202,255,.75);
+}
+
+.mini-jarvis-eye.left{ left:8px; }
+.mini-jarvis-eye.right{ right:8px; }
+
+.mini-jarvis-mouth{
+    position:absolute;
+    left:50%;
+    bottom:7px;
+    width:10px;
+    height:2px;
+    transform:translateX(-50%);
+    border-bottom:2px solid var(--cyan);
+    border-radius:0 0 999px 999px;
+}
+
+.mini-jarvis-button.active{
+    border-color:var(--purple);
+    box-shadow:
+        0 0 22px rgba(173,98,255,.30);
+}
+
+.mini-jarvis-button.active .mini-jarvis-eye{
+    background:var(--purple);
+    box-shadow:0 0 7px rgba(173,98,255,.8);
+}
+
+.mini-jarvis-button.active .mini-jarvis-mouth{
+    border-color:var(--purple);
+}
+
+.mini-jarvis-button.speaking .mini-jarvis-mouth{
+    height:8px;
+    animation:miniJarvisTalk .12s infinite alternate;
+}
+
+@keyframes miniJarvisTalk{
+    from{ transform:translateX(-50%) scaleY(.35); }
+    to{ transform:translateX(-50%) scaleY(1); }
+}
+</style>
+
+
+<style id="jarvis-corner-only-style">
+/* JARVIS: compact corner icon only */
+#jarvisAlertWidget{
+    display:none !important;
+}
+
+#miniJarvisButton{
+    position:fixed !important;
+    right:18px !important;
+    bottom:18px !important;
+    width:52px !important;
+    height:52px !important;
+    z-index:20000 !important;
+    display:flex !important;
+}
+
+#miniJarvisButton .mini-jarvis-face{
+    width:34px !important;
+    height:34px !important;
+}
+</style>
+
 </head>
 
 
@@ -6327,7 +6449,22 @@ async function processVoiceCommand(originalText){
 
     <button
         id="voiceButton"
-        class="voice-button"
+        
+<button
+    id="miniJarvisButton"
+    class="mini-jarvis-button"
+    type="button"
+    title="Open JARVIS alert panel"
+    aria-label="Open JARVIS alert panel"
+>
+    <span class="mini-jarvis-face">
+        <span class="mini-jarvis-eye left"></span>
+        <span class="mini-jarvis-eye right"></span>
+        <span class="mini-jarvis-mouth"></span>
+    </span>
+</button>
+
+    class="voice-button"
         onclick="toggleVoiceAssistant()"
     >
         🎙️
@@ -8514,7 +8651,7 @@ setTimeout(sync,100);
         id="jarvisAlertMeta"
         class="jarvis-alert-meta"
     >
-        Telegram bridge: waiting
+        Web JARVIS • waiting for Telegram
     </div>
 
     <button
@@ -8530,8 +8667,6 @@ setTimeout(sync,100);
 
 
 <script>
-</style>
-
 /* =========================================================
    JARVIS WEB ALERT INTEGRATION
    Telegram -> /api/alert -> dashboard face -> browser voice
@@ -8935,6 +9070,44 @@ setTimeout(sync,100);
 
     pollJarvis();
 
+})();
+</script>
+
+
+<script id="mini-jarvis-script">
+(function(){
+    const mini = document.getElementById("miniJarvisButton");
+    const panel = document.getElementById("jarvisAlertWidget");
+
+    if(!mini) return;
+
+    mini.addEventListener("click", function(){
+        mini.classList.toggle("active");
+
+        if(panel){
+            panel.scrollIntoView({
+                behavior:"smooth",
+                block:"nearest"
+            });
+
+            panel.style.display = "block";
+        }
+    });
+
+    /*
+      Keep the mini face animated while the main JARVIS
+      widget is speaking.
+    */
+    const syncSpeaking = () => {
+        const face = document.getElementById("jarvisFace");
+        if(face && face.classList.contains("speaking")){
+            mini.classList.add("speaking");
+        }else{
+            mini.classList.remove("speaking");
+        }
+    };
+
+    setInterval(syncSpeaking, 120);
 })();
 </script>
 
