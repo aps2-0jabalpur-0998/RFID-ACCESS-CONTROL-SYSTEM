@@ -2652,238 +2652,65 @@ body::after{
 </style>
 
 
-<style>
+<style id="ecoguardian-jarvis-mini-css">
 
-<style id="jarvis-web-alert-style">
 /* =========================================================
-   JARVIS WEB ALERT OVERLAY
+   MINI JARVIS — beside existing microphone
 ========================================================= */
 
-.jarvis-alert-widget{
-    position:fixed;
-    right:24px;
-    bottom:24px;
-    width:320px;
-    display:block;
-    visibility:visible;
-    opacity:1;
-    pointer-events:auto;
-    padding:14px;
-    z-index:10000;
-    border:1px solid rgba(57,202,255,.28);
-    background:
-        linear-gradient(
-            145deg,
-            rgba(7,20,29,.97),
-            rgba(2,10,16,.97)
-        );
-    box-shadow:
-        0 18px 45px rgba(0,0,0,.55),
-        0 0 28px rgba(57,202,255,.08);
-    backdrop-filter:blur(14px);
-}
-
-.jarvis-alert-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    color:var(--cyan);
-    font-family:'Orbitron',sans-serif;
-    font-size:9px;
-    letter-spacing:1.4px;
-}
-
-.jarvis-alert-state{
-    color:var(--green);
-    font-family:'Space Mono',monospace;
-    font-size:7px;
-}
-
-.jarvis-face{
-    width:118px;
-    height:118px;
-    margin:12px auto 10px;
-    position:relative;
-    border-radius:50%;
-    border:1px solid rgba(57,202,255,.38);
-    box-shadow:
-        0 0 25px rgba(57,202,255,.10),
-        inset 0 0 22px rgba(57,202,255,.08);
-    transition:.2s;
-}
-
-.jarvis-face::before,
-.jarvis-face::after{
-    content:"";
-    position:absolute;
-    inset:10px;
-    border-radius:50%;
-    border:1px solid rgba(57,202,255,.10);
-}
-
-.jarvis-face::after{
-    inset:20px;
-}
-
-.jarvis-eye{
-    position:absolute;
-    top:39px;
-    width:19px;
-    height:8px;
-    border-radius:50%;
-    background:var(--cyan);
-    box-shadow:0 0 13px rgba(57,202,255,.8);
-}
-
-.jarvis-eye.left{
-    left:29px;
-}
-
-.jarvis-eye.right{
-    right:29px;
-}
-
-.jarvis-mouth{
-    position:absolute;
-    left:50%;
-    bottom:25px;
-    transform:translateX(-50%);
-    width:30px;
-    height:4px;
-    border:2px solid var(--cyan);
-    border-top:0;
-    border-radius:0 0 999px 999px;
-    transition:.06s;
-}
-
-.jarvis-face.speaking .jarvis-mouth{
-    width:40px;
-    height:18px;
-    animation:jarvisTalk .13s infinite alternate;
-}
-
-@keyframes jarvisTalk{
-    from{ transform:translateX(-50%) scaleY(.35); }
-    to{ transform:translateX(-50%) scaleY(1); }
-}
-
-.jarvis-alert-widget.alert .jarvis-face{
-    border-color:rgba(255,72,72,.62);
-    box-shadow:
-        0 0 32px rgba(255,72,72,.18),
-        inset 0 0 24px rgba(255,72,72,.07);
-}
-
-.jarvis-alert-widget.alert .jarvis-eye{
-    background:var(--red);
-    box-shadow:0 0 13px rgba(255,72,72,.8);
-}
-
-.jarvis-alert-widget.alert .jarvis-mouth{
-    border-color:var(--red);
-}
-
-.jarvis-alert-widget.safe .jarvis-face{
-    border-color:rgba(66,223,108,.55);
-}
-
-.jarvis-alert-widget.safe .jarvis-eye{
-    background:var(--green);
-    box-shadow:0 0 13px rgba(66,223,108,.65);
-}
-
-.jarvis-alert-widget.safe .jarvis-mouth{
-    border-color:var(--green);
-}
-
-.jarvis-alert-text{
-    min-height:54px;
-    color:#d9edf4;
-    font-size:10px;
-    line-height:1.55;
-    text-align:center;
-}
-
-.jarvis-alert-meta{
-    margin-top:8px;
-    color:#607d8a;
-    font-family:'Space Mono',monospace;
-    font-size:7px;
-    line-height:1.5;
-    text-align:center;
-    white-space:pre-line;
-}
-
-.jarvis-enable-btn{
-    width:100%;
-    margin-top:10px;
-    padding:8px 10px;
-    border:1px solid rgba(57,202,255,.28);
-    background:rgba(57,202,255,.05);
-    color:var(--cyan);
-    font-family:'Space Mono',monospace;
-    font-size:8px;
-    cursor:pointer;
-}
-
-.jarvis-enable-btn:hover{
-    background:rgba(57,202,255,.10);
-}
-
-@media(max-width:700px){
-    .jarvis-alert-widget{
-        right:12px;
-        bottom:12px;
-        width:min(320px,calc(100vw - 24px));
-    }
-}
-</style>
-
-<style id="mini-jarvis-style">
-/* Compact JARVIS icon beside the microphone */
 .voice-assistant{
+    position:fixed;
+    left:24px;
+    right:auto;
+    bottom:24px;
+    z-index:4000;
+    display:flex;
+    align-items:center;
     gap:10px;
 }
 
-.mini-jarvis-button{
-    width:50px;
-    height:50px;
-    flex:0 0 50px;
+.jarvis-mini-button{
+    width:52px;
+    height:52px;
+    flex:0 0 52px;
+    padding:0;
+    margin:0;
     border-radius:50%;
     border:1px solid rgba(57,202,255,.45);
     background:
-        radial-gradient(circle at 50% 42%,
+        radial-gradient(
+            circle at 50% 42%,
             rgba(57,202,255,.16),
-            rgba(5,18,28,.98) 72%);
+            rgba(4,16,24,.98) 72%
+        );
     display:flex;
     align-items:center;
     justify-content:center;
     cursor:pointer;
     box-shadow:
-        0 0 16px rgba(57,202,255,.16),
+        0 0 18px rgba(57,202,255,.16),
         inset 0 0 14px rgba(57,202,255,.05);
     transition:.2s ease;
-    padding:0;
 }
 
-.mini-jarvis-button:hover{
+.jarvis-mini-button:hover{
     transform:scale(1.06);
-    border-color:rgba(57,202,255,.75);
+    border-color:rgba(57,202,255,.8);
     box-shadow:
-        0 0 22px rgba(57,202,255,.28),
-        inset 0 0 16px rgba(57,202,255,.08);
+        0 0 26px rgba(57,202,255,.28),
+        inset 0 0 18px rgba(57,202,255,.07);
 }
 
-.mini-jarvis-face{
-    width:34px;
-    height:34px;
-    border-radius:50%;
-    border:1px solid rgba(57,202,255,.30);
+.jarvis-mini-face{
     position:relative;
     display:block;
+    width:34px;
+    height:34px;
+    border:1px solid rgba(57,202,255,.30);
+    border-radius:50%;
 }
 
-.mini-jarvis-eye{
+.jarvis-mini-eye{
     position:absolute;
     top:10px;
     width:6px;
@@ -2893,67 +2720,90 @@ body::after{
     box-shadow:0 0 6px rgba(57,202,255,.75);
 }
 
-.mini-jarvis-eye.left{ left:8px; }
-.mini-jarvis-eye.right{ right:8px; }
+.jarvis-mini-eye.left{ left:8px; }
+.jarvis-mini-eye.right{ right:8px; }
 
-.mini-jarvis-mouth{
+.jarvis-mini-mouth{
     position:absolute;
     left:50%;
     bottom:7px;
-    width:10px;
+    width:11px;
     height:2px;
     transform:translateX(-50%);
     border-bottom:2px solid var(--cyan);
     border-radius:0 0 999px 999px;
 }
 
-.mini-jarvis-button.active{
-    border-color:var(--purple);
+.jarvis-mini-button.alert{
+    border-color:rgba(255,72,72,.75);
     box-shadow:
-        0 0 22px rgba(173,98,255,.30);
+        0 0 22px rgba(255,72,72,.28);
 }
 
-.mini-jarvis-button.active .mini-jarvis-eye{
-    background:var(--purple);
-    box-shadow:0 0 7px rgba(173,98,255,.8);
+.jarvis-mini-button.alert
+.jarvis-mini-eye{
+    background:var(--red);
+    box-shadow:0 0 8px rgba(255,72,72,.85);
 }
 
-.mini-jarvis-button.active .mini-jarvis-mouth{
-    border-color:var(--purple);
+.jarvis-mini-button.alert
+.jarvis-mini-mouth{
+    border-color:var(--red);
 }
 
-.mini-jarvis-button.speaking .mini-jarvis-mouth{
-    height:8px;
-    animation:miniJarvisTalk .12s infinite alternate;
+.jarvis-mini-button.safe{
+    border-color:rgba(66,223,108,.62);
+    box-shadow:
+        0 0 20px rgba(66,223,108,.18);
 }
 
-@keyframes miniJarvisTalk{
-    from{ transform:translateX(-50%) scaleY(.35); }
-    to{ transform:translateX(-50%) scaleY(1); }
-}
-</style>
-
-
-<style id="jarvis-corner-only-style">
-/* JARVIS: compact corner icon only */
-#jarvisAlertWidget{
-    display:none !important;
+.jarvis-mini-button.safe
+.jarvis-mini-eye{
+    background:var(--green);
+    box-shadow:0 0 8px rgba(66,223,108,.75);
 }
 
-#miniJarvisButton{
-    position:fixed !important;
-    right:18px !important;
-    bottom:18px !important;
-    width:52px !important;
-    height:52px !important;
-    z-index:20000 !important;
-    display:flex !important;
+.jarvis-mini-button.safe
+.jarvis-mini-mouth{
+    border-color:var(--green);
 }
 
-#miniJarvisButton .mini-jarvis-face{
-    width:34px !important;
-    height:34px !important;
+.jarvis-mini-button.speaking
+.jarvis-mini-mouth{
+    width:15px;
+    height:10px;
+    animation:
+        ecoguardianJarvisTalk
+        .12s infinite alternate;
 }
+
+@keyframes ecoguardianJarvisTalk{
+    from{
+        transform:
+            translateX(-50%)
+            scaleY(.35);
+    }
+
+    to{
+        transform:
+            translateX(-50%)
+            scaleY(1);
+    }
+}
+
+@media(max-width:600px){
+    .voice-assistant{
+        left:15px;
+        bottom:15px;
+    }
+
+    .jarvis-mini-button{
+        width:48px;
+        height:48px;
+        flex-basis:48px;
+    }
+}
+
 </style>
 
 </head>
@@ -6433,38 +6283,30 @@ async function processVoiceCommand(originalText){
 }
 
 </script>
-</script>
-
-
-<!-- =====================================================
-     NOUPE CHATBOT
-===================================================== -->
-
-<script src="https://www.noupe.com/embed/01980cc4a3ab788f92fbee0c70a738e54d73.js"></script>
    <!-- =====================================================
      AI VOICE ASSISTANT
 ===================================================== -->
 
 <div class="voice-assistant">
 
+
+    <button
+        id="jarvisMiniButton"
+        class="jarvis-mini-button"
+        type="button"
+        title="JARVIS alert listener"
+        aria-label="JARVIS alert listener"
+    >
+        <span class="jarvis-mini-face">
+            <span class="jarvis-mini-eye left"></span>
+            <span class="jarvis-mini-eye right"></span>
+            <span class="jarvis-mini-mouth"></span>
+        </span>
+    </button>
+
     <button
         id="voiceButton"
-        
-<button
-    id="miniJarvisButton"
-    class="mini-jarvis-button"
-    type="button"
-    title="Open JARVIS alert panel"
-    aria-label="Open JARVIS alert panel"
->
-    <span class="mini-jarvis-face">
-        <span class="mini-jarvis-eye left"></span>
-        <span class="mini-jarvis-eye right"></span>
-        <span class="mini-jarvis-mouth"></span>
-    </span>
-</button>
-
-    class="voice-button"
+        class="voice-button"
         onclick="toggleVoiceAssistant()"
     >
         🎙️
@@ -8615,381 +8457,272 @@ setTimeout(sync,100);
 </script>
 
 
-<!-- =========================================================
-     JARVIS WEB ALERT WIDGET
-========================================================= -->
-<section
-    id="jarvisAlertWidget"
-    class="jarvis-alert-widget"
-    aria-live="polite"
->
-
-    <div class="jarvis-alert-head">
-        <span>JARVIS SECURITY CORE</span>
-        <span id="jarvisAlertState" class="jarvis-alert-state">
-            ONLINE
-        </span>
-    </div>
-
-    <div
-        id="jarvisFace"
-        class="jarvis-face"
-    >
-        <div class="jarvis-eye left"></div>
-        <div class="jarvis-eye right"></div>
-        <div class="jarvis-mouth"></div>
-    </div>
-
-    <div
-        id="jarvisAlertText"
-        class="jarvis-alert-text"
-    >
-        Waiting for GuardianEye alerts...
-    </div>
-
-    <div
-        id="jarvisAlertMeta"
-        class="jarvis-alert-meta"
-    >
-        Web JARVIS • waiting for Telegram
-    </div>
-
-    <button
-        id="jarvisEnableVoice"
-        class="jarvis-enable-btn"
-        type="button"
-    >
-        ENABLE JARVIS VOICE
-    </button>
-
-</section>
-
-
-
-<script>
+<script id="ecoguardian-jarvis-bridge">
 /* =========================================================
-   JARVIS WEB ALERT INTEGRATION
-   Telegram -> /api/alert -> dashboard face -> browser voice
+   GUARDIANEYE -> ECOGUARDIAN JARVIS WEB BRIDGE
 ========================================================= */
 
 (function(){
 
     "use strict";
 
-    const widget =
+    /*
+      Default:
+        /api/alert
+      works when jarvis_web_server.py serves this dashboard.
+
+      For GitHub Pages, set this BEFORE this script:
+        window.JARVIS_BRIDGE_URL =
+            "https://YOUR-HTTPS-BACKEND/api/alert";
+    */
+
+    const JARVIS_BRIDGE_URL =
+        window.JARVIS_BRIDGE_URL ||
+        "/api/alert";
+
+    const button =
         document.getElementById(
-            "jarvisAlertWidget"
+            "jarvisMiniButton"
         );
 
-    const face =
-        document.getElementById(
-            "jarvisFace"
-        );
-
-    const alertText =
-        document.getElementById(
-            "jarvisAlertText"
-        );
-
-    const alertMeta =
-        document.getElementById(
-            "jarvisAlertMeta"
-        );
-
-    const alertState =
-        document.getElementById(
-            "jarvisAlertState"
-        );
-
-    const enableButton =
-        document.getElementById(
-            "jarvisEnableVoice"
-        );
+    if(!button){
+        return;
+    }
 
     let lastAlertId = 0;
-    let voiceEnabled = false;
     let resetTimer = null;
 
-    function setMode(type){
+    function setMiniMode(type){
 
-        widget.classList.remove(
+        button.classList.remove(
             "alert",
             "safe"
         );
 
-        if(
-            type === "INTRUDER" ||
-            type === "UNKNOWN_VEHICLE" ||
-            type === "DANGEROUS" ||
-            type === "ALERT"
-        ){
+        const normalized =
+            String(type || "")
+                .toUpperCase();
 
-            widget.classList.add(
+        if(
+            normalized === "INTRUDER" ||
+            normalized === "UNKNOWN_VEHICLE" ||
+            normalized === "DANGEROUS" ||
+            normalized === "ALERT"
+        ){
+            button.classList.add(
                 "alert"
             );
-
-        }else if(
-            type === "KNOWN_PERSON" ||
-            type === "KNOWN_VEHICLE"
-        ){
-
-            widget.classList.add(
-                "safe"
-            );
-
         }
 
+        if(
+            normalized === "KNOWN_PERSON" ||
+            normalized === "KNOWN_VEHICLE"
+        ){
+            button.classList.add(
+                "safe"
+            );
+        }
     }
-
-
-    function cleanSpeech(text){
-
-        return String(text || "")
-            .replace(
-                /[*_`#]/g,
-                ""
-            )
-            .replace(
-                /\s+/g,
-                " "
-            )
-            .trim();
-
-    }
-
 
     function speakAlert(text){
 
-        if(
-            !voiceEnabled ||
-            !("speechSynthesis" in window)
-        ){
-
-            return;
-
-        }
-
         const message =
-            cleanSpeech(text);
+            String(text || "")
+                .replace(
+                    /[*_`#]/g,
+                    ""
+                )
+                .replace(
+                    /\s+/g,
+                    " "
+                )
+                .trim();
 
         if(!message){
             return;
         }
 
-        window.speechSynthesis.cancel();
+        /*
+          Reuse the dashboard's existing voice engine.
+          This preserves the mic/voice UI already present
+          in the EcoGuardian dashboard.
+        */
+        if(
+            typeof showVoiceResponse ===
+            "function"
+        ){
 
-        const utterance =
-            new SpeechSynthesisUtterance(
+            showVoiceResponse(
+                message,
+                "GUARDIANEYE ALERT"
+            );
+        }
+
+        if(
+            typeof speak ===
+            "function"
+        ){
+
+            speak(
                 message
             );
 
-        utterance.rate = 0.94;
-        utterance.pitch = 0.92;
-        utterance.volume = 1.0;
-        utterance.lang = "en-IN";
-
-        const voices =
-            window.speechSynthesis
-                .getVoices();
-
-        const preferred =
-            voices.find(
-                voice =>
-                    /en-IN/i.test(
-                        voice.lang
-                    )
-            ) ||
-            voices.find(
-                voice =>
-                    /en-US|en-GB/i.test(
-                        voice.lang
-                    )
-            );
-
-        if(preferred){
-            utterance.voice =
-                preferred;
+            return;
         }
 
-        utterance.onstart = function(){
-
-            face.classList.add(
-                "speaking"
-            );
-
-            alertState.textContent =
-                "SPEAKING";
-
-        };
-
-        utterance.onend = function(){
-
-            face.classList.remove(
-                "speaking"
-            );
-
-            alertState.textContent =
-                "ONLINE";
-
-        };
-
-        utterance.onerror = function(){
-
-            face.classList.remove(
-                "speaking"
-            );
-
-            alertState.textContent =
-                "ONLINE";
-
-        };
-
-        window.speechSynthesis.speak(
-            utterance
-        );
-
-    }
-
-
-    enableButton.addEventListener(
-        "click",
-        function(){
-
-            voiceEnabled = true;
-
-            const test =
-                new SpeechSynthesisUtterance(
-                    "JARVIS voice enabled."
-                );
-
-            test.rate = 0.94;
-            test.pitch = 0.92;
-            test.lang = "en-IN";
+        /*
+          Fallback if the dashboard voice engine is unavailable.
+        */
+        if(
+            "speechSynthesis"
+            in
+            window
+        ){
 
             window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(
-                test
-            );
 
-            enableButton.textContent =
-                "JARVIS VOICE ENABLED";
+            const utterance =
+                new SpeechSynthesisUtterance(
+                    message
+                );
 
-            alertState.textContent =
-                "VOICE READY";
+            utterance.rate = 0.94;
+            utterance.pitch = 0.92;
+            utterance.lang = "en-IN";
 
-            /*
-              Also enable the dashboard's existing voice
-              state, if those variables/functions exist.
-            */
-            try{
+            utterance.onstart =
+                function(){
 
-                if(
-                    typeof setVoiceState ===
-                    "function"
-                ){
-
-                    setVoiceState(
-                        "VOICE READY",
-                        "READY"
+                    button.classList.add(
+                        "speaking"
                     );
+                };
 
-                }
+            utterance.onend =
+                function(){
 
-            }catch(error){}
+                    button.classList.remove(
+                        "speaking"
+                    );
+                };
 
+            utterance.onerror =
+                function(){
+
+                    button.classList.remove(
+                        "speaking"
+                    );
+                };
+
+            window.speechSynthesis.speak(
+                utterance
+            );
         }
-    );
-
+    }
 
     function showAlert(alert){
 
         if(
             !alert ||
-            !alert.id ||
-            alert.id <= lastAlertId
+            !alert.id
         ){
-
             return;
-
         }
 
-        lastAlertId =
+        const alertId =
             Number(
                 alert.id
             );
 
-        const type =
-            String(
-                alert.type ||
-                "ALERT"
-            );
+        if(
+            !Number.isFinite(alertId) ||
+            alertId <= lastAlertId
+        ){
+            return;
+        }
 
-        alertText.textContent =
-            alert.speech ||
-            alert.raw_message ||
-            "Security alert received.";
+        lastAlertId =
+            alertId;
 
-        alertMeta.textContent =
-            "TYPE: " +
-            type +
-            "\n" +
-            "TIME: " +
-            (
-                alert.received_at ||
-                "—"
-            );
-
-        setMode(
-            type
+        setMiniMode(
+            alert.type
         );
 
-        alertState.textContent =
-            "ALERT";
-
         /*
-          Reuse the existing dashboard speech engine when
-          available. Otherwise use this widget's Web Speech.
+          Put the alert into the existing Activity / Live Alerts
+          bus when those functions exist.
         */
-        let spokenByExistingEngine = false;
-
         try{
 
             if(
-                typeof speak ===
-                "function"
+                window.live &&
+                Array.isArray(
+                    window.live.alerts
+                )
             ){
 
-                speak(
-                    alert.speech ||
-                    alert.raw_message ||
-                    ""
-                );
+                window.live.alerts.unshift({
+                    type:
+                        alert.type ||
+                        "ALERT",
 
-                spokenByExistingEngine =
-                    true;
+                    text:
+                        alert.speech ||
+                        alert.raw_message ||
+                        "GuardianEye alert",
+
+                    time:
+                        alert.received_at ||
+                        ""
+                });
+
+                if(
+                    window.live.alerts.length
+                    >
+                    20
+                ){
+
+                    window.live.alerts =
+                        window.live.alerts.slice(
+                            0,
+                            20
+                        );
+                }
+
+                if(
+                    typeof renderAlerts ===
+                    "function"
+                ){
+                    renderAlerts();
+                }
+
+                if(
+                    typeof addRealActivity ===
+                    "function"
+                ){
+                    addRealActivity(
+                        "🚨",
+                        alert.speech ||
+                        alert.raw_message ||
+                        "GuardianEye alert"
+                    );
+                }
 
             }
 
         }catch(error){
 
             console.warn(
-                "Existing dashboard speech failed:",
+                "GuardianEye UI integration:",
                 error
             );
 
         }
 
-        if(
-            !spokenByExistingEngine
-        ){
-
-            speakAlert(
-                alert.speech ||
-                alert.raw_message ||
-                ""
-            );
-
-        }
+        speakAlert(
+            alert.speech ||
+            alert.raw_message
+        );
 
         clearTimeout(
             resetTimer
@@ -8999,49 +8732,49 @@ setTimeout(sync,100);
             setTimeout(
                 function(){
 
-                    widget.classList.remove(
+                    button.classList.remove(
                         "alert",
-                        "safe"
+                        "safe",
+                        "speaking"
                     );
-
-                    alertState.textContent =
-                        "ONLINE";
 
                 },
                 10000
             );
-
     }
 
-
-    async function pollJarvis(){
+    async function poll(){
 
         try{
 
             const response =
                 await fetch(
-                    "/api/alert",
+                    JARVIS_BRIDGE_URL,
                     {
+                        method:
+                            "GET",
+
                         cache:
-                            "no-store"
+                            "no-store",
+
+                        headers:{
+                            "Accept":
+                                "application/json"
+                        }
                     }
                 );
 
             if(
                 !response.ok
             ){
-
                 throw new Error(
-                    "JARVIS bridge unavailable"
+                    "HTTP " +
+                    response.status
                 );
-
             }
 
             const alert =
                 await response.json();
-
-            alertState.textContent =
-                "ONLINE";
 
             showAlert(
                 alert
@@ -9049,65 +8782,52 @@ setTimeout(sync,100);
 
         }catch(error){
 
-            alertState.textContent =
-                "BRIDGE OFFLINE";
-
-            alertMeta.textContent =
-                "Telegram bridge unavailable";
+            /*
+              Silent fail:
+              the dashboard should work normally when
+              the Telegram bridge is offline.
+            */
+            button.title =
+                "JARVIS bridge offline";
 
         }
 
     }
 
+    button.addEventListener(
+        "click",
+        function(){
+
+            /*
+              Small icon is only the status/shortcut.
+              The existing microphone still controls
+              voice commands.
+            */
+
+            if(
+                typeof showVoiceResponse ===
+                "function"
+            ){
+
+                showVoiceResponse(
+                    "JARVIS GuardianEye alert bridge is connected to this dashboard.",
+                    "JARVIS"
+                );
+            }
+
+        }
+    );
 
     /*
-      Poll every 500 ms.
+      Poll once every 500 ms.
     */
     setInterval(
-        pollJarvis,
+        poll,
         500
     );
 
-    pollJarvis();
+    poll();
 
-})();
-</script>
-
-
-<script id="mini-jarvis-script">
-(function(){
-    const mini = document.getElementById("miniJarvisButton");
-    const panel = document.getElementById("jarvisAlertWidget");
-
-    if(!mini) return;
-
-    mini.addEventListener("click", function(){
-        mini.classList.toggle("active");
-
-        if(panel){
-            panel.scrollIntoView({
-                behavior:"smooth",
-                block:"nearest"
-            });
-
-            panel.style.display = "block";
-        }
-    });
-
-    /*
-      Keep the mini face animated while the main JARVIS
-      widget is speaking.
-    */
-    const syncSpeaking = () => {
-        const face = document.getElementById("jarvisFace");
-        if(face && face.classList.contains("speaking")){
-            mini.classList.add("speaking");
-        }else{
-            mini.classList.remove("speaking");
-        }
-    };
-
-    setInterval(syncSpeaking, 120);
 })();
 </script>
 
