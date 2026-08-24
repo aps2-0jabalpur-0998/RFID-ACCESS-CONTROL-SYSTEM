@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2804,6 +2805,108 @@ body::after{
     }
 }
 
+</style>
+
+
+<style id="guardianeye-fullscreen-alert-css">
+#guardianEyeFullscreenAlert{
+    position:fixed;
+    inset:0;
+    z-index:50000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,72,72,.18),
+            rgba(120,0,0,.52)
+        ),
+        rgba(40,0,0,.72);
+    backdrop-filter:blur(5px);
+    pointer-events:none;
+}
+
+#guardianEyeFullscreenAlert.show{
+    display:flex;
+    animation:guardianAlertFlash .22s ease-out;
+}
+
+@keyframes guardianAlertFlash{
+    from{opacity:0;}
+    to{opacity:1;}
+}
+
+.guardian-alert-box{
+    width:min(900px,92vw);
+    min-height:300px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:34px;
+    border:2px solid rgba(255,110,110,.75);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(35,3,8,.96),
+            rgba(75,0,8,.90)
+        );
+    box-shadow:
+        0 0 70px rgba(255,40,40,.32),
+        inset 0 0 50px rgba(255,70,70,.08);
+}
+
+.guardian-alert-icon{
+    width:86px;
+    height:86px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:18px;
+    border-radius:50%;
+    border:2px solid rgba(255,110,110,.8);
+    color:#fff;
+    font-size:40px;
+    box-shadow:
+        0 0 35px rgba(255,60,60,.35);
+    animation:guardianAlertPulse 1s infinite;
+}
+
+@keyframes guardianAlertPulse{
+    50%{
+        transform:scale(1.06);
+        box-shadow:
+            0 0 55px rgba(255,60,60,.52);
+    }
+}
+
+.guardian-alert-title{
+    color:#fff;
+    font-family:'Orbitron',sans-serif;
+    font-size:clamp(26px,4vw,52px);
+    letter-spacing:4px;
+    text-transform:uppercase;
+}
+
+.guardian-alert-message{
+    margin-top:14px;
+    max-width:800px;
+    color:#ffe9e9;
+    font-family:'Space Mono',monospace;
+    font-size:clamp(13px,1.5vw,19px);
+    line-height:1.65;
+}
+
+.guardian-alert-time{
+    margin-top:18px;
+    color:#ffb1b1;
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    letter-spacing:1px;
+}
 </style>
 
 </head>
@@ -8620,6 +8723,105 @@ setTimeout(sync,100);
         }
     }
 
+    function showGuardianFullscreenAlert(alert){
+
+        const overlay =
+            document.getElementById(
+                "guardianEyeFullscreenAlert"
+            );
+
+        const title =
+            document.getElementById(
+                "guardianAlertTitle"
+            );
+
+        const message =
+            document.getElementById(
+                "guardianAlertMessage"
+            );
+
+        const time =
+            document.getElementById(
+                "guardianAlertTime"
+            );
+
+        const icon =
+            document.getElementById(
+                "guardianAlertIcon"
+            );
+
+        if(!overlay){
+            return;
+        }
+
+        const type =
+            String(
+                alert.type || "ALERT"
+            ).toUpperCase();
+
+        if(
+            type === "DANGEROUS"
+        ){
+            title.textContent =
+                "DANGEROUS";
+            icon.textContent = "⚠";
+        }else if(
+            type === "INTRUDER"
+        ){
+            title.textContent =
+                "INTRUDER DETECTED";
+            icon.textContent = "🚨";
+        }else if(
+            type === "UNKNOWN_VEHICLE"
+        ){
+            title.textContent =
+                "UNKNOWN VEHICLE";
+            icon.textContent = "🚗";
+        }else{
+            title.textContent =
+                "SECURITY ALERT";
+            icon.textContent = "⚠";
+        }
+
+        message.textContent =
+            alert.speech ||
+            alert.raw_message ||
+            "GuardianEye alert received.";
+
+        time.textContent =
+            alert.received_at ||
+            "";
+
+        overlay.classList.add(
+            "show"
+        );
+
+        overlay.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        window.clearTimeout(
+            window.guardianEyeAlertTimer
+        );
+
+        window.guardianEyeAlertTimer =
+            window.setTimeout(
+                function(){
+                    overlay.classList.remove(
+                        "show"
+                    );
+
+                    overlay.setAttribute(
+                        "aria-hidden",
+                        "true"
+                    );
+                },
+                9000
+            );
+    }
+
+
     function showAlert(alert){
 
         if(
@@ -8646,6 +8848,10 @@ setTimeout(sync,100);
 
         setMiniMode(
             alert.type
+        );
+
+        showGuardianFullscreenAlert(
+            alert
         );
 
         /*
@@ -8830,6 +9036,26 @@ setTimeout(sync,100);
 
 })();
 </script>
+
+
+<div
+    id="guardianEyeFullscreenAlert"
+    aria-live="assertive"
+    aria-hidden="true"
+>
+    <div class="guardian-alert-box">
+        <div class="guardian-alert-icon" id="guardianAlertIcon">⚠</div>
+        <div class="guardian-alert-title" id="guardianAlertTitle">
+            SECURITY ALERT
+        </div>
+        <div class="guardian-alert-message" id="guardianAlertMessage">
+            GuardianEye alert received.
+        </div>
+        <div class="guardian-alert-time" id="guardianAlertTime">
+            —
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
