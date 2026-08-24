@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8562,26 +8563,20 @@ setTimeout(sync,100);
 
 <script id="ecoguardian-jarvis-bridge">
 /* =========================================================
-   GUARDIANEYE -> ECOGUARDIAN JARVIS WEB BRIDGE
+   GUARDIANEYE -> GITHUB PAGES JARVIS BRIDGE
+
+   The public HTML NEVER contains a Telegram token.
+
+   GitHub Actions reads Telegram using secrets, writes the
+   latest GuardianEye alert to alerts.json, and GitHub Pages
+   reads that file.
 ========================================================= */
 
 (function(){
 
     "use strict";
 
-    /*
-      Default:
-        /api/alert
-      works when jarvis_web_server.py serves this dashboard.
-
-      For GitHub Pages, set this BEFORE this script:
-        window.JARVIS_BRIDGE_URL =
-            "https://YOUR-HTTPS-BACKEND/api/alert";
-    */
-
-    const JARVIS_BRIDGE_URL =
-        window.JARVIS_BRIDGE_URL ||
-        "/api/alert";
+    const ALERT_FEED = "alerts.json";
 
     const button =
         document.getElementById(
@@ -8627,6 +8622,7 @@ setTimeout(sync,100);
         }
     }
 
+
     function speakAlert(text){
 
         const message =
@@ -8645,11 +8641,6 @@ setTimeout(sync,100);
             return;
         }
 
-        /*
-          Reuse the dashboard's existing voice engine.
-          This preserves the mic/voice UI already present
-          in the EcoGuardian dashboard.
-        */
         if(
             typeof showVoiceResponse ===
             "function"
@@ -8673,9 +8664,6 @@ setTimeout(sync,100);
             return;
         }
 
-        /*
-          Fallback if the dashboard voice engine is unavailable.
-        */
         if(
             "speechSynthesis"
             in
@@ -8695,7 +8683,6 @@ setTimeout(sync,100);
 
             utterance.onstart =
                 function(){
-
                     button.classList.add(
                         "speaking"
                     );
@@ -8703,7 +8690,6 @@ setTimeout(sync,100);
 
             utterance.onend =
                 function(){
-
                     button.classList.remove(
                         "speaking"
                     );
@@ -8711,7 +8697,6 @@ setTimeout(sync,100);
 
             utterance.onerror =
                 function(){
-
                     button.classList.remove(
                         "speaking"
                     );
@@ -8722,6 +8707,7 @@ setTimeout(sync,100);
             );
         }
     }
+
 
     function showGuardianFullscreenAlert(alert){
 
@@ -8759,25 +8745,26 @@ setTimeout(sync,100);
                 alert.type || "ALERT"
             ).toUpperCase();
 
-        if(
-            type === "DANGEROUS"
-        ){
+        if(type === "DANGEROUS"){
+
             title.textContent =
                 "DANGEROUS";
             icon.textContent = "⚠";
-        }else if(
-            type === "INTRUDER"
-        ){
+
+        }else if(type === "INTRUDER"){
+
             title.textContent =
                 "INTRUDER DETECTED";
             icon.textContent = "🚨";
-        }else if(
-            type === "UNKNOWN_VEHICLE"
-        ){
+
+        }else if(type === "UNKNOWN_VEHICLE"){
+
             title.textContent =
                 "UNKNOWN VEHICLE";
             icon.textContent = "🚗";
+
         }else{
+
             title.textContent =
                 "SECURITY ALERT";
             icon.textContent = "⚠";
@@ -8808,6 +8795,7 @@ setTimeout(sync,100);
         window.guardianEyeAlertTimer =
             window.setTimeout(
                 function(){
+
                     overlay.classList.remove(
                         "show"
                     );
@@ -8816,8 +8804,9 @@ setTimeout(sync,100);
                         "aria-hidden",
                         "true"
                     );
+
                 },
-                9000
+                3500
             );
     }
 
@@ -8854,66 +8843,34 @@ setTimeout(sync,100);
             alert
         );
 
-        /*
-          Put the alert into the existing Activity / Live Alerts
-          bus when those functions exist.
-        */
         try{
 
             if(
-                window.live &&
-                Array.isArray(
-                    window.live.alerts
-                )
+                typeof addRealActivity ===
+                "function"
             ){
 
-                window.live.alerts.unshift({
-                    type:
-                        alert.type ||
-                        "ALERT",
+                addRealActivity(
+                    "🚨",
+                    alert.speech ||
+                    alert.raw_message ||
+                    "GuardianEye alert"
+                );
+            }
 
-                    text:
-                        alert.speech ||
-                        alert.raw_message ||
-                        "GuardianEye alert",
+            if(
+                typeof addRealAlert ===
+                "function"
+            ){
 
-                    time:
-                        alert.received_at ||
-                        ""
-                });
-
-                if(
-                    window.live.alerts.length
-                    >
-                    20
-                ){
-
-                    window.live.alerts =
-                        window.live.alerts.slice(
-                            0,
-                            20
-                        );
-                }
-
-                if(
-                    typeof renderAlerts ===
-                    "function"
-                ){
-                    renderAlerts();
-                }
-
-                if(
-                    typeof addRealActivity ===
-                    "function"
-                ){
-                    addRealActivity(
-                        "🚨",
-                        alert.speech ||
-                        alert.raw_message ||
-                        "GuardianEye alert"
-                    );
-                }
-
+                addRealAlert(
+                    "warning",
+                    alert.type ||
+                    "ALERT",
+                    alert.speech ||
+                    alert.raw_message ||
+                    "GuardianEye alert"
+                );
             }
 
         }catch(error){
@@ -8922,7 +8879,6 @@ setTimeout(sync,100);
                 "GuardianEye UI integration:",
                 error
             );
-
         }
 
         speakAlert(
@@ -8949,20 +8905,21 @@ setTimeout(sync,100);
             );
     }
 
+
     async function poll(){
 
         try{
 
             const response =
                 await fetch(
-                    JARVIS_BRIDGE_URL,
+                    ALERT_FEED +
+                    "?t=" +
+                    Date.now(),
                     {
                         method:
                             "GET",
-
                         cache:
                             "no-store",
-
                         headers:{
                             "Accept":
                                 "application/json"
@@ -8988,27 +8945,15 @@ setTimeout(sync,100);
 
         }catch(error){
 
-            /*
-              Silent fail:
-              the dashboard should work normally when
-              the Telegram bridge is offline.
-            */
             button.title =
-                "JARVIS bridge offline";
-
+                "GuardianEye feed unavailable";
         }
-
     }
+
 
     button.addEventListener(
         "click",
         function(){
-
-            /*
-              Small icon is only the status/shortcut.
-              The existing microphone still controls
-              voice commands.
-            */
 
             if(
                 typeof showVoiceResponse ===
@@ -9016,20 +8961,16 @@ setTimeout(sync,100);
             ){
 
                 showVoiceResponse(
-                    "JARVIS GuardianEye alert bridge is connected to this dashboard.",
+                    "JARVIS is connected to the GuardianEye GitHub alert feed.",
                     "JARVIS"
                 );
             }
-
         }
     );
 
-    /*
-      Poll once every 500 ms.
-    */
     setInterval(
         poll,
-        500
+        2000
     );
 
     poll();
