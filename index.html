@@ -2651,6 +2651,187 @@ body::after{
 .live.offline { color:var(--muted)!important; }
 </style>
 
+
+<style>
+/* =========================================================
+   JARVIS WEB ALERT OVERLAY
+========================================================= */
+
+.jarvis-alert-widget{
+    position:fixed;
+    right:24px;
+    bottom:24px;
+    width:320px;
+    padding:14px;
+    z-index:3000;
+    border:1px solid rgba(57,202,255,.28);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(7,20,29,.97),
+            rgba(2,10,16,.97)
+        );
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.55),
+        0 0 28px rgba(57,202,255,.08);
+    backdrop-filter:blur(14px);
+}
+
+.jarvis-alert-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:var(--cyan);
+    font-family:'Orbitron',sans-serif;
+    font-size:9px;
+    letter-spacing:1.4px;
+}
+
+.jarvis-alert-state{
+    color:var(--green);
+    font-family:'Space Mono',monospace;
+    font-size:7px;
+}
+
+.jarvis-face{
+    width:118px;
+    height:118px;
+    margin:12px auto 10px;
+    position:relative;
+    border-radius:50%;
+    border:1px solid rgba(57,202,255,.38);
+    box-shadow:
+        0 0 25px rgba(57,202,255,.10),
+        inset 0 0 22px rgba(57,202,255,.08);
+    transition:.2s;
+}
+
+.jarvis-face::before,
+.jarvis-face::after{
+    content:"";
+    position:absolute;
+    inset:10px;
+    border-radius:50%;
+    border:1px solid rgba(57,202,255,.10);
+}
+
+.jarvis-face::after{
+    inset:20px;
+}
+
+.jarvis-eye{
+    position:absolute;
+    top:39px;
+    width:19px;
+    height:8px;
+    border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 13px rgba(57,202,255,.8);
+}
+
+.jarvis-eye.left{
+    left:29px;
+}
+
+.jarvis-eye.right{
+    right:29px;
+}
+
+.jarvis-mouth{
+    position:absolute;
+    left:50%;
+    bottom:25px;
+    transform:translateX(-50%);
+    width:30px;
+    height:4px;
+    border:2px solid var(--cyan);
+    border-top:0;
+    border-radius:0 0 999px 999px;
+    transition:.06s;
+}
+
+.jarvis-face.speaking .jarvis-mouth{
+    width:40px;
+    height:18px;
+    animation:jarvisTalk .13s infinite alternate;
+}
+
+@keyframes jarvisTalk{
+    from{ transform:translateX(-50%) scaleY(.35); }
+    to{ transform:translateX(-50%) scaleY(1); }
+}
+
+.jarvis-alert-widget.alert .jarvis-face{
+    border-color:rgba(255,72,72,.62);
+    box-shadow:
+        0 0 32px rgba(255,72,72,.18),
+        inset 0 0 24px rgba(255,72,72,.07);
+}
+
+.jarvis-alert-widget.alert .jarvis-eye{
+    background:var(--red);
+    box-shadow:0 0 13px rgba(255,72,72,.8);
+}
+
+.jarvis-alert-widget.alert .jarvis-mouth{
+    border-color:var(--red);
+}
+
+.jarvis-alert-widget.safe .jarvis-face{
+    border-color:rgba(66,223,108,.55);
+}
+
+.jarvis-alert-widget.safe .jarvis-eye{
+    background:var(--green);
+    box-shadow:0 0 13px rgba(66,223,108,.65);
+}
+
+.jarvis-alert-widget.safe .jarvis-mouth{
+    border-color:var(--green);
+}
+
+.jarvis-alert-text{
+    min-height:54px;
+    color:#d9edf4;
+    font-size:10px;
+    line-height:1.55;
+    text-align:center;
+}
+
+.jarvis-alert-meta{
+    margin-top:8px;
+    color:#607d8a;
+    font-family:'Space Mono',monospace;
+    font-size:7px;
+    line-height:1.5;
+    text-align:center;
+    white-space:pre-line;
+}
+
+.jarvis-enable-btn{
+    width:100%;
+    margin-top:10px;
+    padding:8px 10px;
+    border:1px solid rgba(57,202,255,.28);
+    background:rgba(57,202,255,.05);
+    color:var(--cyan);
+    font-family:'Space Mono',monospace;
+    font-size:8px;
+    cursor:pointer;
+}
+
+.jarvis-enable-btn:hover{
+    background:rgba(57,202,255,.10);
+}
+
+@media(max-width:700px){
+    .jarvis-alert-widget{
+        right:12px;
+        bottom:12px;
+        width:min(320px,calc(100vw - 24px));
+    }
+}
+
 </head>
 
 
@@ -8290,6 +8471,467 @@ setTimeout(sync,100);
     }
 
     requestLocation();
+
+})();
+</script>
+
+
+<!-- =========================================================
+     JARVIS WEB ALERT WIDGET
+========================================================= -->
+<section
+    id="jarvisAlertWidget"
+    class="jarvis-alert-widget"
+    aria-live="polite"
+>
+
+    <div class="jarvis-alert-head">
+        <span>JARVIS SECURITY CORE</span>
+        <span id="jarvisAlertState" class="jarvis-alert-state">
+            ONLINE
+        </span>
+    </div>
+
+    <div
+        id="jarvisFace"
+        class="jarvis-face"
+    >
+        <div class="jarvis-eye left"></div>
+        <div class="jarvis-eye right"></div>
+        <div class="jarvis-mouth"></div>
+    </div>
+
+    <div
+        id="jarvisAlertText"
+        class="jarvis-alert-text"
+    >
+        Waiting for GuardianEye alerts...
+    </div>
+
+    <div
+        id="jarvisAlertMeta"
+        class="jarvis-alert-meta"
+    >
+        Telegram bridge: waiting
+    </div>
+
+    <button
+        id="jarvisEnableVoice"
+        class="jarvis-enable-btn"
+        type="button"
+    >
+        ENABLE JARVIS VOICE
+    </button>
+
+</section>
+
+
+
+<script>
+</style>
+
+/* =========================================================
+   JARVIS WEB ALERT INTEGRATION
+   Telegram -> /api/alert -> dashboard face -> browser voice
+========================================================= */
+
+(function(){
+
+    "use strict";
+
+    const widget =
+        document.getElementById(
+            "jarvisAlertWidget"
+        );
+
+    const face =
+        document.getElementById(
+            "jarvisFace"
+        );
+
+    const alertText =
+        document.getElementById(
+            "jarvisAlertText"
+        );
+
+    const alertMeta =
+        document.getElementById(
+            "jarvisAlertMeta"
+        );
+
+    const alertState =
+        document.getElementById(
+            "jarvisAlertState"
+        );
+
+    const enableButton =
+        document.getElementById(
+            "jarvisEnableVoice"
+        );
+
+    let lastAlertId = 0;
+    let voiceEnabled = false;
+    let resetTimer = null;
+
+    function setMode(type){
+
+        widget.classList.remove(
+            "alert",
+            "safe"
+        );
+
+        if(
+            type === "INTRUDER" ||
+            type === "UNKNOWN_VEHICLE" ||
+            type === "DANGEROUS" ||
+            type === "ALERT"
+        ){
+
+            widget.classList.add(
+                "alert"
+            );
+
+        }else if(
+            type === "KNOWN_PERSON" ||
+            type === "KNOWN_VEHICLE"
+        ){
+
+            widget.classList.add(
+                "safe"
+            );
+
+        }
+
+    }
+
+
+    function cleanSpeech(text){
+
+        return String(text || "")
+            .replace(
+                /[*_`#]/g,
+                ""
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+    }
+
+
+    function speakAlert(text){
+
+        if(
+            !voiceEnabled ||
+            !("speechSynthesis" in window)
+        ){
+
+            return;
+
+        }
+
+        const message =
+            cleanSpeech(text);
+
+        if(!message){
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        const utterance =
+            new SpeechSynthesisUtterance(
+                message
+            );
+
+        utterance.rate = 0.94;
+        utterance.pitch = 0.92;
+        utterance.volume = 1.0;
+        utterance.lang = "en-IN";
+
+        const voices =
+            window.speechSynthesis
+                .getVoices();
+
+        const preferred =
+            voices.find(
+                voice =>
+                    /en-IN/i.test(
+                        voice.lang
+                    )
+            ) ||
+            voices.find(
+                voice =>
+                    /en-US|en-GB/i.test(
+                        voice.lang
+                    )
+            );
+
+        if(preferred){
+            utterance.voice =
+                preferred;
+        }
+
+        utterance.onstart = function(){
+
+            face.classList.add(
+                "speaking"
+            );
+
+            alertState.textContent =
+                "SPEAKING";
+
+        };
+
+        utterance.onend = function(){
+
+            face.classList.remove(
+                "speaking"
+            );
+
+            alertState.textContent =
+                "ONLINE";
+
+        };
+
+        utterance.onerror = function(){
+
+            face.classList.remove(
+                "speaking"
+            );
+
+            alertState.textContent =
+                "ONLINE";
+
+        };
+
+        window.speechSynthesis.speak(
+            utterance
+        );
+
+    }
+
+
+    enableButton.addEventListener(
+        "click",
+        function(){
+
+            voiceEnabled = true;
+
+            const test =
+                new SpeechSynthesisUtterance(
+                    "JARVIS voice enabled."
+                );
+
+            test.rate = 0.94;
+            test.pitch = 0.92;
+            test.lang = "en-IN";
+
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(
+                test
+            );
+
+            enableButton.textContent =
+                "JARVIS VOICE ENABLED";
+
+            alertState.textContent =
+                "VOICE READY";
+
+            /*
+              Also enable the dashboard's existing voice
+              state, if those variables/functions exist.
+            */
+            try{
+
+                if(
+                    typeof setVoiceState ===
+                    "function"
+                ){
+
+                    setVoiceState(
+                        "VOICE READY",
+                        "READY"
+                    );
+
+                }
+
+            }catch(error){}
+
+        }
+    );
+
+
+    function showAlert(alert){
+
+        if(
+            !alert ||
+            !alert.id ||
+            alert.id <= lastAlertId
+        ){
+
+            return;
+
+        }
+
+        lastAlertId =
+            Number(
+                alert.id
+            );
+
+        const type =
+            String(
+                alert.type ||
+                "ALERT"
+            );
+
+        alertText.textContent =
+            alert.speech ||
+            alert.raw_message ||
+            "Security alert received.";
+
+        alertMeta.textContent =
+            "TYPE: " +
+            type +
+            "\n" +
+            "TIME: " +
+            (
+                alert.received_at ||
+                "—"
+            );
+
+        setMode(
+            type
+        );
+
+        alertState.textContent =
+            "ALERT";
+
+        /*
+          Reuse the existing dashboard speech engine when
+          available. Otherwise use this widget's Web Speech.
+        */
+        let spokenByExistingEngine = false;
+
+        try{
+
+            if(
+                typeof speak ===
+                "function"
+            ){
+
+                speak(
+                    alert.speech ||
+                    alert.raw_message ||
+                    ""
+                );
+
+                spokenByExistingEngine =
+                    true;
+
+            }
+
+        }catch(error){
+
+            console.warn(
+                "Existing dashboard speech failed:",
+                error
+            );
+
+        }
+
+        if(
+            !spokenByExistingEngine
+        ){
+
+            speakAlert(
+                alert.speech ||
+                alert.raw_message ||
+                ""
+            );
+
+        }
+
+        clearTimeout(
+            resetTimer
+        );
+
+        resetTimer =
+            setTimeout(
+                function(){
+
+                    widget.classList.remove(
+                        "alert",
+                        "safe"
+                    );
+
+                    alertState.textContent =
+                        "ONLINE";
+
+                },
+                10000
+            );
+
+    }
+
+
+    async function pollJarvis(){
+
+        try{
+
+            const response =
+                await fetch(
+                    "/api/alert",
+                    {
+                        cache:
+                            "no-store"
+                    }
+                );
+
+            if(
+                !response.ok
+            ){
+
+                throw new Error(
+                    "JARVIS bridge unavailable"
+                );
+
+            }
+
+            const alert =
+                await response.json();
+
+            alertState.textContent =
+                "ONLINE";
+
+            showAlert(
+                alert
+            );
+
+        }catch(error){
+
+            alertState.textContent =
+                "BRIDGE OFFLINE";
+
+            alertMeta.textContent =
+                "Telegram bridge unavailable";
+
+        }
+
+    }
+
+
+    /*
+      Poll every 500 ms.
+    */
+    setInterval(
+        pollJarvis,
+        500
+    );
+
+    pollJarvis();
 
 })();
 </script>
