@@ -8907,22 +8907,79 @@ setTimeout(sync,100);
     }
 
 
-    function speakAlert(text){
+    function getLocalizedAlertSpeech(type){
+
+        const normalized =
+            String(
+                type || "ALERT"
+            ).toUpperCase();
+
+        if(
+            normalized === "INTRUDER"
+        ){
+
+            return (
+                "अलर्ट अलर्ट! "
+                + "घुसपैठिया पकड़ लिया गया है। "
+                + "अभी निकल जाओ, नहीं तो तुरंत सुरक्षा कार्रवाई होगी।"
+            );
+        }
+
+        if(
+            normalized === "DANGEROUS"
+        ){
+
+            return (
+                "खतरा! खतरा! "
+                + "खतरनाक जानवर का पता चला है। "
+                + "तुरंत दूर हट जाओ और सुरक्षित जगह पर चले जाओ।"
+            );
+        }
+
+        if(
+            normalized === "UNKNOWN_VEHICLE"
+        ){
+
+            return (
+                "चेतावनी! "
+                + "अनजान वाहन का पता चला है। "
+                + "कृपया तुरंत पीछे हटो और सुरक्षा क्षेत्र से बाहर रहो।"
+            );
+        }
+
+        return (
+            "सुरक्षा चेतावनी प्राप्त हुई है। "
+            + "कृपया सावधानी बरतें।"
+        );
+    }
+
+
+    function speakLocalizedAlert(
+        type
+    ){
 
         const message =
-            String(text || "")
-                .replace(
-                    /[*_`#]/g,
-                    ""
-                )
-                .replace(
-                    /\s+/g,
-                    " "
-                )
-                .trim();
+            getLocalizedAlertSpeech(
+                type
+            );
 
-        if(!message){
-            return;
+        const button =
+            document.getElementById(
+                "jarvisMiniButton"
+            );
+
+        const overlay =
+            document.getElementById(
+                "guardianEyeFullscreenAlert"
+            );
+
+        // The overlay is deliberately controlled by the speech lifecycle.
+        // It stays visible until onend/onerror.
+        if(button){
+
+            button.classList.add(
+                "speaking"
+            );
         }
 
         if(
@@ -8930,64 +8987,156 @@ setTimeout(sync,100);
             "function"
         ){
 
-            showVoiceResponse(
-                message,
-                "GUARDIANEYE ALERT"
-            );
+            try{
+
+                showVoiceResponse(
+                    message,
+                    "GUARDIANEYE ALERT"
+                );
+
+            }catch(error){
+
+                console.warn(
+                    "Voice response UI:",
+                    error
+                );
+            }
         }
 
         if(
-            typeof speak ===
-            "function"
+            !("speechSynthesis" in window)
         ){
 
-            speak(
-                message
+            // No speech engine: keep the alert visible briefly rather than
+            // leaving it stuck forever.
+            window.setTimeout(
+                finishLocalizedAlertSpeech,
+                3500
             );
 
             return;
         }
 
-        if(
-            "speechSynthesis"
-            in
-            window
-        ){
+        window.speechSynthesis.cancel();
 
-            window.speechSynthesis.cancel();
+        const utterance =
+            new SpeechSynthesisUtterance(
+                message
+            );
 
-            const utterance =
-                new SpeechSynthesisUtterance(
-                    message
-                );
+        utterance.rate =
+            0.88;
 
-            utterance.rate = 0.94;
-            utterance.pitch = 0.92;
-            utterance.lang = "en-IN";
+        utterance.pitch =
+            0.88;
 
-            utterance.onstart =
-                function(){
+        utterance.volume =
+            1.0;
+
+        // Prefer a Hindi/Indian voice if the browser exposes one.
+        const voices =
+            window.speechSynthesis.getVoices();
+
+        const hindiVoice =
+            voices.find(
+                function(voice){
+
+                    const lang =
+                        String(
+                            voice.lang || ""
+                        ).toLowerCase();
+
+                    return (
+                        lang === "hi-in"
+                        ||
+                        lang.startsWith(
+                            "hi-"
+                        )
+                    );
+                }
+            );
+
+        if(hindiVoice){
+
+            utterance.voice =
+                hindiVoice;
+
+        }else{
+
+            utterance.lang =
+                "hi-IN";
+        }
+
+        utterance.onstart =
+            function(){
+
+                if(button){
+
                     button.classList.add(
                         "speaking"
                     );
-                };
+                }
+            };
 
-            utterance.onend =
-                function(){
-                    button.classList.remove(
-                        "speaking"
-                    );
-                };
+        utterance.onend =
+            function(){
 
-            utterance.onerror =
-                function(){
-                    button.classList.remove(
-                        "speaking"
-                    );
-                };
+                finishLocalizedAlertSpeech();
+            };
 
-            window.speechSynthesis.speak(
-                utterance
+        utterance.onerror =
+            function(){
+
+                finishLocalizedAlertSpeech();
+            };
+
+        window.speechSynthesis.speak(
+            utterance
+        );
+    }
+
+
+    function finishLocalizedAlertSpeech(){
+
+        const button =
+            document.getElementById(
+                "jarvisMiniButton"
+            );
+
+        if(button){
+
+            button.classList.remove(
+                "speaking",
+                "alert"
+            );
+        }
+
+        const overlay =
+            document.getElementById(
+                "guardianEyeFullscreenAlert"
+            );
+
+        if(overlay){
+
+            overlay.classList.remove(
+                "show"
+            );
+
+            overlay.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+        }
+
+        const face =
+            document.querySelector(
+                ".health-jarvis-face"
+            );
+
+        if(face){
+
+            face.classList.remove(
+                "jarvis-alert"
             );
         }
     }
@@ -9029,35 +9178,64 @@ setTimeout(sync,100);
                 alert.type || "ALERT"
             ).toUpperCase();
 
-        if(type === "DANGEROUS"){
+        if(
+            type === "DANGEROUS"
+        ){
 
             title.textContent =
-                "DANGEROUS";
-            icon.textContent = "⚠";
+                "DANGEROUS ANIMAL";
 
-        }else if(type === "INTRUDER"){
+            icon.textContent =
+                "⚠️";
+
+            message.textContent =
+                getLocalizedAlertSpeech(
+                    type
+                );
+
+        }else if(
+            type === "INTRUDER"
+        ){
 
             title.textContent =
                 "INTRUDER DETECTED";
-            icon.textContent = "🚨";
 
-        }else if(type === "UNKNOWN_VEHICLE"){
+            icon.textContent =
+                "🚨";
+
+            message.textContent =
+                getLocalizedAlertSpeech(
+                    type
+                );
+
+        }else if(
+            type === "UNKNOWN_VEHICLE"
+        ){
 
             title.textContent =
                 "UNKNOWN VEHICLE";
-            icon.textContent = "🚗";
+
+            icon.textContent =
+                "🚗";
+
+            message.textContent =
+                getLocalizedAlertSpeech(
+                    type
+                );
 
         }else{
 
             title.textContent =
                 "SECURITY ALERT";
-            icon.textContent = "⚠";
-        }
 
-        message.textContent =
-            alert.speech ||
-            alert.raw_message ||
-            "GuardianEye alert received.";
+            icon.textContent =
+                "⚠";
+
+            message.textContent =
+                getLocalizedAlertSpeech(
+                    type
+                );
+        }
 
         time.textContent =
             alert.received_at ||
@@ -9072,26 +9250,9 @@ setTimeout(sync,100);
             "false"
         );
 
-        window.clearTimeout(
-            window.guardianEyeAlertTimer
-        );
-
-        window.guardianEyeAlertTimer =
-            window.setTimeout(
-                function(){
-
-                    overlay.classList.remove(
-                        "show"
-                    );
-
-                    overlay.setAttribute(
-                        "aria-hidden",
-                        "true"
-                    );
-
-                },
-                3500
-            );
+        // No fixed auto-close timer here.
+        // The speech completion callback closes the alert.
+        return type;
     }
 
 
@@ -9152,10 +9313,6 @@ setTimeout(sync,100);
             alert.type
         );
 
-        showGuardianFullscreenAlert(
-            alert
-        );
-
         try{
 
             if(
@@ -9194,9 +9351,15 @@ setTimeout(sync,100);
             );
         }
 
-        speakAlert(
-            alert.speech ||
-            alert.raw_message
+        const spokenType =
+            showGuardianFullscreenAlert(
+                alert
+            );
+
+        speakLocalizedAlert(
+            spokenType ||
+            alert.type ||
+            "ALERT"
         );
 
         clearTimeout(
