@@ -8,6 +8,11 @@ on:
 permissions:
   contents: write
 
+# Prevent two scheduled/manual sync runs from pushing at the same time.
+concurrency:
+  group: guardianeye-telegram-sync-main
+  cancel-in-progress: false
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -15,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,6 +41,8 @@ jobs:
 
       - name: Commit alert feed
         run: |
+          set -e
+
           git config user.name "GuardianEye Bot"
           git config user.email "actions@users.noreply.github.com"
 
@@ -45,4 +54,10 @@ jobs:
           fi
 
           git commit -m "Update GuardianEye alert feed"
-          git push
+
+          # The repository may have changed while the Telegram sync ran.
+          # Rebase the generated commit onto the newest main before pushing.
+          git fetch origin main
+          git rebase origin/main
+
+          git push origin HEAD:main
