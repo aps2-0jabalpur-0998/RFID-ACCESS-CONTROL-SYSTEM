@@ -1,0 +1,312 @@
+name: Patch IOT4 Intruder Log Mode
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-iot4-intruder-log.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Patch IOT4
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('IOT4.html')
+          html = path.read_text(encoding='utf-8')
+
+          old = r'''// ── WebSocket ─────────────────────────────────────────────────
+function connect(){
+  const ws = new WebSocket('ws://localhost:8767');
+  const dot = document.getElementById('wsDot');
+  const lbl = document.getElementById('wsLabel');
+
+  ws.onopen = ()=>{
+    dot.className = 'ws-dot on';
+    lbl.textContent = 'LIVE — ws://localhost:8767';
+    addLog('safe','System connected','Live');
+  };
+
+  ws.onmessage = (e)=>{
+    try {
+      const data = JSON.parse(e.data);
+
+      // Existing intruder-system packets
+      if(data.project === 'intruder' && data.source === 'combined_test'){
+        const eventType = data.type || 'unknown_movement';
+        const t = data.time || now();
+
+        if(eventType === 'intruder'){
+          const file = data.filename ? {
+            filename: data.filename,
+            type: 'intruder',
+            timestamp: data.timestamp || t,
+            time: t,
+            date: data.date || new Date().toLocaleDateString('en-IN'),
+            unix: Math.floor(Date.now()/1000)
+          } : null;
+
+          if(file){
+            allEvidence.unshift(file);
+            if(allEvidence.length > 100) allEvidence.pop();
+          }
+
+          const current = Number(document.getElementById('sIntruder').textContent || 0);
+          document.getElementById('sIntruder').textContent = current + 1;
+          document.getElementById('sTotal').textContent = allEvidence.length;
+          document.getElementById('sToday').textContent = todayCount(allEvidence);
+
+          updateBanner({
+            status: 'danger',
+            last_event_time: `${data.date || ''} ${t}`
+          });
+
+          renderEvidence();
+          addLog('intruder', 'Unknown face detected!', t);
+          document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
+        }
+
+        else if(eventType === 'known'){
+          updateBanner({ status: 'safe', last_event_time: `${data.date || ''} ${t}` });
+          addLog('safe', `Known person: ${data.name || 'Authorized user'}`, t);
+          document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
+        }
+
+        else if(eventType === 'animal'){
+          addLog('safe', `Animal detected: ${data.animal || 'unknown'}`, t);
+          document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
+        }
+
+        else if(eventType === 'unknown_movement'){
+          addLog('safe', 'Unknown movement detected', t);
+          document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
+        }
+
+        return;
+      }
+
+      // Existing state-based server packets remain supported.
+      if(data.type === 'init' || data.type === 'update'){
+        processData(data.state, data.evidence, data.new || []);
+      }
+
+    } catch(err) {
+      console.error('[WS DATA ERROR]', err, e.data);
+    }
+  };
+
+  ws.onclose = ()=>{
+    dot.className = 'ws-dot';
+    lbl.textContent = 'DISCONNECTED — Retrying...';
+    setTimeout(connect, 3000);
+  };
+
+  ws.onerror = ()=> ws.close();
+}
+
+// HTTP fallback poll
+async function pollHTTP(){
+  try{
+    const res = await fetch(`${HTTP_BASE}/state`);
+    const data = await res.json();
+    processData(data.state, data.evidence, []);
+  }catch(e){}
+}
+
+connect();
+setInterval(pollHTTP, 3000);
+pollHTTP();'''
+
+          new = r'''// ── REAL-TIME INTRUDER LOG STREAM ─────────────────────────────
+// Primary GuardianEye alerts are handled by the main dashboard.
+// IOT4 mirrors the same Telegram event into EVENT LOG ONLY.
+// No second alert banner is triggered here.
+
+const INTRUDER_WS_URL =
+  'wss://dim-handle-packed-veterans.trycloudflare.com/ws';
+
+const seenTelegramMessages = new Set();
+
+function realtimeEventTime(data){
+  return data.time || data.received_at || now();
+}
+
+function recordIntruderLog(data){
+  const telegramId = data.telegram_message_id;
+
+  if(telegramId !== undefined && telegramId !== null){
+    const key = String(telegramId);
+
+    if(seenTelegramMessages.has(key)) return;
+
+    seenTelegramMessages.add(key);
+
+    if(seenTelegramMessages.size > 300){
+      const first = seenTelegramMessages.values().next().value;
+      seenTelegramMessages.delete(first);
+    }
+  }
+
+  const t = realtimeEventTime(data);
+  const date = data.date || '';
+
+  const message = String(
+    data.raw_message ||
+    data.speech ||
+    'Intruder event received'
+  ).replace(/\s+/g, ' ').trim();
+
+  // LOG ONLY. Deliberately do not call updateBanner().
+  addLog(
+    'intruder',
+    `INTRUDER LOG — ${message}`,
+    `${date} ${t}`.trim()
+  );
+
+  const current = Number(
+    document.getElementById('sIntruder').textContent || 0
+  );
+
+  document.getElementById('sIntruder').textContent = current + 1;
+  document.getElementById('lastUpdate').textContent =
+    'Intruder log: ' + now();
+}
+
+function recordVehicleLog(data){
+  addLog(
+    'safe',
+    `VEHICLE LOG — ${String(data.raw_message || data.speech || 'Vehicle event').replace(/\s+/g,' ').trim()}`,
+    `${data.date || ''} ${realtimeEventTime(data)}`.trim()
+  );
+}
+
+function recordAnimalLog(data){
+  addLog(
+    'emergency',
+    `ANIMAL LOG — ${String(data.raw_message || data.speech || 'Dangerous animal event').replace(/\s+/g,' ').trim()}`,
+    `${data.date || ''} ${realtimeEventTime(data)}`.trim()
+  );
+}
+
+function connect(){
+  const ws = new WebSocket(INTRUDER_WS_URL);
+  const dot = document.getElementById('wsDot');
+  const lbl = document.getElementById('wsLabel');
+
+  ws.onopen = ()=>{
+    dot.className = 'ws-dot on';
+    lbl.textContent = 'LIVE — TELEGRAM LOG STREAM';
+    addLog('safe','Intruder Telegram log stream connected','Live');
+  };
+
+  ws.onmessage = (e)=>{
+    try{
+      const data = JSON.parse(e.data);
+
+      if(data.type === 'SYSTEM') return;
+
+      if(data.type === 'INTRUDER'){
+        recordIntruderLog(data);
+        return;
+      }
+
+      if(data.type === 'UNKNOWN_VEHICLE'){
+        recordVehicleLog(data);
+        return;
+      }
+
+      if(data.type === 'DANGEROUS'){
+        recordAnimalLog(data);
+        return;
+      }
+
+      // Backward-compatible local-bridge packet.
+      if(data.project === 'intruder' && data.type === 'intruder'){
+        recordIntruderLog(data);
+        return;
+      }
+
+      if(data.project === 'intruder' && data.type === 'known'){
+        addLog(
+          'safe',
+          `KNOWN PERSON LOG — ${data.name || 'Authorized user'}`,
+          data.time || now()
+        );
+      }
+
+    }catch(err){
+      console.error('[INTRUDER WS DATA ERROR]', err, e.data);
+    }
+  };
+
+  ws.onclose = ()=>{
+    dot.className = 'ws-dot';
+    lbl.textContent = 'DISCONNECTED — RETRYING';
+    setTimeout(connect, 2500);
+  };
+
+  ws.onerror = ()=>{
+    try { ws.close(); } catch(e) {}
+  };
+}
+
+connect();'''
+
+          if 'INTRUDER TELEGRAM LOG MIRROR' not in html:
+              html = html.replace(
+                  '<p>INTELLIGENT SURVEILLANCE SYSTEM</p>',
+                  '<p>INTRUDER TELEGRAM LOG MIRROR</p>',
+                  1
+              )
+              html = html.replace(
+                  '<div class="sec-label">▸ LIVE STATUS</div>',
+                  '<div class="sec-label">▸ LOG MIRROR STATUS</div>',
+                  1
+              )
+              html = html.replace(
+                  '<div class="alert-status" id="alertStatus">ALL CLEAR</div>',
+                  '<div class="alert-status" id="alertStatus">LOG MIRROR READY</div>',
+                  1
+              )
+              html = html.replace(
+                  '<div class="alert-sub" id="alertSub">System monitoring — no threats detected</div>',
+                  '<div class="alert-sub" id="alertSub">Primary intruder alerts are handled by GuardianEye. This dashboard records intruder events in the log.</div>',
+                  1
+              )
+              html = html.replace(
+                  '<span class="alert-badge badge-safe">● SYSTEM SAFE</span>',
+                  '<span class="alert-badge badge-safe">● LOG-ONLY MODE</span>',
+                  1
+              )
+
+          if old not in html:
+              print('Expected old websocket block was not found; leaving IOT4 unchanged.')
+              raise SystemExit(2)
+
+          html = html.replace(old, new, 1)
+          path.write_text(html, encoding='utf-8')
+          print('IOT4 patched successfully:', path)
+
+      - name: Commit and push
+        run: |
+          git config user.name "GuardianEye Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add IOT4.html .github/workflows/patch-iot4-intruder-log.yml
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Mirror Telegram intruder events to IOT4 event log"
+          git push origin main
