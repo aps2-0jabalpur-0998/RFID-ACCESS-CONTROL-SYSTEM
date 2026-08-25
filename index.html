@@ -2890,6 +2890,15 @@ body::after{
 
 }
 
+
+        .guardian-alert-zone{
+            margin-top:10px;
+            color:#ff7373;
+            font-family:'Orbitron',sans-serif;
+            font-size:12px;
+            letter-spacing:2px;
+        }
+
 </style>
 
 <style>
@@ -9035,10 +9044,17 @@ setTimeout(sync,100);
                 "DANGEROUS";
             icon.textContent = "⚠";
 
-        }else if(type === "INTRUDER"){
+        }else if(
+            type === "INTRUDER"
+        ){
 
             title.textContent =
-                "INTRUDER DETECTED";
+                "INTRUDER DETECTED" +
+                (
+                    alert.zone
+                        ? " — ZONE " + alert.zone
+                        : ""
+                );
             icon.textContent = "🚨";
 
         }else if(type === "UNKNOWN_VEHICLE"){
@@ -9308,6 +9324,11 @@ setTimeout(sync,100);
         <div class="guardian-alert-time" id="guardianAlertTime">
             —
         </div>
+        <div
+            class="guardian-alert-zone"
+            id="guardianAlertZone"
+        ></div>
+
     </div>
 </div>
 
@@ -9749,7 +9770,12 @@ function hideGuardianAlert(){
         ){
 
             title.textContent =
-                "DANGEROUS ANIMAL";
+                "DANGEROUS ANIMAL" +
+                (
+                    alert.zone
+                        ? " — ZONE " + alert.zone
+                        : ""
+                );
 
             icon.textContent =
                 "⚠️";
@@ -9774,6 +9800,20 @@ function hideGuardianAlert(){
         }
 
         message.textContent =
+            alert.zone
+                ? (
+                    "ZONE " +
+                    alert.zone +
+                    " — " +
+                    (
+                        type === "INTRUDER"
+                            ? "घुसपैठिया detected हुआ है।"
+                            : type === "DANGEROUS"
+                                ? "खतरनाक जानवर detected हुआ है।"
+                                : "सुरक्षा चेतावनी प्राप्त हुई है।"
+                    )
+                )
+                : (
             type === "INTRUDER"
                 ? "घुसपैठिया detected हुआ है। तुरंत क्षेत्र खाली करें।"
                 : type === "DANGEROUS"
@@ -9782,7 +9822,8 @@ function hideGuardianAlert(){
                         alert.speech ||
                         alert.raw_message ||
                         "सुरक्षा चेतावनी प्राप्त हुई है।"
-                    );
+                    )
+                );
 
         time.textContent =
             alert.received_at ||
@@ -9791,6 +9832,19 @@ function hideGuardianAlert(){
                 " " +
                 (alert.time || "")
             ).trim();
+
+        const zoneEl =
+            document.getElementById(
+                "guardianAlertZone"
+            );
+
+        if(zoneEl){
+
+            zoneEl.textContent =
+                alert.zone
+                    ? "ZONE " + alert.zone
+                    : "";
+        }
 
         overlay.classList.add(
             "show"
