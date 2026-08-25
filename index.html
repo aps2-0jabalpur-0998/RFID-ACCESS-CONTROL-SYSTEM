@@ -9431,92 +9431,7 @@ document.addEventListener(
     },
     {passive:true}
 );
-
-
-async function playElevenLabsAudio(
-    base64Audio
-){
-
-    if(
-        !base64Audio
-    ){
-        return false;
-    }
-
-    if(
-        !jarvisVoiceUnlocked
-    ){
-
-        console.warn(
-            "JARVIS voice is locked by browser autoplay policy."
-        );
-
-        return false;
-    }
-
-    try{
-
-        const audioBytes =
-            Uint8Array.from(
-                atob(base64Audio),
-                function(char){
-                    return char.charCodeAt(0);
-                }
-            );
-
-        const blob =
-            new Blob(
-                [audioBytes],
-                {type:"audio/mpeg"}
-            );
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-        if(
-            jarvisAudio
-        ){
-
-            jarvisAudio.pause();
-        }
-
-        jarvisAudio =
-            new Audio(url);
-
-        jarvisAudio.volume =
-            1.0;
-
-        await jarvisAudio.play();
-
-        jarvisAudio.addEventListener(
-            "ended",
-            function(){
-
-                URL.revokeObjectURL(
-                    url
-                );
-
-            },
-            {once:true}
-        );
-
-        return true;
-
-    }catch(error){
-
-        console.warn(
-            "ElevenLabs browser playback failed:",
-            error
-        );
-
-        return false;
-    }
-}
-
-
-function speakText(
+    function speakText(
     text
 ){
 
@@ -9567,7 +9482,49 @@ function speakText(
 }
 
 
-    function hideGuardianAlert(){
+    
+    let guardianLastAlertKey = "";
+    let guardianLastAlertAt = 0;
+
+    function stopAllGuardianAudio(){
+
+        try{
+            if(
+                "speechSynthesis" in window
+            ){
+                window.speechSynthesis.cancel();
+            }
+        }catch(error){}
+
+        try{
+            if(
+                window.jarvisAudio &&
+                typeof window.jarvisAudio.pause === "function"
+            ){
+                window.jarvisAudio.pause();
+
+                try{
+                    window.jarvisAudio.currentTime = 0;
+                }catch(error){}
+            }
+        }catch(error){}
+
+        try{
+            document
+                .querySelectorAll("audio")
+                .forEach(
+                    function(audio){
+                        try{
+                            audio.pause();
+                            audio.currentTime = 0;
+                        }catch(error){}
+                    }
+                );
+        }catch(error){}
+    }
+
+
+function hideGuardianAlert(){
 
         const overlay =
             document.getElementById(
@@ -9600,91 +9557,88 @@ function speakText(
     }
 
 
+    
     function speakAlertHindi(
         text
     ){
 
-        // Stop anything left from the general JARVIS voice.
+        stopAllGuardianAudio();
+
         if(
-            "speechSynthesis" in window
+            !("speechSynthesis" in window)
         ){
 
-            window.speechSynthesis.cancel();
-
-            const utterance =
-                new SpeechSynthesisUtterance(
-                    text
-                );
-
-            utterance.lang =
-                "hi-IN";
-
-            utterance.rate =
-                0.90;
-
-            utterance.pitch =
-                0.88;
-
-            utterance.volume =
-                1.0;
-
-            // Prefer a Hindi voice if Chrome/Edge exposes one.
-            const voices =
-                window.speechSynthesis
-                    .getVoices();
-
-            const hindiVoice =
-                voices.find(
-                    function(voice){
-
-                        return /^hi-IN$/i.test(
-                            voice.lang
-                        );
-                    }
-                ) ||
-                voices.find(
-                    function(voice){
-
-                        return /^hi/i.test(
-                            voice.lang
-                        );
-                    }
-                );
-
-            if(hindiVoice){
-
-                utterance.voice =
-                    hindiVoice;
-            }
-
-            utterance.onend =
-                function(){
-
-                    hideGuardianAlert();
-                };
-
-            utterance.onerror =
-                function(){
-
-                    hideGuardianAlert();
-                };
-
-            window.speechSynthesis.speak(
-                utterance
-            );
-
+            hideGuardianAlert();
             return;
         }
 
-        // No browser speech engine: don't leave the UI stuck forever.
-        setTimeout(
-            hideGuardianAlert,
-            2500
+        const utterance =
+            new SpeechSynthesisUtterance(
+                text
+            );
+
+        utterance.lang =
+            "hi-IN";
+
+        utterance.rate =
+            0.90;
+
+        utterance.pitch =
+            0.88;
+
+        utterance.volume =
+            1.0;
+
+        const voices =
+            window.speechSynthesis
+                .getVoices();
+
+        const hindiVoice =
+            voices.find(
+                function(voice){
+                    return /^hi-IN$/i.test(
+                        voice.lang
+                    );
+                }
+            ) ||
+            voices.find(
+                function(voice){
+                    return /^hi/i.test(
+                        voice.lang
+                    );
+                }
+            );
+
+        if(
+            hindiVoice
+        ){
+            utterance.voice =
+                hindiVoice;
+        }
+
+        utterance.onend =
+            function(){
+
+                hideGuardianAlert();
+            };
+
+        utterance.onerror =
+            function(){
+
+                hideGuardianAlert();
+            };
+
+        window.speechSynthesis.speak(
+            utterance
         );
     }
 
 
-function showRealtimeAlert(
+
+
+
+
+    function showRealtimeAlert(
         alert
     ){
 
@@ -9694,6 +9648,42 @@ function showRealtimeAlert(
         ){
             return;
         }
+
+        const type =
+            String(
+                alert.type ||
+                "ALERT"
+            ).toUpperCase();
+
+        // Prevent multiple WebSocket listeners / duplicated
+        // Telegram packets from starting the voice twice.
+        const alertKey =
+            String(
+                alert.telegram_message_id ||
+                alert.id ||
+                (
+                    type + "|" +
+                    (alert.date || "") + "|" +
+                    (alert.time || "") + "|" +
+                    (alert.raw_message || "")
+                )
+            );
+
+        const nowMs =
+            Date.now();
+
+        if(
+            guardianLastAlertKey === alertKey &&
+            nowMs - guardianLastAlertAt < 15000
+        ){
+            return;
+        }
+
+        guardianLastAlertKey =
+            alertKey;
+
+        guardianLastAlertAt =
+            nowMs;
 
         const overlay =
             document.getElementById(
@@ -9720,18 +9710,17 @@ function showRealtimeAlert(
                 "guardianAlertIcon"
             );
 
-        const type =
-            String(
-                alert.type ||
-                "ALERT"
-            ).toUpperCase();
-
         const face =
             document.querySelector(
                 ".health-jarvis-face"
             );
 
-        if(face){
+        // Stop every old speech/audio path BEFORE starting the new one.
+        stopAllGuardianAudio();
+
+        if(
+            face
+        ){
 
             face.classList.toggle(
                 "jarvis-alert",
@@ -9741,170 +9730,117 @@ function showRealtimeAlert(
             );
 
             clearTimeout(
-                window.jarvisFaceAlertTimer
+                window.guardianFaceTimer
             );
-
-            window.jarvisFaceAlertTimer =
-                setTimeout(
-                    function(){
-
-                        face.classList.remove(
-                            "jarvis-alert"
-                        );
-
-                    },
-                    4000
-                );
         }
 
         if(
-            title &&
-            icon
+            type === "INTRUDER"
         ){
 
-            if(
-                type === "INTRUDER"
-            ){
+            title.textContent =
+                "INTRUDER DETECTED";
 
-                title.textContent =
-                    "INTRUDER DETECTED";
+            icon.textContent =
+                "🚨";
 
-                icon.textContent =
-                    "🚨";
+        }else if(
+            type === "DANGEROUS"
+        ){
 
-            }else if(
-                type === "DANGEROUS"
-            ){
+            title.textContent =
+                "DANGEROUS ANIMAL";
 
-                title.textContent =
-                    "DANGEROUS";
+            icon.textContent =
+                "⚠️";
 
-                icon.textContent =
-                    "⚠";
+        }else if(
+            type === "UNKNOWN_VEHICLE"
+        ){
 
-            }else if(
-                type === "UNKNOWN_VEHICLE"
-            ){
+            title.textContent =
+                "UNKNOWN VEHICLE";
 
-                title.textContent =
-                    "UNKNOWN VEHICLE";
+            icon.textContent =
+                "🚗";
 
-                icon.textContent =
-                    "🚗";
+        }else{
 
-            }else{
+            title.textContent =
+                "SECURITY ALERT";
 
-                title.textContent =
-                    "SECURITY ALERT";
-
-                icon.textContent =
-                    "⚠";
-            }
+            icon.textContent =
+                "⚠️";
         }
 
-        if(message){
+        message.textContent =
+            type === "INTRUDER"
+                ? "घुसपैठिया detected हुआ है। तुरंत क्षेत्र खाली करें।"
+                : type === "DANGEROUS"
+                    ? "खतरनाक जानवर detected हुआ है। सुरक्षित दूरी बनाए रखें।"
+                    : (
+                        alert.speech ||
+                        alert.raw_message ||
+                        "सुरक्षा चेतावनी प्राप्त हुई है।"
+                    );
 
-            message.textContent =
-                alert.speech ||
-                alert.raw_message ||
-                "GuardianEye alert received.";
-        }
+        time.textContent =
+            alert.received_at ||
+            (
+                (alert.date || "") +
+                " " +
+                (alert.time || "")
+            ).trim();
 
-        if(time){
+        overlay.classList.add(
+            "show"
+        );
 
-            time.textContent =
-                alert.received_at ||
-                "";
-        }
+        overlay.setAttribute(
+            "aria-hidden",
+            "false"
+        );
 
-        if(overlay){
+        // One and only one voice path: browser Hindi TTS.
+        let voiceText = "";
 
-            overlay.classList.add(
-                "show"
-            );
+        if(
+            type === "INTRUDER"
+        ){
 
-            overlay.setAttribute(
-                "aria-hidden",
-                "false"
-            );
-
-        }
-
-        try{
-
-            if(
-                typeof addRealActivity ===
-                "function"
-            ){
-
-                addRealActivity(
-                    "🚨",
-                    alert.speech ||
-                    alert.raw_message ||
-                    "GuardianEye alert"
-                );
-            }
-
-            if(
-                typeof addRealAlert ===
-                "function"
-            ){
-
-                addRealAlert(
-                    "warning",
-                    type,
-                    alert.speech ||
-                    alert.raw_message ||
-                    "GuardianEye alert"
-                );
-            }
-
-        }catch(error){
-
-            console.warn(
-                "GuardianEye dashboard hooks:",
-                error
-            );
-        }
-
-        
-        // ----------------------------------------------------
-        // JARVIS ALERT VOICE
-        // One and only one speech path.
-        // The alert overlay is dismissed by speech.onend.
-        // ----------------------------------------------------
-
-        let jarvisAlertSpeech = "";
-
-        if(type === "INTRUDER"){
-
-            jarvisAlertSpeech =
+            voiceText =
                 "अलर्ट! अलर्ट! घुसपैठिया पकड़ा गया है। "
                 + "अभी निकल जाओ, वरना सुरक्षा कार्रवाई की जाएगी।";
 
-        }else if(type === "DANGEROUS"){
+        }else if(
+            type === "DANGEROUS"
+        ){
 
-            jarvisAlertSpeech =
+            voiceText =
                 "खतरा! खतरा! खतरनाक जानवर का पता चला है। "
                 + "तुरंत दूर हट जाओ और सुरक्षित जगह पर चले जाओ।";
 
-        }else if(type === "UNKNOWN_VEHICLE"){
+        }else if(
+            type === "UNKNOWN_VEHICLE"
+        ){
 
-            jarvisAlertSpeech =
+            voiceText =
                 "सावधान! अनजान वाहन detected हुआ है। "
                 + "कृपया तुरंत सुरक्षा जांच करें।";
 
         }else{
 
-            jarvisAlertSpeech =
+            voiceText =
                 "सुरक्षा चेतावनी प्राप्त हुई है।";
         }
 
         speakAlertHindi(
-            jarvisAlertSpeech
+            voiceText
         );
-
     }
+
+
+
 
     function connect(){
 
