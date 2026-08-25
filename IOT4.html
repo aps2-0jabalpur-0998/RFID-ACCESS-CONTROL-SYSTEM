@@ -452,7 +452,7 @@ function connect(){
 
   ws.onopen = ()=>{
     dot.className = 'ws-dot on';
-    lbl.textContent = 'LIVE — ws://localhost:8767';
+    lbl.textContent = 'LIVE — COMBINED_TEST1';
     addLog('safe','System connected','Live');
   };
 
@@ -461,7 +461,7 @@ function connect(){
       const data = JSON.parse(e.data);
 
       // Existing intruder-system packets
-      if(data.project === 'intruder' && data.source === 'combined_test'){
+      if(data.project === 'intruder' && data.source === 'combined_test1'){
         const eventType = data.type || 'unknown_movement';
         const t = data.time || now();
 
