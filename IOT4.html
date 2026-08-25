@@ -154,7 +154,7 @@ header { display:flex; align-items:center; justify-content:space-between; margin
       <div class="logo-icon">👁️</div>
       <div class="logo-text">
         <h1>GuardianAI</h1>
-        <p>INTELLIGENT SURVEILLANCE SYSTEM</p>
+        <p>INTRUDER TELEGRAM LOG MIRROR</p>
       </div>
     </div>
     <div class="header-right">
@@ -167,12 +167,12 @@ header { display:flex; align-items:center; justify-content:space-between; margin
   </header>
 
   <!-- ALERT BANNER -->
-  <div class="sec-label">▸ LIVE STATUS</div>
+  <div class="sec-label">▸ PRIMARY STATUS / LOG MIRROR</div>
   <div class="alert-banner safe" id="alertBanner">
     <div class="alert-icon" id="alertIcon">🛡️</div>
     <div class="alert-info">
       <div class="alert-status" id="alertStatus">ALL CLEAR</div>
-      <div class="alert-sub" id="alertSub">System monitoring — no threats detected</div>
+      <div class="alert-sub" id="alertSub">Primary alert is handled by GuardianEye. This page mirrors intruder events into the log.</div>
       <div id="alertBadge"><span class="alert-badge badge-safe">● SYSTEM SAFE</span></div>
     </div>
     <div class="alert-time" id="alertTime"></div>
@@ -444,109 +444,312 @@ function processData(state, evidence, newFiles){
   }
 }
 
-// ── WebSocket ─────────────────────────────────────────────────
-function connect(){
-  const ws = new WebSocket('ws://localhost:8767');
-  const dot = document.getElementById('wsDot');
-  const lbl = document.getElementById('wsLabel');
+// ── TELEGRAM REALTIME INTRUDER LOG MIRROR ────────────────────
+// IMPORTANT:
+//   Main dashboard = actual alert UI.
+//   IOT4            = intruder LOG ONLY.
+//
+// Data path:
+//   combined_test1.py
+//      -> Telegram group
+//      -> Telegram realtime backend
+//      -> Cloudflare WSS
+//      -> IOT4 event log
+//
+// This page deliberately DOES NOT call updateBanner() for an
+// incoming intruder. Therefore it cannot create a second alert.
 
-  ws.onopen = ()=>{
-    dot.className = 'ws-dot on';
-    lbl.textContent = 'LIVE — COMBINED_TEST1';
-    addLog('safe','System connected','Live');
+const TELEGRAM_LOG_WS =
+  "wss://dim-handle-packed-veterans.trycloudflare.com/ws";
+
+const intruderSeenIds = new Set();
+
+function getEventTime(data){
+
+  return (
+    data.time ||
+    data.received_at ||
+    now()
+  );
+}
+
+function addIntruderLog(data){
+
+  const messageId =
+    data.telegram_message_id;
+
+  if(
+    messageId !== undefined &&
+    messageId !== null
+  ){
+
+    const key =
+      String(messageId);
+
+    if(
+      intruderSeenIds.has(key)
+    ){
+      return;
+    }
+
+    intruderSeenIds.add(key);
+
+    if(
+      intruderSeenIds.size > 300
+    ){
+
+      const first =
+        intruderSeenIds.values()
+          .next()
+          .value;
+
+      intruderSeenIds.delete(
+        first
+      );
+    }
+  }
+
+  const t =
+    getEventTime(data);
+
+  const date =
+    data.date ||
+    "";
+
+  const cleanMessage =
+    String(
+      data.raw_message ||
+      data.speech ||
+      "Intruder detected"
+    )
+    .replace(
+      /\s+/g,
+      " "
+    )
+    .trim();
+
+  // LOG ONLY.
+  addLog(
+    "intruder",
+    `INTRUDER LOG: ${cleanMessage}`,
+    `${date} ${t}`.trim()
+  );
+
+  const count =
+    Number(
+      document.getElementById(
+        "sIntruder"
+      ).textContent || 0
+    );
+
+  document.getElementById(
+    "sIntruder"
+  ).textContent =
+    count + 1;
+
+  document.getElementById(
+    "lastUpdate"
+  ).textContent =
+    "Intruder log: " +
+    now();
+}
+
+
+function addVehicleLog(data){
+
+  const t =
+    getEventTime(data);
+
+  const cleanMessage =
+    String(
+      data.raw_message ||
+      data.speech ||
+      "Vehicle event"
+    )
+    .replace(
+      /\s+/g,
+      " "
+    )
+    .trim();
+
+  addLog(
+    "safe",
+    `VEHICLE LOG: ${cleanMessage}`,
+    `${data.date || ""} ${t}`.trim()
+  );
+
+  document.getElementById(
+    "lastUpdate"
+  ).textContent =
+    "Vehicle log: " +
+    now();
+}
+
+
+function addAnimalLog(data){
+
+  const t =
+    getEventTime(data);
+
+  const cleanMessage =
+    String(
+      data.raw_message ||
+      data.speech ||
+      "Dangerous animal event"
+    )
+    .replace(
+      /\s+/g,
+      " "
+    )
+    .trim();
+
+  addLog(
+    "emergency",
+    `ANIMAL LOG: ${cleanMessage}`,
+    `${data.date || ""} ${t}`.trim()
+  );
+
+  document.getElementById(
+    "lastUpdate"
+  ).textContent =
+    "Animal log: " +
+    now();
+}
+
+
+function connectTelegramLog(){
+
+  const ws =
+    new WebSocket(
+      TELEGRAM_LOG_WS
+    );
+
+  const dot =
+    document.getElementById(
+      "wsDot"
+    );
+
+  const label =
+    document.getElementById(
+      "wsLabel"
+    );
+
+  ws.onopen = function(){
+
+    dot.className =
+      "ws-dot on";
+
+    label.textContent =
+      "LIVE — TELEGRAM LOG";
+
+    addLog(
+      "safe",
+      "Telegram intruder log connected",
+      "Live"
+    );
   };
 
-  ws.onmessage = (e)=>{
-    try {
-      const data = JSON.parse(e.data);
 
-      // Existing intruder-system packets
-      if(data.project === 'intruder' && data.source === 'combined_test1'){
-        const eventType = data.type || 'unknown_movement';
-        const t = data.time || now();
+  ws.onmessage = function(event){
 
-        if(eventType === 'intruder'){
-          const file = data.filename ? {
-            filename: data.filename,
-            type: 'intruder',
-            timestamp: data.timestamp || t,
-            time: t,
-            date: data.date || new Date().toLocaleDateString('en-IN'),
-            unix: Math.floor(Date.now()/1000)
-          } : null;
+    try{
 
-          if(file){
-            allEvidence.unshift(file);
-            if(allEvidence.length > 100) allEvidence.pop();
-          }
+      const data =
+        JSON.parse(
+          event.data
+        );
 
-          const current = Number(document.getElementById('sIntruder').textContent || 0);
-          document.getElementById('sIntruder').textContent = current + 1;
-          document.getElementById('sTotal').textContent = allEvidence.length;
-          document.getElementById('sToday').textContent = todayCount(allEvidence);
+      if(
+        data.type === "SYSTEM"
+      ){
+        return;
+      }
 
-          updateBanner({
-            status: 'danger',
-            last_event_time: `${data.date || ''} ${t}`
-          });
+      // Current Telegram realtime backend.
+      if(
+        data.type === "INTRUDER"
+      ){
 
-          renderEvidence();
-          addLog('intruder', 'Unknown face detected!', t);
-          document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
-        }
-
-        else if(eventType === 'known'){
-          updateBanner({ status: 'safe', last_event_time: `${data.date || ''} ${t}` });
-          addLog('safe', `Known person: ${data.name || 'Authorized user'}`, t);
-          document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
-        }
-
-        else if(eventType === 'animal'){
-          addLog('safe', `Animal detected: ${data.animal || 'unknown'}`, t);
-          document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
-        }
-
-        else if(eventType === 'unknown_movement'){
-          addLog('safe', 'Unknown movement detected', t);
-          document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
-        }
+        addIntruderLog(
+          data
+        );
 
         return;
       }
 
-      // Existing state-based server packets remain supported.
-      if(data.type === 'init' || data.type === 'update'){
-        processData(data.state, data.evidence, data.new || []);
+      if(
+        data.type === "UNKNOWN_VEHICLE"
+      ){
+
+        addVehicleLog(
+          data
+        );
+
+        return;
       }
 
-    } catch(err) {
-      console.error('[WS DATA ERROR]', err, e.data);
+      if(
+        data.type === "DANGEROUS"
+      ){
+
+        addAnimalLog(
+          data
+        );
+
+        return;
+      }
+
+      // Backward compatibility for older packet format.
+      if(
+        data.project === "intruder" &&
+        data.source === "combined_test1" &&
+        data.type === "intruder"
+      ){
+
+        addIntruderLog(
+          {
+            ...data,
+            type:
+              "INTRUDER"
+          }
+        );
+      }
+
+    }catch(error){
+
+      console.error(
+        "[IOT4 WS ERROR]",
+        error
+      );
     }
   };
 
-  ws.onclose = ()=>{
-    dot.className = 'ws-dot';
-    lbl.textContent = 'DISCONNECTED — Retrying...';
-    setTimeout(connect, 3000);
+
+  ws.onclose = function(){
+
+    dot.className =
+      "ws-dot";
+
+    label.textContent =
+      "DISCONNECTED — RETRYING";
+
+    setTimeout(
+      connectTelegramLog,
+      2500
+    );
   };
 
-  ws.onerror = ()=> ws.close();
+
+  ws.onerror = function(){
+
+    try{
+      ws.close();
+    }catch(error){}
+  };
 }
 
-// HTTP fallback poll
-async function pollHTTP(){
-  try{
-    const res = await fetch(`${HTTP_BASE}/state`);
-    const data = await res.json();
-    processData(data.state, data.evidence, []);
-  }catch(e){}
-}
 
-connect();
-setInterval(pollHTTP, 3000);
-pollHTTP();
+connectTelegramLog();
 </script>
 </body>
 </html>
-HTMLEOF
-echo "done"
