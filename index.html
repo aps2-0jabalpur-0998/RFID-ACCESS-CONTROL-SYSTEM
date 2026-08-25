@@ -637,21 +637,13 @@ body::after{
     position:relative;
 
     background:
-        radial-gradient(
-            circle,
-            rgba(57,202,255,.08) 0 42%,
-            transparent 43% 62%,
-            rgba(57,202,255,.06) 63% 64%,
-            transparent 65%
+        conic-gradient(
+            var(--green) 0deg 340deg,
+            #12303a 340deg 360deg
         );
 
-    border:1px solid rgba(57,202,255,.18);
-
     box-shadow:
-        0 0 30px rgba(57,202,255,.10),
-        inset 0 0 25px rgba(57,202,255,.05);
-
-    overflow:hidden;
+        0 0 30px rgba(66,223,108,.10);
 }
 
 .health-gauge::before{
@@ -660,250 +652,38 @@ body::after{
 
     position:absolute;
 
-    inset:8px;
+    inset:12px;
 
     border-radius:50%;
 
-    border:1px solid rgba(57,202,255,.20);
+    background:#06131c;
 
-    border-top-color:var(--cyan);
-
-    border-right-color:rgba(57,202,255,.15);
-
-    animation:
-        healthRingRotate
-        5s linear infinite;
-
-    box-shadow:
-        0 0 16px rgba(57,202,255,.10);
+    border:1px solid rgba(66,223,108,.15);
 }
 
-.health-gauge::after{
-
-    content:"";
-
-    position:absolute;
-
-    inset:18px;
-
-    border-radius:50%;
-
-    border:1px dashed rgba(66,223,108,.18);
-
-    animation:
-        healthRingReverse
-        8s linear infinite;
-}
-
-@keyframes healthRingRotate{
-
-    from{
-        transform:rotate(0deg);
-    }
-
-    to{
-        transform:rotate(360deg);
-    }
-}
-
-@keyframes healthRingReverse{
-
-    from{
-        transform:rotate(360deg);
-    }
-
-    to{
-        transform:rotate(0deg);
-    }
-}
-
-
-/* =========================================================
-   JARVIS FACE INSIDE CAMP HEALTH GAUGE
-========================================================= */
-
-.health-jarvis-face{
-
-    width:92px;
-
-    height:92px;
+.gauge-center{
 
     position:relative;
 
-    z-index:5;
-
-    border-radius:50%;
-
-    border:1px solid rgba(57,202,255,.45);
-
-    background:
-        radial-gradient(
-            circle at 50% 42%,
-            rgba(57,202,255,.14),
-            rgba(3,13,20,.98) 68%
-        );
-
-    box-shadow:
-        0 0 28px rgba(57,202,255,.14),
-        inset 0 0 22px rgba(57,202,255,.08);
-
-    animation:
-        jarvisFaceRotate
-        10s linear infinite;
+    text-align:center;
 }
 
-.health-jarvis-face::before{
+.gauge-number{
 
-    content:"";
+    font-family:'Orbitron',sans-serif;
 
-    position:absolute;
-
-    inset:7px;
-
-    border-radius:50%;
-
-    border:1px solid rgba(57,202,255,.15);
+    font-size:29px;
 }
 
-.health-jarvis-face::after{
+.gauge-grade{
 
-    content:"";
+    margin-top:5px;
 
-    position:absolute;
+    color:var(--green);
 
-    left:50%;
+    font-family:'Space Mono',monospace;
 
-    top:50%;
-
-    width:112px;
-
-    height:112px;
-
-    border-radius:50%;
-
-    transform:translate(-50%,-50%);
-
-    border:1px solid rgba(57,202,255,.07);
-
-}
-
-@keyframes jarvisFaceRotate{
-
-    from{
-        transform:rotate(0deg);
-    }
-
-    to{
-        transform:rotate(360deg);
-    }
-}
-
-.health-jarvis-eye{
-
-    position:absolute;
-
-    top:34px;
-
-    width:17px;
-
-    height:8px;
-
-    border-radius:50%;
-
-    background:var(--cyan);
-
-    box-shadow:
-        0 0 13px rgba(57,202,255,.85);
-
-    animation:
-        jarvisEyePulse
-        1.7s ease-in-out infinite;
-}
-
-.health-jarvis-eye.left{
-    left:21px;
-}
-
-.health-jarvis-eye.right{
-    right:21px;
-}
-
-@keyframes jarvisEyePulse{
-
-    0%,100%{
-        transform:scaleY(.9);
-        opacity:.9;
-    }
-
-    50%{
-        transform:scaleY(1.15);
-        opacity:1;
-    }
-}
-
-.health-jarvis-mouth{
-
-    position:absolute;
-
-    left:50%;
-
-    bottom:21px;
-
-    width:31px;
-
-    height:6px;
-
-    transform:translateX(-50%);
-
-    border-bottom:2px solid var(--cyan);
-
-    border-radius:0 0 999px 999px;
-
-    box-shadow:
-        0 0 8px rgba(57,202,255,.45);
-}
-
-.health-jarvis-scan{
-
-    position:absolute;
-
-    left:50%;
-
-    top:-15px;
-
-    width:1px;
-
-    height:122px;
-
-    transform-origin:center;
-
-    transform:translateX(-50%);
-
-    background:
-        linear-gradient(
-            transparent,
-            rgba(57,202,255,.55),
-            transparent
-        );
-
-    animation:
-        jarvisScan
-        2.8s linear infinite;
-}
-
-@keyframes jarvisScan{
-
-    from{
-        transform:
-            translateX(-50%)
-            rotate(0deg);
-    }
-
-    to{
-        transform:
-            translateX(-50%)
-            rotate(360deg);
-    }
+    font-size:9px;
 }
 
 .health-stars{
@@ -3498,22 +3278,20 @@ body::after{
 
     <div class="health-gauge">
 
-        <div class="health-jarvis-face">
+        <div class="gauge-center">
 
-            <div class="health-jarvis-eye left"></div>
-            <div class="health-jarvis-eye right"></div>
+            <div
+                class="gauge-number"
+                id="healthValue"
+            >
+                0%
+            </div>
 
-            <div class="health-jarvis-mouth"></div>
-
-            <div class="health-jarvis-scan"></div>
+            <div class="gauge-grade" id="healthGrade">OFFLINE</div>
 
         </div>
 
     </div>
-
-
-<div id="healthValue" style="display:none">0%</div>
-<div id="healthGrade" style="display:none">OFFLINE</div>
 
 
     <div class="health-stars">
