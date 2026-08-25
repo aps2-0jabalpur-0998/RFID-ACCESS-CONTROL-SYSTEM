@@ -1,0 +1,44 @@
+name: Build GuardianEye Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'flutter_app/**'
+      - '.github/workflows/build-guardianeye-apk.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter_app
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.2'
+          channel: stable
+          cache: true
+
+      - name: Generate Android platform files
+        run: flutter create --platforms=android --project-name guardianceye_mobile .
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardianceye-mobile-apk
+          path: flutter_app/build/app/outputs/flutter-apk/app-release.apk
