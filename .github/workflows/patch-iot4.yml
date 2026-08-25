@@ -1,0 +1,56 @@
+name: Patch IOT4 combined_test1 source
+
+on:
+  push:
+    paths:
+      - ".github/workflows/patch-iot4.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch IOT4 source filter
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("IOT4.html")
+          text = path.read_text(encoding="utf-8")
+
+          text = text.replace(
+              "data.project === 'intruder' && data.source === 'combined_test'",
+              "data.project === 'intruder' && data.source === 'combined_test1'",
+          )
+
+          text = text.replace(
+              "lbl.textContent = 'LIVE — ws://localhost:8767';",
+              "lbl.textContent = 'LIVE — COMBINED_TEST1';",
+          )
+
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Commit IOT4 patch
+        run: |
+          git config user.name "GuardianEye Bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add IOT4.html
+
+          if git diff --cached --quiet; then
+            echo "IOT4 already patched."
+            exit 0
+          fi
+
+          git commit -m "Route IOT4 intruder events from combined_test1"
+          git push origin HEAD:main
