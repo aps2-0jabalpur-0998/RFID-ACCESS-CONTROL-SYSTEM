@@ -92,7 +92,7 @@ header { display:flex; align-items:center; justify-content:space-between; margin
 .sec-label { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.2em; color:var(--muted); margin-bottom:0.75rem; }
 
 /* MAIN GRID */
-.main-grid { display:grid; grid-template-columns:1fr 320px; gap:1.25rem; margin-bottom:1.5rem; }
+.main-grid { display:grid; grid-template-columns:1fr; gap:1.25rem; margin-bottom:1.5rem; }
 @media(max-width:900px){ .main-grid{grid-template-columns:1fr;} }
 
 /* EVIDENCE GRID */
@@ -265,6 +265,59 @@ header { display:flex; align-items:center; justify-content:space-between; margin
     line-height:1.5;
 }
 
+
+/* =========================================================
+   FULL-WIDTH EVENT LOGBOOK
+========================================================= */
+
+.event-log-section{
+    width:100%;
+    margin-top:1.25rem;
+}
+
+.event-log-section .log-card{
+    width:100%;
+}
+
+.event-log-section .log-table-wrap{
+    width:100%;
+    overflow-x:hidden;
+}
+
+.event-log-section .log-table{
+    width:100%;
+    min-width:0;
+    table-layout:fixed;
+}
+
+.event-log-section .log-col-date{width:14%;}
+.event-log-section .log-col-time{width:12%;}
+.event-log-section .log-col-type{width:19%;}
+.event-log-section .log-col-source{width:20%;}
+.event-log-section .log-col-details{width:35%;}
+
+.event-log-section .log-table th,
+.event-log-section .log-table td{
+    padding:14px 16px;
+}
+
+@media (max-width: 800px){
+    .event-log-section .log-table{
+        font-size:.72rem;
+    }
+
+    .event-log-section .log-table th,
+    .event-log-section .log-table td{
+        padding:10px 9px;
+    }
+
+    .event-log-section .log-col-date{width:18%;}
+    .event-log-section .log-col-time{width:15%;}
+    .event-log-section .log-col-type{width:22%;}
+    .event-log-section .log-col-source{width:20%;}
+    .event-log-section .log-col-details{width:25%;}
+}
+
 </style>
 </head>
 <body>
@@ -301,7 +354,7 @@ header { display:flex; align-items:center; justify-content:space-between; margin
 
   <!-- STATS -->
   <!-- MAIN GRID -->
-  <div class="main-grid">
+  <div class="main-grid event-log-layout">
 
     <!-- EVIDENCE -->
     <div>
@@ -318,7 +371,8 @@ header { display:flex; align-items:center; justify-content:space-between; margin
     </div>
 
     <!-- EVENT LOG -->
-    <div>
+    <div class="event-log-section">
+
       <div class="sec-label">▸ EVENT LOG</div>
       
 <div class="log-card">
