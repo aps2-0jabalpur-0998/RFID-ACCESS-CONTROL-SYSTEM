@@ -640,24 +640,21 @@ function connectTelegramLog(){
       "ws-dot on";
 
     label.textContent =
-      "LIVE — TELEGRAM LOG";
+      "LIVE — GUARDIANEYE LOGS";
 
     addLog(
       "safe",
-      "Telegram intruder log connected",
+      "GuardianEye realtime log connected",
       "Live"
     );
   };
-
 
   ws.onmessage = function(event){
 
     try{
 
       const data =
-        JSON.parse(
-          event.data
-        );
+        JSON.parse(event.data);
 
       if(
         data.type === "SYSTEM"
@@ -665,65 +662,77 @@ function connectTelegramLog(){
         return;
       }
 
-      // Current Telegram realtime backend.
-      if(
-        data.type === "INTRUDER"
-      ){
+      const t =
+        getEventTime(data);
 
-        addIntruderLog(
-          data
+      const stamp =
+        `${data.date || ""} ${t}`.trim();
+
+      if(data.type === "KNOWN_PERSON"){
+
+        addLog(
+          "safe",
+          `KNOWN PERSON: ${data.name || "Authorized person"}`,
+          stamp
         );
-
         return;
       }
 
-      if(
-        data.type === "UNKNOWN_VEHICLE"
-      ){
+      if(data.type === "INTRUDER"){
 
-        addVehicleLog(
-          data
-        );
-
+        addIntruderLog(data);
         return;
       }
 
-      if(
-        data.type === "DANGEROUS"
-      ){
+      if(data.type === "KNOWN_VEHICLE"){
 
-        addAnimalLog(
-          data
+        addLog(
+          "safe",
+          `KNOWN VEHICLE: ${data.vehicle_name || data.vehicle_id || "Known vehicle"}`,
+          stamp
         );
-
         return;
       }
 
-      // Backward compatibility for older packet format.
-      if(
-        data.project === "intruder" &&
-        data.source === "combined_test1" &&
-        data.type === "intruder"
-      ){
+      if(data.type === "UNKNOWN_VEHICLE"){
 
-        addIntruderLog(
-          {
-            ...data,
-            type:
-              "INTRUDER"
-          }
+        addLog(
+          "intruder",
+          `UNKNOWN VEHICLE: ${data.vehicle_name || data.vehicle_id || "Unknown vehicle"}`,
+          stamp
         );
+        return;
+      }
+
+      if(data.type === "SAFE_ANIMAL"){
+
+        addLog(
+          "safe",
+          `SAFE ANIMAL: ${data.animal || "Animal"}${data.confidence !== null && data.confidence !== undefined ? ` (${Number(data.confidence) * 100).toFixed(1)}%)` : ""}`,
+          stamp
+        );
+        return;
+      }
+
+      if(data.type === "DANGEROUS"){
+
+        addLog(
+          "emergency",
+          `DANGEROUS ANIMAL: ${data.animal || "Animal"}${data.confidence !== null && data.confidence !== undefined ? ` (${Number(data.confidence) * 100).toFixed(1)}%)` : ""}`,
+          stamp
+        );
+        return;
       }
 
     }catch(error){
 
       console.error(
-        "[IOT4 WS ERROR]",
-        error
+        "[IOT4 LOG ERROR]",
+        error,
+        event.data
       );
     }
   };
-
 
   ws.onclose = function(){
 
@@ -739,9 +748,7 @@ function connectTelegramLog(){
     );
   };
 
-
   ws.onerror = function(){
-
     try{
       ws.close();
     }catch(error){}
