@@ -3161,6 +3161,27 @@ body::after{
 
 
 <body>
+<div id="jarvisVoiceUnlock"
+     style="
+        position:fixed;
+        left:16px;
+        bottom:16px;
+        z-index:40000;
+        display:flex;
+        align-items:center;
+        gap:8px;
+        padding:8px 10px;
+        border:1px solid rgba(57,202,255,.35);
+        background:rgba(4,16,24,.92);
+        color:#bfefff;
+        font-family:'Space Mono',monospace;
+        font-size:8px;
+        cursor:pointer;
+        box-shadow:0 0 18px rgba(57,202,255,.10);
+     ">
+    🔊 ENABLE JARVIS VOICE
+</div>
+
 
 
 <div class="command-center">
@@ -9351,78 +9372,201 @@ setTimeout(sync,100);
         }
     }
 
-    function speakText(
-        text
-    ){
+    
+let jarvisVoiceUnlocked = false;
+let jarvisAudio = null;
 
-        const message =
-            String(
-                text || ""
-            )
-            .replace(
-                /[*_`#]/g,
-                ""
-            )
-            .replace(
-                /\s+/g,
-                " "
-            )
-            .trim();
+function unlockJarvisVoice(){
 
-        if(!message){
-            return;
-        }
+    jarvisVoiceUnlocked = true;
 
-        if(
-            typeof speak ===
-            "function"
-        ){
-
-            try{
-
-                speak(
-                    message
-                );
-
-                return;
-
-            }catch(error){
-
-                console.warn(
-                    "Existing JARVIS voice failed:",
-                    error
-                );
-            }
-        }
-
-        if(
-            "speechSynthesis"
-            in window
-        ){
-
-            window.speechSynthesis.cancel();
-
-            const utterance =
-                new SpeechSynthesisUtterance(
-                    message
-                );
-
-            utterance.rate =
-                0.94;
-
-            utterance.pitch =
-                0.92;
-
-            utterance.lang =
-                "en-IN";
-
-            window.speechSynthesis.speak(
-                utterance
-            );
-        }
+    if(!jarvisAudio){
+        jarvisAudio =
+            new Audio();
     }
 
-    function showRealtimeAlert(
+    // A tiny silent data URL is used only to unlock the audio element
+    // after the user's click, satisfying browser autoplay rules.
+    jarvisAudio.src =
+        "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA";
+
+    jarvisAudio.play()
+        .catch(function(){});
+
+    const unlock =
+        document.getElementById(
+            "jarvisVoiceUnlock"
+        );
+
+    if(unlock){
+        unlock.textContent =
+            "🔊 JARVIS VOICE READY";
+        unlock.style.color =
+            "var(--green)";
+        unlock.style.borderColor =
+            "rgba(66,223,108,.35)";
+    }
+
+    console.log(
+        "🟢 JARVIS voice unlocked"
+    );
+}
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        const unlockButton =
+            document.getElementById(
+                "jarvisVoiceUnlock"
+            );
+
+        if(
+            unlockButton &&
+            event.target === unlockButton
+        ){
+
+            unlockJarvisVoice();
+        }
+    },
+    {passive:true}
+);
+
+
+async function playElevenLabsAudio(
+    base64Audio
+){
+
+    if(
+        !base64Audio
+    ){
+        return false;
+    }
+
+    if(
+        !jarvisVoiceUnlocked
+    ){
+
+        console.warn(
+            "JARVIS voice is locked by browser autoplay policy."
+        );
+
+        return false;
+    }
+
+    try{
+
+        const audioBytes =
+            Uint8Array.from(
+                atob(base64Audio),
+                function(char){
+                    return char.charCodeAt(0);
+                }
+            );
+
+        const blob =
+            new Blob(
+                [audioBytes],
+                {type:"audio/mpeg"}
+            );
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        if(
+            jarvisAudio
+        ){
+
+            jarvisAudio.pause();
+        }
+
+        jarvisAudio =
+            new Audio(url);
+
+        jarvisAudio.volume =
+            1.0;
+
+        await jarvisAudio.play();
+
+        jarvisAudio.addEventListener(
+            "ended",
+            function(){
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+            },
+            {once:true}
+        );
+
+        return true;
+
+    }catch(error){
+
+        console.warn(
+            "ElevenLabs browser playback failed:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+function speakText(
+    text
+){
+
+    const message =
+        String(
+            text || ""
+        )
+        .replace(
+            /[*_`#]/g,
+            ""
+        )
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
+
+    if(
+        !message
+    ){
+        return;
+    }
+
+    if(
+        "speechSynthesis" in window
+    ){
+
+        window.speechSynthesis.cancel();
+
+        const utterance =
+            new SpeechSynthesisUtterance(
+                message
+            );
+
+        utterance.rate =
+            0.94;
+
+        utterance.pitch =
+            0.92;
+
+        utterance.lang =
+            "hi-IN";
+
+        window.speechSynthesis.speak(
+            utterance
+        );
+    }
+}
+
+function showRealtimeAlert(
         alert
     ){
 
@@ -9625,19 +9769,26 @@ setTimeout(sync,100);
             );
         }
 
-        if(type === "INTRUDER"){
+        const preferredText =
+            type === "INTRUDER"
+                ? "अरे निकल जा! यह GuardianEye security zone है। तुरंत पीछे हटो, नहीं तो फेश फेश!"
+                : (
+                    alert.elevenlabs_text ||
+                    alert.speech ||
+                    alert.raw_message
+                );
 
-            speakText(
-                "Abe nikal jaa, nahi toh fessh fessh!"
-            );
+        playElevenLabsAudio(
+            alert.elevenlabs_audio_b64
+        ).then(function(played){
 
-        }else{
+            if(!played){
 
-            speakText(
-                alert.speech ||
-                alert.raw_message
-            );
-        }
+                speakText(
+                    preferredText
+                );
+            }
+        });
     }
 
     function connect(){
