@@ -144,6 +144,127 @@ header { display:flex; align-items:center; justify-content:space-between; margin
 .lb-info { text-align:center; margin-top:10px; font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--muted); }
 
 @media(max-width:600px){ .stats{grid-template-columns:repeat(2,1fr);} header{flex-direction:column;} }
+
+/* =========================================================
+   TABLE LOGBOOK
+========================================================= */
+
+.log-card{
+    background:var(--s1);
+    border:1px solid var(--border);
+    border-radius:var(--r);
+    overflow:hidden;
+}
+
+.log-table-wrap{
+    width:100%;
+    overflow-x:auto;
+}
+
+.log-table{
+    width:100%;
+    min-width:760px;
+    border-collapse:collapse;
+    table-layout:fixed;
+}
+
+.log-table th{
+    padding:12px 14px;
+    text-align:left;
+    color:var(--muted);
+    font-family:'DM Mono',monospace;
+    font-size:.62rem;
+    letter-spacing:.10em;
+    text-transform:uppercase;
+    background:rgba(99,179,237,.035);
+    border-bottom:1px solid var(--border2);
+}
+
+.log-table td{
+    padding:12px 14px;
+    color:var(--text);
+    font-size:.78rem;
+    vertical-align:top;
+    border-bottom:1px solid rgba(99,179,237,.055);
+}
+
+.log-table tr:last-child td{
+    border-bottom:none;
+}
+
+.log-table tr:hover td{
+    background:rgba(99,179,237,.025);
+}
+
+.log-col-date{width:115px;}
+.log-col-time{width:95px;}
+.log-col-type{width:155px;}
+.log-col-source{width:150px;}
+.log-col-details{width:auto;}
+
+.log-type{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 8px;
+    border-radius:999px;
+    font-family:'DM Mono',monospace;
+    font-size:.60rem;
+    font-weight:700;
+    letter-spacing:.04em;
+}
+
+.log-type.known{
+    color:var(--green);
+    background:rgba(72,187,120,.08);
+    border:1px solid rgba(72,187,120,.22);
+}
+
+.log-type.intruder{
+    color:var(--red);
+    background:rgba(252,129,129,.08);
+    border:1px solid rgba(252,129,129,.22);
+}
+
+.log-type.vehicle{
+    color:var(--blue);
+    background:rgba(99,179,237,.08);
+    border:1px solid rgba(99,179,237,.22);
+}
+
+.log-type.warning{
+    color:var(--amber);
+    background:rgba(246,173,85,.08);
+    border:1px solid rgba(246,173,85,.22);
+}
+
+.log-type.animal{
+    color:var(--purple);
+    background:rgba(183,148,244,.08);
+    border:1px solid rgba(183,148,244,.22);
+}
+
+.log-empty-row td{
+    padding:24px 14px;
+    text-align:center;
+    color:var(--muted);
+    font-family:'DM Mono',monospace;
+    font-size:.72rem;
+}
+
+.log-detail-main{
+    color:var(--text);
+    font-weight:700;
+}
+
+.log-detail-sub{
+    margin-top:4px;
+    color:var(--muted);
+    font-family:'DM Mono',monospace;
+    font-size:.60rem;
+    line-height:1.5;
+}
+
 </style>
 </head>
 <body>
@@ -199,15 +320,37 @@ header { display:flex; align-items:center; justify-content:space-between; margin
     <!-- EVENT LOG -->
     <div>
       <div class="sec-label">▸ EVENT LOG</div>
-      <div class="log-card">
-        <div class="card-head">
-          <div class="card-head-title">Live Events</div>
-          <button onclick="clearLog()" style="font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;cursor:pointer;">CLEAR</button>
-        </div>
-        <div class="log-scroll" id="eventLog">
-          <div class="log-empty">No events yet</div>
-        </div>
-      </div>
+      
+<div class="log-card">
+  <div class="card-head">
+    <div class="card-head-title">Event Logbook</div>
+    <button
+      type="button"
+      class="ftab"
+      onclick="clearLog()"
+    >CLEAR</button>
+  </div>
+
+  <div class="log-table-wrap">
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th class="log-col-date">Date</th>
+          <th class="log-col-time">Time</th>
+          <th class="log-col-type">Event Type</th>
+          <th class="log-col-source">Source</th>
+          <th class="log-col-details">Details</th>
+        </tr>
+      </thead>
+      <tbody id="eventLog">
+        <tr class="log-empty-row">
+          <td colspan="5">No events yet</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
     </div>
 
   </div>
@@ -362,25 +505,335 @@ function filterEv(type, btn){
 }
 
 // ── Event Log ─────────────────────────────────────────────────
-function addLog(type, msg, time){
-  const logEl = document.getElementById('eventLog');
-  if(logEl.querySelector('.log-empty')) logEl.innerHTML = '';
-  const item = document.createElement('div');
-  item.className = 'log-item';
-  item.innerHTML = `
-    <div class="log-dot dot-${type}"></div>
-    <div>
-      <div class="log-msg">${msg}</div>
-      <div class="log-time">${time}</div>
-    </div>
-  `;
-  logEl.insertBefore(item, logEl.firstChild);
-  if(logEl.children.length > 50) logEl.removeChild(logEl.lastChild);
+
+function escapeHTML(value){
+
+  return String(
+    value ?? ""
+  )
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
 }
 
-function clearLog(){
-  document.getElementById('eventLog').innerHTML = '<div class="log-empty">No events yet</div>';
+
+function inferLogParts(
+  type,
+  data
+){
+
+  const upper =
+    String(
+      type || "LOG"
+    ).toUpperCase();
+
+  let badgeClass = "known";
+  let icon = "•";
+
+  if(
+    upper.includes("INTRUDER")
+  ){
+
+    badgeClass = "intruder";
+    icon = "🚨";
+
+  }else if(
+    upper.includes("UNKNOWN_VEHICLE")
+  ){
+
+    badgeClass = "vehicle";
+    icon = "⚠️";
+
+  }else if(
+    upper.includes("KNOWN_VEHICLE")
+  ){
+
+    badgeClass = "vehicle";
+    icon = "🚗";
+
+  }else if(
+    upper.includes("SAFE_ANIMAL")
+  ){
+
+    badgeClass = "animal";
+    icon = "🐾";
+
+  }else if(
+    upper.includes("DANGEROUS")
+  ){
+
+    badgeClass = "warning";
+    icon = "⚠️";
+
+  }else if(
+    upper.includes("KNOWN_PERSON")
+  ){
+
+    badgeClass = "known";
+    icon = "✅";
+
+  }else if(
+    upper.includes("SAFE")
+  ){
+
+    badgeClass = "known";
+    icon = "✅";
+
+  }else{
+
+    badgeClass = "vehicle";
+    icon = "•";
+  }
+
+  return {
+    badgeClass,
+    icon,
+    label:
+      upper.replace(
+        /_/g,
+        " "
+      )
+  };
 }
+
+
+function addLog(
+  type,
+  msg,
+  time,
+  extraData = {}
+){
+
+  const logBody =
+    document.getElementById(
+      "eventLog"
+    );
+
+  if(!logBody){
+    return;
+  }
+
+  const empty =
+    logBody.querySelector(
+      ".log-empty-row"
+    );
+
+  if(empty){
+    empty.remove();
+  }
+
+  const parts =
+    String(
+      time || ""
+    ).trim()
+    .split(/\s+/);
+
+  let date = "";
+  let clock = "";
+
+  if(
+    parts.length >= 2
+  ){
+
+    date = parts[0];
+    clock = parts[1];
+
+  }else{
+
+    clock =
+      time ||
+      now();
+  }
+
+  const meta =
+    inferLogParts(
+      type,
+      extraData
+    );
+
+  let source =
+    extraData.source ||
+    extraData.project ||
+    "GuardianEye";
+
+  let detailsMain =
+    msg ||
+    extraData.message ||
+    "Event recorded";
+
+  let detailsSub = [];
+
+  if(
+    extraData.name
+  ){
+
+    detailsSub.push(
+      "Name: " +
+      extraData.name
+    );
+  }
+
+  if(
+    extraData.vehicle_id
+  ){
+
+    detailsSub.push(
+      "Vehicle ID: " +
+      extraData.vehicle_id
+    );
+  }
+
+  if(
+    extraData.vehicle_name
+  ){
+
+    detailsSub.push(
+      "Vehicle: " +
+      extraData.vehicle_name
+    );
+  }
+
+  if(
+    extraData.vehicle_status
+  ){
+
+    detailsSub.push(
+      "Status: " +
+      extraData.vehicle_status
+    );
+  }
+
+  if(
+    extraData.animal
+  ){
+
+    detailsSub.push(
+      "Animal: " +
+      extraData.animal
+    );
+  }
+
+  if(
+    extraData.confidence !== undefined &&
+    extraData.confidence !== null
+  ){
+
+    const c =
+      Number(
+        extraData.confidence
+      );
+
+    detailsSub.push(
+      "Confidence: " +
+      (
+        c <= 1
+          ? (c * 100).toFixed(1)
+          : c.toFixed(1)
+      ) +
+      "%"
+    );
+  }
+
+  const row =
+    document.createElement(
+      "tr"
+    );
+
+  row.innerHTML = `
+    <td>${escapeHTML(date || "—")}</td>
+
+    <td>
+      <span style="
+        font-family:'DM Mono',monospace;
+        font-size:.68rem;
+      ">
+        ${escapeHTML(clock || "—")}
+      </span>
+    </td>
+
+    <td>
+      <span class="
+        log-type
+        ${meta.badgeClass}
+      ">
+        ${meta.icon}
+        ${escapeHTML(meta.label)}
+      </span>
+    </td>
+
+    <td>
+      <span style="
+        font-family:'DM Mono',monospace;
+        font-size:.64rem;
+        color:var(--cyan);
+      ">
+        ${escapeHTML(source)}
+      </span>
+    </td>
+
+    <td>
+      <div class="log-detail-main">
+        ${escapeHTML(detailsMain)}
+      </div>
+
+      ${
+        detailsSub.length
+          ? `
+            <div class="log-detail-sub">
+              ${detailsSub
+                .map(
+                  escapeHTML
+                )
+                .join(
+                  " • "
+                )}
+            </div>
+          `
+          : ""
+      }
+    </td>
+  `;
+
+  logBody.insertBefore(
+    row,
+    logBody.firstChild
+  );
+
+  while(
+    logBody.children.length >
+    100
+  ){
+
+    logBody.removeChild(
+      logBody.lastChild
+    );
+  }
+}
+
+
+
+function clearLog(){
+
+  const logBody =
+    document.getElementById(
+      "eventLog"
+    );
+
+  if(!logBody){
+    return;
+  }
+
+  logBody.innerHTML = `
+    <tr class="log-empty-row">
+      <td colspan="5">
+        No events yet
+      </td>
+    </tr>
+  `;
+}
+
 
 // ── Lightbox ──────────────────────────────────────────────────
 function openLB(filename, type, timestamp){
