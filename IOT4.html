@@ -154,7 +154,7 @@ header { display:flex; align-items:center; justify-content:space-between; margin
       <div class="logo-icon">👁️</div>
       <div class="logo-text">
         <h1>GuardianAI</h1>
-        <p>INTRUDER TELEGRAM LOG MIRROR</p>
+        <p>INTRUDER EVENT LOG</p>
       </div>
     </div>
     <div class="header-right">
@@ -179,35 +179,6 @@ header { display:flex; align-items:center; justify-content:space-between; margin
   </div>
 
   <!-- STATS -->
-  <div class="sec-label">▸ DETECTION STATS</div>
-  <div class="stats">
-    <div class="stat" style="--c:var(--red)">
-      <div class="stat-icon">🚨</div>
-      <div class="stat-val" id="sIntruder">0</div>
-      <div class="stat-label">INTRUDER ALERTS</div>
-    </div>
-    <div class="stat" style="--c:var(--purple)">
-      <div class="stat-icon">🙋</div>
-      <div class="stat-val" id="sHelp">0</div>
-      <div class="stat-label">HELP GESTURES</div>
-    </div>
-    <div class="stat" style="--c:var(--amber)">
-      <div class="stat-icon">🆘</div>
-      <div class="stat-val" id="sEmergency">0</div>
-      <div class="stat-label">EMERGENCIES</div>
-    </div>
-    <div class="stat" style="--c:var(--blue)">
-      <div class="stat-icon">📁</div>
-      <div class="stat-val" id="sTotal">0</div>
-      <div class="stat-label">TOTAL EVIDENCE</div>
-    </div>
-    <div class="stat" style="--c:var(--green)">
-      <div class="stat-icon">📅</div>
-      <div class="stat-val" id="sToday">0</div>
-      <div class="stat-label">TODAY</div>
-    </div>
-  </div>
-
   <!-- MAIN GRID -->
   <div class="main-grid">
 
@@ -308,15 +279,6 @@ function updateBanner(state){
 }
 
 // ── Update Stats ──────────────────────────────────────────────
-function updateStats(state, files){
-  document.getElementById('sIntruder').textContent  = state.total_intruder  || 0;
-  document.getElementById('sHelp').textContent      = state.total_help      || 0;
-  document.getElementById('sEmergency').textContent = state.total_emergency || 0;
-  document.getElementById('sTotal').textContent     = (files||[]).length;
-  document.getElementById('sToday').textContent     = todayCount(files||[]);
-  document.getElementById('lastUpdate').textContent = 'Updated: ' + now();
-}
-
 async function sendJarvisAlert(
     project,
     title,
@@ -534,24 +496,6 @@ function addIntruderLog(data){
     `INTRUDER LOG: ${cleanMessage}`,
     `${date} ${t}`.trim()
   );
-
-  const count =
-    Number(
-      document.getElementById(
-        "sIntruder"
-      ).textContent || 0
-    );
-
-  document.getElementById(
-    "sIntruder"
-  ).textContent =
-    count + 1;
-
-  document.getElementById(
-    "lastUpdate"
-  ).textContent =
-    "Intruder log: " +
-    now();
 }
 
 
@@ -640,21 +584,24 @@ function connectTelegramLog(){
       "ws-dot on";
 
     label.textContent =
-      "LIVE — GUARDIANEYE LOGS";
+      "LIVE — TELEGRAM LOG";
 
     addLog(
       "safe",
-      "GuardianEye realtime log connected",
+      "Telegram intruder log connected",
       "Live"
     );
   };
+
 
   ws.onmessage = function(event){
 
     try{
 
       const data =
-        JSON.parse(event.data);
+        JSON.parse(
+          event.data
+        );
 
       if(
         data.type === "SYSTEM"
@@ -662,77 +609,65 @@ function connectTelegramLog(){
         return;
       }
 
-      const t =
-        getEventTime(data);
+      // Current Telegram realtime backend.
+      if(
+        data.type === "INTRUDER"
+      ){
 
-      const stamp =
-        `${data.date || ""} ${t}`.trim();
-
-      if(data.type === "KNOWN_PERSON"){
-
-        addLog(
-          "safe",
-          `KNOWN PERSON: ${data.name || "Authorized person"}`,
-          stamp
+        addIntruderLog(
+          data
         );
+
         return;
       }
 
-      if(data.type === "INTRUDER"){
+      if(
+        data.type === "UNKNOWN_VEHICLE"
+      ){
 
-        addIntruderLog(data);
+        addVehicleLog(
+          data
+        );
+
         return;
       }
 
-      if(data.type === "KNOWN_VEHICLE"){
+      if(
+        data.type === "DANGEROUS"
+      ){
 
-        addLog(
-          "safe",
-          `KNOWN VEHICLE: ${data.vehicle_name || data.vehicle_id || "Known vehicle"}`,
-          stamp
+        addAnimalLog(
+          data
         );
+
         return;
       }
 
-      if(data.type === "UNKNOWN_VEHICLE"){
+      // Backward compatibility for older packet format.
+      if(
+        data.project === "intruder" &&
+        data.source === "combined_test1" &&
+        data.type === "intruder"
+      ){
 
-        addLog(
-          "intruder",
-          `UNKNOWN VEHICLE: ${data.vehicle_name || data.vehicle_id || "Unknown vehicle"}`,
-          stamp
+        addIntruderLog(
+          {
+            ...data,
+            type:
+              "INTRUDER"
+          }
         );
-        return;
-      }
-
-      if(data.type === "SAFE_ANIMAL"){
-
-        addLog(
-          "safe",
-          `SAFE ANIMAL: ${data.animal || "Animal"}${data.confidence !== null && data.confidence !== undefined ? ` (${Number(data.confidence) * 100).toFixed(1)}%)` : ""}`,
-          stamp
-        );
-        return;
-      }
-
-      if(data.type === "DANGEROUS"){
-
-        addLog(
-          "emergency",
-          `DANGEROUS ANIMAL: ${data.animal || "Animal"}${data.confidence !== null && data.confidence !== undefined ? ` (${Number(data.confidence) * 100).toFixed(1)}%)` : ""}`,
-          stamp
-        );
-        return;
       }
 
     }catch(error){
 
       console.error(
-        "[IOT4 LOG ERROR]",
-        error,
-        event.data
+        "[IOT4 WS ERROR]",
+        error
       );
     }
   };
+
 
   ws.onclose = function(){
 
@@ -748,7 +683,9 @@ function connectTelegramLog(){
     );
   };
 
+
   ws.onerror = function(){
+
     try{
       ws.close();
     }catch(error){}
