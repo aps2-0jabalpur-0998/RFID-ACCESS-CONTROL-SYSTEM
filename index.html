@@ -1,6 +1,5 @@
 
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8587,7 +8586,12 @@ setTimeout(sync,100);
         return;
     }
 
-    let lastAlertId = 0;
+    /*
+      The value already present in alerts.json when the page opens
+      is treated as OLD. Only a later/newer alert is displayed.
+    */
+    let lastAlertId = null;
+    let feedInitialized = false;
     let resetTimer = null;
 
     function setMiniMode(type){
@@ -8826,7 +8830,31 @@ setTimeout(sync,100);
             );
 
         if(
-            !Number.isFinite(alertId) ||
+            !Number.isFinite(alertId)
+        ){
+            return;
+        }
+
+        /*
+          FIRST POLL:
+          Take the current alerts.json ID as the baseline.
+          Do NOT show or speak it.
+
+          LATER POLLS:
+          Only a strictly newer ID is a NEW alert.
+        */
+        if(!feedInitialized){
+
+            feedInitialized =
+                true;
+
+            lastAlertId =
+                alertId;
+
+            return;
+        }
+
+        if(
             alertId <= lastAlertId
         ){
             return;
@@ -8834,6 +8862,11 @@ setTimeout(sync,100);
 
         lastAlertId =
             alertId;
+
+        localStorage.setItem(
+            LAST_SEEN_KEY,
+            String(alertId)
+        );
 
         setMiniMode(
             alert.type
