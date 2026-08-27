@@ -3556,28 +3556,140 @@ body::after{
 
     <div class="health-gauge">
 
-        <div class="health-jarvis-face">
+       <div class="health-jarvis-face">
 
-            <div class="jarvis-corner-mark tl"></div>
-            <div class="jarvis-corner-mark tr"></div>
-            <div class="jarvis-corner-mark bl"></div>
-            <div class="jarvis-corner-mark br"></div>
+    <div class="jarvis-holo-ring ring-1"></div>
+    <div class="jarvis-holo-ring ring-2"></div>
 
-            <div class="health-jarvis-brow left"></div>
-            <div class="health-jarvis-brow right"></div>
+    <svg class="jarvis-wireframe-face"
+         viewBox="0 0 300 380"
+         preserveAspectRatio="xMidYMid meet">
 
-            <div class="health-jarvis-eye left"></div>
-            <div class="health-jarvis-eye right"></div>
+        <!-- HEAD OUTLINE -->
+        <path class="face-line"
+              d="M150 20
+                 C82 20 42 72 42 150
+                 C42 245 68 315 150 350
+                 C232 315 258 245 258 150
+                 C258 72 218 20 150 20Z"/>
 
-            <div class="health-jarvis-core"></div>
+        <!-- HEAD HORIZONTAL SCAN LINES -->
+        <path class="mesh-line"
+              d="M58 75 Q150 105 242 75"/>
+        <path class="mesh-line"
+              d="M48 95 Q150 120 252 95"/>
+        <path class="mesh-line"
+              d="M44 118 Q150 138 256 118"/>
+        <path class="mesh-line"
+              d="M43 142 Q150 157 257 142"/>
+        <path class="mesh-line"
+              d="M43 166 Q150 174 257 166"/>
+        <path class="mesh-line"
+              d="M46 190 Q150 192 254 190"/>
+        <path class="mesh-line"
+              d="M50 214 Q150 210 250 214"/>
+        <path class="mesh-line"
+              d="M56 238 Q150 230 244 238"/>
+        <path class="mesh-line"
+              d="M64 262 Q150 250 236 262"/>
+        <path class="mesh-line"
+              d="M76 286 Q150 270 224 286"/>
+        <path class="mesh-line"
+              d="M92 308 Q150 292 208 308"/>
 
-            <div class="health-jarvis-mouth"></div>
-            <div class="health-jarvis-scan"></div>
+        <!-- VERTICAL FACE MESH -->
+        <path class="mesh-line"
+              d="M82 45 Q65 180 105 315"/>
+        <path class="mesh-line"
+              d="M105 32 Q92 150 120 330"/>
+        <path class="mesh-line"
+              d="M128 25 Q120 130 138 342"/>
+        <path class="mesh-line"
+              d="M150 22 L150 348"/>
+        <path class="mesh-line"
+              d="M172 25 Q180 130 162 342"/>
+        <path class="mesh-line"
+              d="M195 32 Q208 150 180 330"/>
+        <path class="mesh-line"
+              d="M218 45 Q235 180 195 315"/>
 
-        </div>
+        <!-- EARS -->
+        <path class="face-line"
+              d="M43 125
+                 C20 120 17 145 27 180
+                 C31 197 43 203 49 190"/>
 
-    </div>
+        <path class="face-line"
+              d="M257 125
+                 C280 120 283 145 273 180
+                 C269 197 257 203 251 190"/>
 
+        <!-- LEFT EYE -->
+        <path class="feature-line"
+              d="M72 145
+                 Q102 119 133 145
+                 Q103 169 72 145Z"/>
+
+        <!-- RIGHT EYE -->
+        <path class="feature-line"
+              d="M167 145
+                 Q198 119 228 145
+                 Q198 169 167 145Z"/>
+
+        <!-- EYE GLOW -->
+        <ellipse class="eye-core"
+                 cx="103"
+                 cy="145"
+                 rx="12"
+                 ry="5"/>
+
+        <ellipse class="eye-core"
+                 cx="197"
+                 cy="145"
+                 rx="12"
+                 ry="5"/>
+
+        <!-- NOSE -->
+        <path class="feature-line"
+              d="M150 145
+                 L139 205
+                 L128 224
+                 Q150 236 172 224
+                 L161 205
+                 Z"/>
+
+        <path class="mesh-line"
+              d="M130 224 Q150 214 170 224"/>
+
+        <!-- CHEEKS -->
+        <path class="mesh-line"
+              d="M62 190 Q95 180 128 205"/>
+
+        <path class="mesh-line"
+              d="M238 190 Q205 180 172 205"/>
+
+        <!-- MOUTH -->
+        <path class="feature-line"
+              d="M105 267
+                 Q150 248 195 267
+                 Q150 286 105 267Z"/>
+
+        <path class="mesh-line"
+              d="M112 267 Q150 273 188 267"/>
+
+        <!-- CHIN -->
+        <path class="mesh-line"
+              d="M100 292 Q150 315 200 292"/>
+
+        <!-- FOREHEAD CENTER -->
+        <path class="scan-line"
+              d="M150 32 L150 120"/>
+
+    </svg>
+
+    <div class="jarvis-scan-beam"></div>
+
+</div>
 
 <div id="healthValue" style="display:none">0%</div>
 <div id="healthGrade" style="display:none">OFFLINE</div>
