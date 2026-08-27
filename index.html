@@ -7381,6 +7381,334 @@ async function processVoiceCommand(originalText){
     );
 }
 
+   /* =========================================================
+   REAL 3D JARVIS FACE
+   THREE.JS
+========================================================= */
+
+const jarvisFaceContainer =
+    document.getElementById("jarvis3DFace");
+
+let jarvisScene;
+let jarvisCamera;
+let jarvisRenderer;
+let jarvisHead;
+let jarvisClock;
+
+
+/* =========================================================
+   LOAD THREE.JS
+========================================================= */
+
+const threeScript = document.createElement("script");
+
+threeScript.src =
+    "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js";
+
+threeScript.onload = () => {
+
+    const loaderScript =
+        document.createElement("script");
+
+    loaderScript.src =
+        "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/js/loaders/GLTFLoader.js";
+
+    loaderScript.onload = () => {
+
+        initJarvis3D();
+
+    };
+
+    document.head.appendChild(loaderScript);
+
+};
+
+document.head.appendChild(threeScript);
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+function initJarvis3D(){
+
+    if(!jarvisFaceContainer) return;
+
+
+    /* SCENE */
+
+    jarvisScene =
+        new THREE.Scene();
+
+
+    /* CAMERA */
+
+    jarvisCamera =
+        new THREE.PerspectiveCamera(
+            32,
+            120 / 145,
+            0.01,
+            100
+        );
+
+    jarvisCamera.position.set(
+        0,
+        0.02,
+        3.1
+    );
+
+
+    /* RENDERER */
+
+    jarvisRenderer =
+        new THREE.WebGLRenderer({
+            antialias:true,
+            alpha:true
+        });
+
+
+    jarvisRenderer.setPixelRatio(
+        Math.min(window.devicePixelRatio,2)
+    );
+
+
+    jarvisRenderer.setSize(
+        120,
+        145,
+        false
+    );
+
+
+    jarvisRenderer.setClearColor(
+        0x000000,
+        0
+    );
+
+
+    jarvisFaceContainer.appendChild(
+        jarvisRenderer.domElement
+    );
+
+
+    /* =====================================================
+       LIGHTING
+    ===================================================== */
+
+    const ambient =
+        new THREE.AmbientLight(
+            0x66ccff,
+            1.8
+        );
+
+    jarvisScene.add(ambient);
+
+
+    const frontLight =
+        new THREE.DirectionalLight(
+            0x8eeaff,
+            2.5
+        );
+
+    frontLight.position.set(
+        0,
+        1,
+        3
+    );
+
+    jarvisScene.add(frontLight);
+
+
+    const sideLight =
+        new THREE.DirectionalLight(
+            0x168cff,
+            1.5
+        );
+
+    sideLight.position.set(
+        -3,
+        0,
+        1
+    );
+
+    jarvisScene.add(sideLight);
+
+
+    /* =====================================================
+       LOAD REAL 3D HEAD
+    ===================================================== */
+
+    const loader =
+        new THREE.GLTFLoader();
+
+
+    loader.load(
+
+        "/models/facecap.glb",
+
+        function(gltf){
+
+            jarvisHead =
+                gltf.scene;
+
+
+            /* SCALE */
+
+            jarvisHead.scale.set(
+                1.55,
+                1.55,
+                1.55
+            );
+
+
+            /* POSITION */
+
+            jarvisHead.position.set(
+                0,
+                -0.72,
+                0
+            );
+
+
+            /* =================================================
+               MAKE IT JARVIS STYLE
+            ================================================= */
+
+            jarvisHead.traverse(
+                function(object){
+
+                    if(!object.isMesh) return;
+
+
+                    object.material =
+                        new THREE.MeshBasicMaterial({
+
+                            color:0x39caff,
+
+                            transparent:true,
+
+                            opacity:0.20,
+
+                            wireframe:false
+
+                        });
+
+
+                    /* REAL 3D WIREFRAME */
+
+                    const wire =
+                        new THREE.Mesh(
+                            object.geometry,
+                            new THREE.MeshBasicMaterial({
+
+                                color:0x5edfff,
+
+                                transparent:true,
+
+                                opacity:0.82,
+
+                                wireframe:true
+
+                            })
+                        );
+
+
+                    wire.position.copy(
+                        object.position
+                    );
+
+                    wire.rotation.copy(
+                        object.rotation
+                    );
+
+                    wire.scale.copy(
+                        object.scale
+                    );
+
+
+                    object.parent.add(wire);
+
+                }
+            );
+
+
+            jarvisScene.add(
+                jarvisHead
+            );
+
+
+            jarvisClock =
+                new THREE.Clock();
+
+
+            animateJarvis3D();
+
+        },
+
+        undefined,
+
+        function(error){
+
+            console.error(
+                "JARVIS 3D FACE FAILED:",
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   360° REAL 3D ROTATION
+========================================================= */
+
+function animateJarvis3D(){
+
+    requestAnimationFrame(
+        animateJarvis3D
+    );
+
+
+    if(!jarvisHead) return;
+
+
+    const elapsed =
+        jarvisClock.getElapsedTime();
+
+
+    /*
+       ACTUAL 3D ROTATION
+
+       Front
+          ↓
+       3/4
+          ↓
+       Side
+          ↓
+       3/4
+          ↓
+       Front
+    */
+
+    jarvisHead.rotation.y =
+        elapsed * 0.65;
+
+
+    /* tiny natural head movement */
+
+    jarvisHead.rotation.x =
+        Math.sin(elapsed * 0.8) * 0.025;
+
+
+    jarvisRenderer.render(
+        jarvisScene,
+        jarvisCamera
+    );
+
+}
+
 </script>
    <!-- =====================================================
      AI VOICE ASSISTANT
