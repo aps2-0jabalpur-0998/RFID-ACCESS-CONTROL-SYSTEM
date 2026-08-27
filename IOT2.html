@@ -425,12 +425,33 @@ let hasHistory=false;
 let historyItems=[];
 let activeAlerts=0;
 
-const zoneMap={
-  A:{card:"cardA",box:"zoneA",state:"zoneStateA"},
-  B:{card:"cardB",box:"zoneB",state:"zoneStateB"},
-  C:{card:"cardC",box:"zoneC",state:"zoneStateC"}
+const zoneMap = {
+
+    X2:{
+        card:"cardX2",
+        box:"zoneX2",
+        state:"zoneStateX2"
+    }
+
 };
 
+  if(
+    data.project === "fire" &&
+    data.type === "alert"
+){
+
+    triggerAlert(
+        data.sensor,
+        "X2"
+    );
+
+    addHistory(
+        data.sensor,
+        "X2",
+        data.time,
+        data.date
+    );
+}
 async function sendJarvisAlert(
     project,
     title,
@@ -501,32 +522,122 @@ function setSafe(){
   document.getElementById("alertCount").textContent="0";
 }
 
-function triggerAlert(sensor,zone){
-  zone=String(zone).trim().toUpperCase();
+function triggerAlert(
+    sensor,
+    zone
+){
 
-  const map=zoneMap[zone];
-  document.getElementById("systemStatus").className="status-banner alert";
-  document.getElementById("statusIcon").textContent="⚠️";
-  document.getElementById("statusText").textContent="FIRE DETECTED";
-  document.getElementById("statusSub").textContent="Emergency sensor event received — investigate immediately";
-  document.getElementById("statusTime").innerHTML="<span style='color:var(--red);font-weight:700'>ACTIVE ALERT</span>";
+    /*
+     * Fire system = X2
+     */
 
-  if(map){
-    const card=document.getElementById(map.card);
-    const box=document.getElementById(map.box);
-    const state=document.getElementById(map.state);
+    zone = "X2";
 
-    if(card)card.classList.add("alert");
-    if(box){box.className="zone-status";box.innerText=(sensor||"SENSOR")+" ACTIVE — FIRE DETECTED";}
-    if(state)state.textContent="ALERT";
-  }
+    const map =
+        zoneMap.X2;
 
-  activeAlerts=Math.max(1,activeAlerts+1);
-  document.getElementById("alertCount").textContent=activeAlerts;
+    document
+        .getElementById(
+            "systemStatus"
+        )
+        .className =
+            "status-banner alert";
 
-  console.log("LIVE FIRE ALERT:",zone,sensor);
+    document
+        .getElementById(
+            "statusIcon"
+        )
+        .textContent =
+            "⚠️";
+
+    document
+        .getElementById(
+            "statusText"
+        )
+        .textContent =
+            "FIRE DETECTED";
+
+    document
+        .getElementById(
+            "statusSub"
+        )
+        .textContent =
+            "Emergency sensor event received — investigate immediately";
+
+    document
+        .getElementById(
+            "statusTime"
+        )
+        .innerHTML =
+            "<span style='color:var(--red);font-weight:700'>" +
+            "ACTIVE ALERT · ZONE X2" +
+            "</span>";
+
+
+    if(map){
+
+        const card =
+            document.getElementById(
+                map.card
+            );
+
+        const box =
+            document.getElementById(
+                map.box
+            );
+
+        const state =
+            document.getElementById(
+                map.state
+            );
+
+        if(card){
+            card.classList.add(
+                "alert"
+            );
+        }
+
+        if(box){
+
+            box.className =
+                "zone-status";
+
+            box.innerText =
+                (
+                    sensor ||
+                    "FIRE SENSOR"
+                ) +
+                " ACTIVE — FIRE DETECTED";
+
+        }
+
+        if(state){
+
+            state.textContent =
+                "ALERT";
+
+        }
+
+    }
+
+    activeAlerts =
+        Math.max(
+            1,
+            activeAlerts + 1
+        );
+
+    document
+        .getElementById(
+            "alertCount"
+        )
+        .textContent =
+            activeAlerts;
+
+    console.log(
+        "🔥 FIRE → X2:",
+        sensor
+    );
 }
-
 function addHistory(sensor,zone,time,date){
   if(!hasHistory){
     document.getElementById("historyBody").innerHTML="";
