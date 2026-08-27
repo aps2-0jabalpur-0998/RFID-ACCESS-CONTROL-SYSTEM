@@ -3650,134 +3650,273 @@ body::after{
 
        <div class="health-jarvis-face">
 
-    <div class="jarvis-holo-ring ring-1"></div>
-    <div class="jarvis-holo-ring ring-2"></div>
+    <svg
+        class="jarvis-wireframe-face"
+        viewBox="0 0 300 350"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+    >
 
-    <svg class="jarvis-wireframe-face"
-         viewBox="0 0 300 380"
-         preserveAspectRatio="xMidYMid meet">
+        <!-- =========================
+             HEAD OUTLINE
+        ========================== -->
 
-        <!-- HEAD OUTLINE -->
-        <path class="face-line"
-              d="M150 20
-                 C82 20 42 72 42 150
-                 C42 245 68 315 150 350
-                 C232 315 258 245 258 150
-                 C258 72 218 20 150 20Z"/>
+        <path
+            class="face-line"
+            d="
+                M150 18
+                C90 18 48 55 43 118
+                C38 185 50 267 91 309
+                C108 326 128 337 150 340
+                C172 337 192 326 209 309
+                C250 267 262 185 257 118
+                C252 55 210 18 150 18
+                Z
+            "
+        />
 
-        <!-- HEAD HORIZONTAL SCAN LINES -->
-        <path class="mesh-line"
-              d="M58 75 Q150 105 242 75"/>
-        <path class="mesh-line"
-              d="M48 95 Q150 120 252 95"/>
-        <path class="mesh-line"
-              d="M44 118 Q150 138 256 118"/>
-        <path class="mesh-line"
-              d="M43 142 Q150 157 257 142"/>
-        <path class="mesh-line"
-              d="M43 166 Q150 174 257 166"/>
-        <path class="mesh-line"
-              d="M46 190 Q150 192 254 190"/>
-        <path class="mesh-line"
-              d="M50 214 Q150 210 250 214"/>
-        <path class="mesh-line"
-              d="M56 238 Q150 230 244 238"/>
-        <path class="mesh-line"
-              d="M64 262 Q150 250 236 262"/>
-        <path class="mesh-line"
-              d="M76 286 Q150 270 224 286"/>
-        <path class="mesh-line"
-              d="M92 308 Q150 292 208 308"/>
 
-        <!-- VERTICAL FACE MESH -->
-        <path class="mesh-line"
-              d="M82 45 Q65 180 105 315"/>
-        <path class="mesh-line"
-              d="M105 32 Q92 150 120 330"/>
-        <path class="mesh-line"
-              d="M128 25 Q120 130 138 342"/>
-        <path class="mesh-line"
-              d="M150 22 L150 348"/>
-        <path class="mesh-line"
-              d="M172 25 Q180 130 162 342"/>
-        <path class="mesh-line"
-              d="M195 32 Q208 150 180 330"/>
-        <path class="mesh-line"
-              d="M218 45 Q235 180 195 315"/>
+        <!-- =========================
+             HORIZONTAL HEAD MESH
+        ========================== -->
 
-        <!-- EARS -->
-        <path class="face-line"
-              d="M43 125
-                 C20 120 17 145 27 180
-                 C31 197 43 203 49 190"/>
+        <path class="mesh-line"
+            d="M58 62 Q150 82 242 62"/>
 
-        <path class="face-line"
-              d="M257 125
-                 C280 120 283 145 273 180
-                 C269 197 257 203 251 190"/>
+        <path class="mesh-line"
+            d="M48 82 Q150 100 252 82"/>
 
-        <!-- LEFT EYE -->
-        <path class="feature-line"
-              d="M72 145
-                 Q102 119 133 145
-                 Q103 169 72 145Z"/>
+        <path class="mesh-line"
+            d="M44 104 Q150 118 256 104"/>
+
+        <path class="mesh-line"
+            d="M42 128 Q150 137 258 128"/>
+
+        <path class="mesh-line"
+            d="M42 153 Q150 157 258 153"/>
+
+        <path class="mesh-line"
+            d="M43 178 Q150 178 257 178"/>
+
+        <path class="mesh-line"
+            d="M46 203 Q150 199 254 203"/>
+
+        <path class="mesh-line"
+            d="M51 228 Q150 220 249 228"/>
+
+        <path class="mesh-line"
+            d="M59 252 Q150 242 241 252"/>
+
+        <path class="mesh-line"
+            d="M70 275 Q150 263 230 275"/>
+
+        <path class="mesh-line"
+            d="M85 296 Q150 283 215 296"/>
+
+
+        <!-- =========================
+             VERTICAL MESH
+        ========================== -->
+
+        <path class="mesh-line"
+            d="M76 42 Q62 150 91 286"/>
+
+        <path class="mesh-line"
+            d="M99 29 Q88 150 111 310"/>
+
+        <path class="mesh-line"
+            d="M124 21 Q116 140 130 329"/>
+
+        <path class="mesh-line"
+            d="M150 19 L150 338"/>
+
+        <path class="mesh-line"
+            d="M176 21 Q184 140 170 329"/>
+
+        <path class="mesh-line"
+            d="M201 29 Q212 150 189 310"/>
+
+        <path class="mesh-line"
+            d="M224 42 Q238 150 209 286"/>
+
+
+        <!-- =========================
+             EARS
+        ========================== -->
+
+        <path
+            class="face-line"
+            d="
+                M44 117
+                C27 112 22 130 27 157
+                C30 175 38 185 48 181
+            "
+        />
+
+        <path
+            class="face-line"
+            d="
+                M256 117
+                C273 112 278 130 273 157
+                C270 175 262 185 252 181
+            "
+        />
+
+
+        <!-- =========================
+             EYEBROWS
+        ========================== -->
+
+        <path
+            class="mesh-line"
+            d="M70 119 Q101 100 130 118"
+        />
+
+        <path
+            class="mesh-line"
+            d="M170 118 Q199 100 230 119"
+        />
+
+
+        <!-- =========================
+             LEFT EYE
+        ========================== -->
+
+        <path
+            class="feature-line"
+            d="
+                M70 137
+                Q100 116 132 138
+                Q101 157 70 137
+                Z
+            "
+        />
 
         <!-- RIGHT EYE -->
-        <path class="feature-line"
-              d="M167 145
-                 Q198 119 228 145
-                 Q198 169 167 145Z"/>
 
-        <!-- EYE GLOW -->
-        <ellipse class="eye-core"
-                 cx="103"
-                 cy="145"
-                 rx="12"
-                 ry="5"/>
+        <path
+            class="feature-line"
+            d="
+                M168 138
+                Q200 116 230 137
+                Q199 157 168 138
+                Z
+            "
+        />
 
-        <ellipse class="eye-core"
-                 cx="197"
-                 cy="145"
-                 rx="12"
-                 ry="5"/>
 
-        <!-- NOSE -->
-        <path class="feature-line"
-              d="M150 145
-                 L139 205
-                 L128 224
-                 Q150 236 172 224
-                 L161 205
-                 Z"/>
+        <!-- GLOWING EYE CORES -->
 
-        <path class="mesh-line"
-              d="M130 224 Q150 214 170 224"/>
+        <ellipse
+            class="eye-core"
+            cx="102"
+            cy="137"
+            rx="10"
+            ry="4"
+        />
 
-        <!-- CHEEKS -->
-        <path class="mesh-line"
-              d="M62 190 Q95 180 128 205"/>
+        <ellipse
+            class="eye-core"
+            cx="198"
+            cy="137"
+            rx="10"
+            ry="4"
+        />
 
-        <path class="mesh-line"
-              d="M238 190 Q205 180 172 205"/>
 
-        <!-- MOUTH -->
-        <path class="feature-line"
-              d="M105 267
-                 Q150 248 195 267
-                 Q150 286 105 267Z"/>
+        <!-- =========================
+             NOSE
+        ========================== -->
 
-        <path class="mesh-line"
-              d="M112 267 Q150 273 188 267"/>
+        <path
+            class="feature-line"
+            d="
+                M150 140
+                L140 199
+                L128 220
+                Q150 232 172 220
+                L160 199
+                Z
+            "
+        />
 
-        <!-- CHIN -->
-        <path class="mesh-line"
-              d="M100 292 Q150 315 200 292"/>
+        <path
+            class="mesh-line"
+            d="M130 220 Q150 210 170 220"
+        />
 
-        <!-- FOREHEAD CENTER -->
-        <path class="scan-line"
-              d="M150 32 L150 120"/>
+
+        <!-- =========================
+             CHEEK MESH
+        ========================== -->
+
+        <path
+            class="mesh-line"
+            d="M57 184 Q94 174 129 204"
+        />
+
+        <path
+            class="mesh-line"
+            d="M243 184 Q206 174 171 204"
+        />
+
+        <path
+            class="mesh-line"
+            d="M63 204 Q96 194 124 216"
+        />
+
+        <path
+            class="mesh-line"
+            d="M237 204 Q204 194 176 216"
+        />
+
+
+        <!-- =========================
+             MOUTH
+        ========================== -->
+
+        <path
+            class="feature-line"
+            d="
+                M106 264
+                Q150 244 194 264
+                Q150 283 106 264
+                Z
+            "
+        />
+
+        <path
+            class="mesh-line"
+            d="M114 264 Q150 271 186 264"
+        />
+
+
+        <!-- =========================
+             CHIN
+        ========================== -->
+
+        <path
+            class="mesh-line"
+            d="M98 292 Q150 311 202 292"
+        />
+
+        <path
+            class="mesh-line"
+            d="M112 309 Q150 324 188 309"
+        />
+
+
+        <!-- =========================
+             FOREHEAD SCAN
+        ========================== -->
+
+        <path
+            class="mesh-line"
+            d="M150 35 L150 106"
+        />
 
     </svg>
+
 
     <div class="jarvis-scan-beam"></div>
 
