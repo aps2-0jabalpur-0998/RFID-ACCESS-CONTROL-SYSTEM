@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9783,143 +9780,46 @@ document.addEventListener(
 }
 
 
-   let guardianSirenTimer = null;
-let guardianVoiceTimer = null;
-
-function playGuardianSiren(){
-
-    const siren =
-        document.getElementById(
-            "guardianAlertSiren"
-        );
-
-    if(!siren){
-        console.warn(
-            "guardianAlertSiren not found"
-        );
-        return;
-    }
-
-    clearTimeout(
-        guardianSirenTimer
-    );
-
-    try{
-
-        siren.pause();
-
-        siren.currentTime = 0;
-
-        siren.volume = 1.0;
-
-        const playPromise =
-            siren.play();
-
-        if(
-            playPromise &&
-            typeof playPromise.catch ===
-            "function"
-        ){
-
-            playPromise.catch(
-                function(error){
-
-                    console.warn(
-                        "Siren autoplay blocked:",
-                        error
-                    );
-
-                }
-            );
-        }
-
-    }catch(error){
-
-        console.error(
-            "Siren playback error:",
-            error
-        );
-    }
-
-
-    /*
-     * Siren = 5 seconds
-     */
-
-    guardianSirenTimer =
-        setTimeout(
-            function(){
-
-                try{
-
-                    siren.pause();
-
-                    siren.currentTime = 0;
-
-                }catch(error){}
-
-            },
-            5000
-        );
-}
     
     let guardianLastAlertKey = "";
     let guardianLastAlertAt = 0;
 
-function stopAllGuardianAudio(){
+    function stopAllGuardianAudio(){
 
-    try{
-        if("speechSynthesis" in window){
-            window.speechSynthesis.cancel();
-        }
-    }catch(error){}
+        try{
+            if(
+                "speechSynthesis" in window
+            ){
+                window.speechSynthesis.cancel();
+            }
+        }catch(error){}
 
-    try{
+        try{
+            if(
+                window.jarvisAudio &&
+                typeof window.jarvisAudio.pause === "function"
+            ){
+                window.jarvisAudio.pause();
 
-        if(
-            window.jarvisAudio &&
-            typeof window.jarvisAudio.pause === "function"
-        ){
+                try{
+                    window.jarvisAudio.currentTime = 0;
+                }catch(error){}
+            }
+        }catch(error){}
 
-            window.jarvisAudio.pause();
-
-            try{
-                window.jarvisAudio.currentTime = 0;
-            }catch(error){}
-        }
-
-    }catch(error){}
-
-    try{
-
-        document
-            .querySelectorAll("audio")
-            .forEach(
-                function(audio){
-
-                    /*
-                     * DO NOT stop the siren here when
-                     * showRealtimeAlert() has just started it.
-                     */
-
-                    if(
-                        audio.id ===
-                        "guardianAlertSiren"
-                    ){
-                        return;
+        try{
+            document
+                .querySelectorAll("audio")
+                .forEach(
+                    function(audio){
+                        try{
+                            audio.pause();
+                            audio.currentTime = 0;
+                        }catch(error){}
                     }
-
-                    try{
-
-                        audio.pause();
-                        audio.currentTime = 0;
-
-                    }catch(error){}
-                }
-            );
-
-    }catch(error){}
-}
+                );
+        }catch(error){}
+    }
 
 
 function hideGuardianAlert(){
@@ -9961,14 +9861,6 @@ function hideGuardianAlert(){
     ){
 
         stopAllGuardianAudio();
-       /*
- * 🔊 EVERY REAL ALERT → SIREN
- *
- * Fire / Intruder / Dangerous Animal /
- * Unknown Vehicle / any other alert
- */
-
-playGuardianSiren();
 
         if(
             !("speechSynthesis" in window)
@@ -10273,27 +10165,9 @@ playGuardianSiren();
                 "सुरक्षा चेतावनी प्राप्त हुई है।";
         }
 
-       /*
- * 🔊 Siren 5 sec
- * ⏱️ 1 sec gap
- * 🗣️ Then JARVIS voice
- */
-
-clearTimeout(
-    guardianVoiceTimer
-);
-
-guardianVoiceTimer =
-    setTimeout(
-        function(){
-
-            speakAlertHindi(
-                voiceText
-            );
-
-        },
-        6000
-    );
+        speakAlertHindi(
+            voiceText
+        );
     }
 
 
@@ -10488,12 +10362,6 @@ guardianVoiceTimer =
     connect();
 
 })();
-
-   <audio
-    id="guardianAlertSiren"
-    src="siren.mp3"
-    preload="auto">
-</audio>
 </script>
 
 </body>
