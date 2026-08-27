@@ -800,22 +800,21 @@ body::after{
 /* THREE.JS CANVAS */
 
 .jarvis-3d-face{
-
     width:120px;
     height:145px;
 
     position:relative;
 
     display:flex;
-
     align-items:center;
     justify-content:center;
 
     background:transparent;
 
     overflow:visible;
-}
 
+    perspective:800px;
+}
 
 .jarvis-3d-face canvas{
 
@@ -824,13 +823,13 @@ body::after{
 
     display:block;
 
-    background:transparent;
+    background:transparent !important;
 
     pointer-events:none;
 
     filter:
-        drop-shadow(0 0 5px rgba(57,202,255,.95))
-        drop-shadow(0 0 14px rgba(57,202,255,.4));
+        drop-shadow(0 0 4px rgba(57,202,255,.9))
+        drop-shadow(0 0 10px rgba(57,202,255,.45));
 }
 
 /* FACE SVG */
@@ -3925,248 +3924,12 @@ body::after{
 
     <div class="health-jarvis-face">
 
-        <svg
-            class="jarvis-wireframe-face"
-            viewBox="0 0 300 350"
-            preserveAspectRatio="xMidYMid meet"
-            aria-hidden="true"
-        >
-
-            <!-- HEAD -->
-
-            <path
-                class="face-line"
-                d="
-                    M150 18
-                    C90 18 48 58 43 120
-                    C38 190 51 268 91 309
-                    C108 326 130 337 150 340
-                    C170 337 192 326 209 309
-                    C249 268 262 190 257 120
-                    C252 58 210 18 150 18
-                    Z
-                "
-            />
-
-
-            <!-- HORIZONTAL MESH -->
-
-            <path class="mesh-line"
-                d="M58 62 Q150 83 242 62"/>
-
-            <path class="mesh-line"
-                d="M49 83 Q150 101 251 83"/>
-
-            <path class="mesh-line"
-                d="M44 106 Q150 119 256 106"/>
-
-            <path class="mesh-line"
-                d="M42 130 Q150 139 258 130"/>
-
-            <path class="mesh-line"
-                d="M42 155 Q150 158 258 155"/>
-
-            <path class="mesh-line"
-                d="M43 180 Q150 179 257 180"/>
-
-            <path class="mesh-line"
-                d="M46 205 Q150 200 254 205"/>
-
-            <path class="mesh-line"
-                d="M51 230 Q150 221 249 230"/>
-
-            <path class="mesh-line"
-                d="M59 253 Q150 243 241 253"/>
-
-            <path class="mesh-line"
-                d="M71 276 Q150 264 229 276"/>
-
-            <path class="mesh-line"
-                d="M86 298 Q150 284 214 298"/>
-
-
-            <!-- VERTICAL MESH -->
-
-            <path class="mesh-line"
-                d="M76 43 Q62 150 91 287"/>
-
-            <path class="mesh-line"
-                d="M99 30 Q88 150 111 310"/>
-
-            <path class="mesh-line"
-                d="M124 22 Q116 140 130 329"/>
-
-            <path class="mesh-line"
-                d="M150 19 L150 338"/>
-
-            <path class="mesh-line"
-                d="M176 22 Q184 140 170 329"/>
-
-            <path class="mesh-line"
-                d="M201 30 Q212 150 189 310"/>
-
-            <path class="mesh-line"
-                d="M224 43 Q238 150 209 287"/>
-
-
-            <!-- EARS -->
-
-            <path
-                class="face-line"
-                d="
-                    M44 118
-                    C27 112 22 132 27 157
-                    C30 175 38 185 48 181
-                "
-            />
-
-            <path
-                class="face-line"
-                d="
-                    M256 118
-                    C273 112 278 132 273 157
-                    C270 175 262 185 252 181
-                "
-            />
-
-
-            <!-- EYEBROWS -->
-
-            <path
-                class="mesh-line"
-                d="M70 119 Q101 101 130 118"
-            />
-
-            <path
-                class="mesh-line"
-                d="M170 118 Q199 101 230 119"
-            />
-
-
-            <!-- LEFT EYE -->
-
-            <path
-                class="feature-line"
-                d="
-                    M70 137
-                    Q101 116 132 138
-                    Q101 158 70 137
-                    Z
-                "
-            />
-
-
-            <!-- RIGHT EYE -->
-
-            <path
-                class="feature-line"
-                d="
-                    M168 138
-                    Q199 116 230 137
-                    Q199 158 168 138
-                    Z
-                "
-            />
-
-
-            <!-- EYE CORES -->
-
-            <ellipse
-                class="eye-core"
-                cx="102"
-                cy="137"
-                rx="10"
-                ry="4"
-            />
-
-            <ellipse
-                class="eye-core"
-                cx="198"
-                cy="137"
-                rx="10"
-                ry="4"
-            />
-
-
-            <!-- NOSE -->
-
-            <path
-                class="feature-line"
-                d="
-                    M150 140
-                    L140 199
-                    L128 220
-                    Q150 232 172 220
-                    L160 199
-                    Z
-                "
-            />
-
-            <path
-                class="mesh-line"
-                d="M130 220 Q150 210 170 220"
-            />
-
-
-            <!-- CHEEKS -->
-
-            <path
-                class="mesh-line"
-                d="M57 184 Q94 174 129 204"
-            />
-
-            <path
-                class="mesh-line"
-                d="M243 184 Q206 174 171 204"
-            />
-
-            <path
-                class="mesh-line"
-                d="M63 204 Q96 194 124 216"
-            />
-
-            <path
-                class="mesh-line"
-                d="M237 204 Q204 194 176 216"
-            />
-
-
-            <!-- MOUTH -->
-
-            <path
-                class="feature-line"
-                d="
-                    M106 264
-                    Q150 245 194 264
-                    Q150 283 106 264
-                    Z
-                "
-            />
-
-            <path
-                class="mesh-line"
-                d="M114 264 Q150 271 186 264"
-            />
-
-
-            <!-- CHIN -->
-
-            <path
-                class="mesh-line"
-                d="M98 292 Q150 311 202 292"
-            />
-
-            <path
-                class="mesh-line"
-                d="M112 309 Q150 324 188 309"
-            />
-
-        </svg>
-
-
-        <div class="jarvis-scan-beam"></div>
-
+    <div
+        class="jarvis-3d-face"
+        id="jarvis3DFace">
     </div>
+
+</div>
 
 
 
@@ -7386,6 +7149,10 @@ async function processVoiceCommand(originalText){
    THREE.JS
 ========================================================= */
 
+/* =========================================================
+   REAL 3D JARVIS HOLOGRAM FACE
+========================================================= */
+
 const jarvisFaceContainer =
     document.getElementById("jarvis3DFace");
 
@@ -7396,9 +7163,7 @@ let jarvisHead;
 let jarvisClock;
 
 
-/* =========================================================
-   LOAD THREE.JS
-========================================================= */
+/* LOAD THREE */
 
 const threeScript = document.createElement("script");
 
@@ -7407,8 +7172,7 @@ threeScript.src =
 
 threeScript.onload = () => {
 
-    const loaderScript =
-        document.createElement("script");
+    const loaderScript = document.createElement("script");
 
     loaderScript.src =
         "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/js/loaders/GLTFLoader.js";
@@ -7427,7 +7191,7 @@ document.head.appendChild(threeScript);
 
 
 /* =========================================================
-   INITIALIZE
+   INIT
 ========================================================= */
 
 function initJarvis3D(){
@@ -7437,40 +7201,37 @@ function initJarvis3D(){
 
     /* SCENE */
 
-    jarvisScene =
-        new THREE.Scene();
+    jarvisScene = new THREE.Scene();
 
 
     /* CAMERA */
 
-    jarvisCamera =
-        new THREE.PerspectiveCamera(
-            32,
-            120 / 145,
-            0.01,
-            100
-        );
+    jarvisCamera = new THREE.PerspectiveCamera(
+        28,
+        120 / 145,
+        0.01,
+        100
+    );
 
     jarvisCamera.position.set(
         0,
-        0.02,
-        3.1
+        0,
+        3.2
     );
 
 
     /* RENDERER */
 
-    jarvisRenderer =
-        new THREE.WebGLRenderer({
-            antialias:true,
-            alpha:true
-        });
+    jarvisRenderer = new THREE.WebGLRenderer({
 
+        antialias:true,
+        alpha:true
+
+    });
 
     jarvisRenderer.setPixelRatio(
         Math.min(window.devicePixelRatio,2)
     );
-
 
     jarvisRenderer.setSize(
         120,
@@ -7478,12 +7239,12 @@ function initJarvis3D(){
         false
     );
 
-
     jarvisRenderer.setClearColor(
         0x000000,
         0
     );
 
+    jarvisFaceContainer.innerHTML = "";
 
     jarvisFaceContainer.appendChild(
         jarvisRenderer.domElement
@@ -7491,50 +7252,20 @@ function initJarvis3D(){
 
 
     /* =====================================================
-       LIGHTING
+       LIGHT
     ===================================================== */
 
     const ambient =
         new THREE.AmbientLight(
-            0x66ccff,
-            1.8
+            0x39caff,
+            1.5
         );
 
     jarvisScene.add(ambient);
 
 
-    const frontLight =
-        new THREE.DirectionalLight(
-            0x8eeaff,
-            2.5
-        );
-
-    frontLight.position.set(
-        0,
-        1,
-        3
-    );
-
-    jarvisScene.add(frontLight);
-
-
-    const sideLight =
-        new THREE.DirectionalLight(
-            0x168cff,
-            1.5
-        );
-
-    sideLight.position.set(
-        -3,
-        0,
-        1
-    );
-
-    jarvisScene.add(sideLight);
-
-
     /* =====================================================
-       LOAD REAL 3D HEAD
+       LOAD MODEL
     ===================================================== */
 
     const loader =
@@ -7551,27 +7282,10 @@ function initJarvis3D(){
                 gltf.scene;
 
 
-            /* SCALE */
-
-            jarvisHead.scale.set(
-                1.55,
-                1.55,
-                1.55
-            );
-
-
-            /* POSITION */
-
-            jarvisHead.position.set(
-                0,
-                -0.72,
-                0
-            );
-
-
-            /* =================================================
-               MAKE IT JARVIS STYLE
-            ================================================= */
+            /*
+             * IMPORTANT:
+             * NO BLACK MATERIAL
+             */
 
             jarvisHead.traverse(
                 function(object){
@@ -7579,55 +7293,130 @@ function initJarvis3D(){
                     if(!object.isMesh) return;
 
 
-                    object.material =
+                    /* Hide original solid mesh */
+
+                    object.visible = false;
+
+
+                    /* =========================================
+                       REAL 3D WIREFRAME
+                    ========================================= */
+
+                    const wireMaterial =
                         new THREE.MeshBasicMaterial({
 
-                            color:0x39caff,
+                            color:0x55ddff,
+
+                            wireframe:true,
 
                             transparent:true,
 
-                            opacity:0.20,
+                            opacity:.78,
 
-                            wireframe:false
+                            depthTest:true,
+
+                            depthWrite:false
 
                         });
 
 
-                    /* REAL 3D WIREFRAME */
-
-                    const wire =
+                    const wireMesh =
                         new THREE.Mesh(
                             object.geometry,
-                            new THREE.MeshBasicMaterial({
-
-                                color:0x5edfff,
-
-                                transparent:true,
-
-                                opacity:0.82,
-
-                                wireframe:true
-
-                            })
+                            wireMaterial
                         );
 
 
-                    wire.position.copy(
+                    /*
+                     * Copy actual 3D transform
+                     */
+
+                    wireMesh.position.copy(
                         object.position
                     );
 
-                    wire.rotation.copy(
+                    wireMesh.rotation.copy(
                         object.rotation
                     );
 
-                    wire.scale.copy(
+                    wireMesh.scale.copy(
                         object.scale
                     );
 
 
-                    object.parent.add(wire);
+                    /*
+                     * Slight glow layer
+                     */
+
+                    const glowMaterial =
+                        new THREE.MeshBasicMaterial({
+
+                            color:0x159bd1,
+
+                            wireframe:true,
+
+                            transparent:true,
+
+                            opacity:.16,
+
+                            depthTest:false,
+
+                            depthWrite:false
+
+                        });
+
+
+                    const glowMesh =
+                        new THREE.Mesh(
+                            object.geometry,
+                            glowMaterial
+                        );
+
+
+                    glowMesh.position.copy(
+                        object.position
+                    );
+
+                    glowMesh.rotation.copy(
+                        object.rotation
+                    );
+
+                    glowMesh.scale.set(
+                        object.scale.x * 1.012,
+                        object.scale.y * 1.012,
+                        object.scale.z * 1.012
+                    );
+
+
+                    object.parent.add(
+                        wireMesh
+                    );
+
+                    object.parent.add(
+                        glowMesh
+                    );
 
                 }
+            );
+
+
+            /* =================================================
+               MODEL SIZE
+            ================================================= */
+
+            jarvisHead.scale.set(
+                1.65,
+                1.65,
+                1.65
+            );
+
+
+            /* CENTER */
+
+            jarvisHead.position.set(
+                0,
+                -0.68,
+                0
             );
 
 
@@ -7649,7 +7438,7 @@ function initJarvis3D(){
         function(error){
 
             console.error(
-                "JARVIS 3D FACE FAILED:",
+                "3D JARVIS FACE ERROR:",
                 error
             );
 
@@ -7661,7 +7450,7 @@ function initJarvis3D(){
 
 
 /* =========================================================
-   360° REAL 3D ROTATION
+   REAL 3D ROTATION
 ========================================================= */
 
 function animateJarvis3D(){
@@ -7674,33 +7463,29 @@ function animateJarvis3D(){
     if(!jarvisHead) return;
 
 
-    const elapsed =
+    const t =
         jarvisClock.getElapsedTime();
 
 
     /*
-       ACTUAL 3D ROTATION
-
-       Front
-          ↓
-       3/4
-          ↓
-       Side
-          ↓
-       3/4
-          ↓
-       Front
-    */
+     * FULL REAL 3D ROTATION
+     */
 
     jarvisHead.rotation.y =
-        elapsed * 0.65;
+        t * 0.55;
 
 
-    /* tiny natural head movement */
+    /*
+     * VERY SMALL HEAD TILT
+     */
 
     jarvisHead.rotation.x =
-        Math.sin(elapsed * 0.8) * 0.025;
+        Math.sin(t * 0.7) * 0.025;
 
+
+    /*
+     * Render
+     */
 
     jarvisRenderer.render(
         jarvisScene,
@@ -7708,8 +7493,6 @@ function animateJarvis3D(){
     );
 
 }
-
-</script>
    <!-- =====================================================
      AI VOICE ASSISTANT
 ===================================================== -->
