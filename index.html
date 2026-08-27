@@ -3857,6 +3857,817 @@ body::after{
 
 }
 
+   /* =========================================================
+   ECOGUARDIAN LIVE CAMP MAP + SIREN
+========================================================= */
+
+(function(){
+
+    "use strict";
+
+
+    /* =====================================================
+       MAP POINT CONFIGURATION
+
+       Change positions here if your actual camp layout
+       is different.
+    ===================================================== */
+
+    const MAP_POINTS = {
+
+        X3:
+            document.getElementById(
+                "mapPointX3"
+            ),
+
+        X4:
+            document.getElementById(
+                "mapPointX4"
+            ),
+
+        X2:
+            document.getElementById(
+                "mapPointX2"
+            )
+
+    };
+
+
+    /* =====================================================
+       SIREN
+    ===================================================== */
+
+    const siren =
+        new Audio(
+            "siren.mp3"
+        );
+
+
+    siren.preload =
+        "auto";
+
+
+    siren.volume =
+        1.0;
+
+
+    let sirenTimer =
+        null;
+
+
+    let speechTimer =
+        null;
+
+
+    let lastMapAlertKey =
+        "";
+
+
+    /* =====================================================
+       LOCATION DETECTION
+    ===================================================== */
+
+    function detectMapPoint(alert){
+
+        if(!alert){
+
+            return null;
+
+        }
+
+
+        const raw =
+            [
+
+                alert.zone,
+
+                alert.location,
+
+                alert.sensor,
+
+                alert.point,
+
+                alert.device,
+
+                alert.name,
+
+                alert.raw_message,
+
+                alert.speech
+
+            ]
+            .filter(Boolean)
+            .join(" ")
+            .toUpperCase();
+
+
+        /*
+           FIRE ALWAYS GOES TO X2
+        */
+
+        const type =
+            String(
+                alert.type || ""
+            ).toUpperCase();
+
+
+        if(
+            type === "FIRE" ||
+            type === "FIRE_ALERT" ||
+            raw.includes("FIRE")
+        ){
+
+            return "X2";
+
+        }
+
+
+        /*
+           Explicit X2 / X3 / X4
+        */
+
+        if(
+            /\bX2\b/.test(raw)
+        ){
+
+            return "X2";
+
+        }
+
+
+        if(
+            /\bX3\b/.test(raw)
+        ){
+
+            return "X3";
+
+        }
+
+
+        if(
+            /\bX4\b/.test(raw)
+        ){
+
+            return "X4";
+
+        }
+
+
+        /*
+           If security alert has no explicit point,
+           use X3 as default security point.
+        */
+
+        if(
+            type === "INTRUDER" ||
+            type === "DANGEROUS" ||
+            type === "UNKNOWN_VEHICLE"
+        ){
+
+            return "X3";
+
+        }
+
+
+        return "X3";
+
+    }
+
+
+    /* =====================================================
+       BLINK MAP POINT
+    ===================================================== */
+
+    function activateMapPoint(
+        point,
+        alert
+    ){
+
+        Object.values(
+            MAP_POINTS
+        ).forEach(
+            function(el){
+
+                if(el){
+
+                    el.classList.remove(
+                        "map-alert"
+                    );
+
+                }
+
+            }
+        );
+
+
+        const element =
+            MAP_POINTS[point];
+
+
+        if(!element){
+
+            return;
+
+        }
+
+
+        element.classList.add(
+            "map-alert"
+        );
+
+
+        const banner =
+            document.getElementById(
+                "mapAlertBanner"
+            );
+
+
+        if(banner){
+
+            const type =
+                String(
+                    alert?.type ||
+                    "ALERT"
+                ).toUpperCase();
+
+
+            banner.textContent =
+                "⚠ " +
+                type +
+                " • " +
+                point;
+
+
+            banner.classList.add(
+                "alert"
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       CLEAR MAP ALERT
+    ===================================================== */
+
+    function clearMapPoint(){
+
+        Object.values(
+            MAP_POINTS
+        ).forEach(
+            function(el){
+
+                if(el){
+
+                    el.classList.remove(
+                        "map-alert"
+                    );
+
+                }
+
+            }
+        );
+
+
+        const banner =
+            document.getElementById(
+                "mapAlertBanner"
+            );
+
+
+        if(banner){
+
+            banner.textContent =
+                "SYSTEM MONITORING";
+
+            banner.classList.remove(
+                "alert"
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       CLEAN TEXT FOR SPEECH
+    ===================================================== */
+
+    function cleanSpeech(
+        text
+    ){
+
+        return String(
+            text || ""
+        )
+        .replace(
+            /[*_`#]/g,
+            ""
+        )
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
+
+    }
+
+
+    /* =====================================================
+       SPEAK AFTER SIREN
+    ===================================================== */
+
+    function speakAfterSiren(
+        text
+    ){
+
+        const message =
+            cleanSpeech(
+                text
+            );
+
+
+        if(!message){
+
+            return;
+
+        }
+
+
+        if(
+            "speechSynthesis"
+            in window
+        ){
+
+            window.speechSynthesis.cancel();
+
+
+            const utterance =
+                new SpeechSynthesisUtterance(
+                    message
+                );
+
+
+            utterance.lang =
+                "hi-IN";
+
+
+            utterance.rate =
+                0.90;
+
+
+            utterance.pitch =
+                0.88;
+
+
+            utterance.volume =
+                1.0;
+
+
+            /*
+               Prefer Hindi voice
+            */
+
+            const voices =
+                window.speechSynthesis
+                    .getVoices();
+
+
+            const hindiVoice =
+                voices.find(
+                    function(voice){
+
+                        return /^hi-IN$/i
+                            .test(
+                                voice.lang
+                            );
+
+                    }
+                )
+                ||
+                voices.find(
+                    function(voice){
+
+                        return /^hi/i
+                            .test(
+                                voice.lang
+                            );
+
+                    }
+                );
+
+
+            if(hindiVoice){
+
+                utterance.voice =
+                    hindiVoice;
+
+            }
+
+
+            utterance.onend =
+                function(){
+
+                    clearMapPoint();
+
+                };
+
+
+            utterance.onerror =
+                function(){
+
+                    clearMapPoint();
+
+                };
+
+
+            window.speechSynthesis.speak(
+                utterance
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       DEFAULT JARVIS MESSAGE
+    ===================================================== */
+
+    function getAlertSpeech(
+        alert,
+        point
+    ){
+
+        const type =
+            String(
+                alert?.type ||
+                "ALERT"
+            ).toUpperCase();
+
+
+        if(
+            alert?.speech ||
+            alert?.raw_message
+        ){
+
+            return cleanSpeech(
+                alert.speech ||
+                alert.raw_message
+            );
+
+        }
+
+
+        if(type === "INTRUDER"){
+
+            return (
+                "अलर्ट! अलर्ट! "
+                +
+                point
+                +
+                " में घुसपैठिया detected हुआ है। "
+                +
+                "तुरंत सुरक्षित स्थान पर चले जाएं।"
+            );
+
+        }
+
+
+        if(type === "DANGEROUS"){
+
+            return (
+                "खतरा! "
+                +
+                point
+                +
+                " में खतरनाक स्थिति detected हुई है। "
+                +
+                "तुरंत सुरक्षित स्थान पर चले जाएं।"
+            );
+
+        }
+
+
+        if(
+            type === "FIRE" ||
+            type === "FIRE_ALERT"
+        ){
+
+            return (
+                "फायर अलर्ट! "
+                +
+                point
+                +
+                " में आग detected हुई है। "
+                +
+                "तुरंत सुरक्षित स्थान पर चले जाएं।"
+            );
+
+        }
+
+
+        if(
+            type === "UNKNOWN_VEHICLE"
+        ){
+
+            return (
+                "सावधान! "
+                +
+                point
+                +
+                " पर अनजान वाहन detected हुआ है।"
+            );
+
+        }
+
+
+        return (
+            "सुरक्षा चेतावनी प्राप्त हुई है। "
+            +
+            point
+            +
+            " पर अलर्ट detected हुआ है।"
+        );
+
+    }
+
+
+    /* =====================================================
+       MAIN ALERT SEQUENCE
+    ===================================================== */
+
+    window.ecoGuardianMapAlert =
+        function(alert){
+
+            if(!alert){
+
+                return;
+
+            }
+
+
+            const point =
+                detectMapPoint(
+                    alert
+                );
+
+
+            if(!point){
+
+                return;
+
+            }
+
+
+            /*
+               Create unique alert key
+            */
+
+            const key =
+                String(
+                    alert.telegram_message_id ||
+                    alert.id ||
+                    (
+                        alert.type +
+                        "|" +
+                        alert.date +
+                        "|" +
+                        alert.time +
+                        "|" +
+                        alert.zone +
+                        "|" +
+                        alert.raw_message
+                    )
+                );
+
+
+            /*
+               Prevent duplicate sirens
+            */
+
+            if(
+                key ===
+                lastMapAlertKey
+            ){
+
+                return;
+
+            }
+
+
+            lastMapAlertKey =
+                key;
+
+
+            /* Stop previous sequence */
+
+            clearTimeout(
+                sirenTimer
+            );
+
+
+            clearTimeout(
+                speechTimer
+            );
+
+
+            try{
+
+                siren.pause();
+
+                siren.currentTime =
+                    0;
+
+            }catch(error){}
+
+
+            if(
+                "speechSynthesis"
+                in window
+            ){
+
+                window.speechSynthesis.cancel();
+
+            }
+
+
+            /* MAP */
+
+            activateMapPoint(
+                point,
+                alert
+            );
+
+
+            /* SPEECH */
+
+            const speech =
+                getAlertSpeech(
+                    alert,
+                    point
+                );
+
+
+            /*
+               SIREN FIRST
+            */
+
+            siren.currentTime =
+                0;
+
+
+            const playPromise =
+                siren.play();
+
+
+            if(
+                playPromise &&
+                typeof playPromise.catch ===
+                "function"
+            ){
+
+                playPromise.catch(
+                    function(error){
+
+                        console.warn(
+                            "Siren autoplay blocked. Click ENABLE JARVIS VOICE once.",
+                            error
+                        );
+
+                    }
+                );
+
+            }
+
+
+            /*
+               EXACTLY 5 SECONDS
+            */
+
+            sirenTimer =
+                setTimeout(
+                    function(){
+
+                        try{
+
+                            siren.pause();
+
+                            siren.currentTime =
+                                0;
+
+                        }catch(error){}
+
+
+                        speakAfterSiren(
+                            speech
+                        );
+
+                    },
+                    5000
+                );
+
+        };
+
+
+    /* =====================================================
+       CONNECT EXISTING REAL-TIME ALERT SYSTEM
+    ===================================================== */
+
+    /*
+       We don't replace your WebSocket.
+       We hook into showRealtimeAlert.
+    */
+
+    if(
+        typeof window.showRealtimeAlert ===
+        "function"
+    ){
+
+        const originalRealtimeAlert =
+            window.showRealtimeAlert;
+
+
+        window.showRealtimeAlert =
+            function(alert){
+
+                try{
+
+                    window.ecoGuardianMapAlert(
+                        alert
+                    );
+
+                }catch(error){
+
+                    console.warn(
+                        "Map alert error:",
+                        error
+                    );
+
+                }
+
+
+                return originalRealtimeAlert(
+                    alert
+                );
+
+            };
+
+    }
+
+
+    /* =====================================================
+       FIRE ALERT HOOK
+    ===================================================== */
+
+    window.ecoGuardianFireAlert =
+        function(data){
+
+            const isAlert =
+                data &&
+                (
+                    data.type === "alert" ||
+                    data.alert === true ||
+                    data.fire === true ||
+                    String(
+                        data.status || ""
+                    ).toLowerCase()
+                    ===
+                    "danger"
+                );
+
+
+            if(!isAlert){
+
+                return;
+
+            }
+
+
+            window.ecoGuardianMapAlert({
+
+                ...data,
+
+                type:"FIRE",
+
+                zone:
+                    data.zone ||
+                    data.sensor ||
+                    "X2"
+
+            });
+
+        };
+
+
+    console.log(
+        "🗺️ EcoGuardian Live Camp Map ready"
+    );
+
+})();
+
+
 </style>
 
 <style>
@@ -9226,22 +10037,40 @@ function connectFire() {
                 isAlert ? "ALERT" : "MONITORING";
 
             if (isAlert) {
-                addRealActivity(
-                    "🔥",
-                    `Fire alert — ${safeText(data.sensor,"sensor")}`
-                );
 
-                addRealAlert(
-                    "fire",
-                    "FIRE DETECTED",
-                    safeText(
-                        data.sensor,
-                        "Fire sensor alert"
-                    ),
-                    data.time ||
-                    data.timestamp ||
-                    nowShort()
-                );
+    /* LIVE MAP + SIREN */
+
+    if(
+        typeof window.ecoGuardianFireAlert ===
+        "function"
+    ){
+
+        window.ecoGuardianFireAlert(
+            data
+        );
+
+    }
+
+
+    addRealActivity(
+        "🔥",
+        `Fire alert — ${safeText(data.sensor,"sensor")}`
+    );
+
+
+    addRealAlert(
+        "fire",
+        "FIRE DETECTED",
+        safeText(
+            data.sensor,
+            "Fire sensor alert"
+        ),
+        data.time ||
+        data.timestamp ||
+        nowShort()
+    );
+
+}
             } else {
                 addRealActivity(
                     "✓",
@@ -11250,6 +12079,20 @@ function hideGuardianAlert(){
 
         guardianLastAlertAt =
             nowMs;
+       /* =====================================================
+   LIVE CAMP MAP
+===================================================== */
+
+if(
+    typeof window.ecoGuardianMapAlert ===
+    "function"
+){
+
+    window.ecoGuardianMapAlert(
+        alert
+    );
+
+}
 
         const overlay =
             document.getElementById(
