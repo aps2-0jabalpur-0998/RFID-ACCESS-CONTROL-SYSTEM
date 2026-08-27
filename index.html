@@ -4521,29 +4521,159 @@ body::after{
 <div class="right-column">
 
 
-<section class="panel alert-panel">
+<!-- =====================================================
+     LIVE CAMP MAP
+===================================================== -->
+
+<section class="panel camp-map-panel">
 
     <div class="panel-title">
 
-        <span style="color:var(--red)">
-            LIVE ALERTS
+        <span>
+            LIVE CAMP MAP
         </span>
 
-        <span id="alertCount">
-            0 EVENTS
+        <span id="mapStatus">
+            LIVE
         </span>
 
     </div>
-    <div id="alertList">
-        <div class="alert ok">
-            <div class="alert-icon">✓</div>
-            <div>
-                <div class="alert-title">NO ACTIVE ALERTS</div>
-                <div class="alert-sub">Waiting for real sensor events</div>
-            </div>
-            <div class="alert-time">—</div>
+
+
+    <div class="camp-map">
+
+        <!-- GRID -->
+
+        <div class="map-grid"></div>
+
+
+        <!-- ROAD / PATHS -->
+
+        <div class="map-road road-main"></div>
+
+        <div class="map-road road-cross"></div>
+
+
+        <!-- CAMP BUILDINGS -->
+
+        <div class="map-building building-main">
+            COMMAND
         </div>
+
+        <div class="map-building building-fire">
+            FIRE
+        </div>
+
+        <div class="map-building building-security">
+            SECURITY
+        </div>
+
+
+        <!-- X3 -->
+
+        <div
+            class="map-point point-x3"
+            id="mapPointX3"
+            data-location="X3"
+        >
+
+            <span class="point-pulse"></span>
+
+            <span class="point-core"></span>
+
+            <span class="point-label">
+                X3
+            </span>
+
+        </div>
+
+
+        <!-- X4 -->
+
+        <div
+            class="map-point point-x4"
+            id="mapPointX4"
+            data-location="X4"
+        >
+
+            <span class="point-pulse"></span>
+
+            <span class="point-core"></span>
+
+            <span class="point-label">
+                X4
+            </span>
+
+        </div>
+
+
+        <!-- FIRE X2 -->
+
+        <div
+            class="map-point point-x2"
+            id="mapPointX2"
+            data-location="X2"
+        >
+
+            <span class="point-pulse"></span>
+
+            <span class="point-core"></span>
+
+            <span class="point-label">
+                X2
+            </span>
+
+            <span class="point-type">
+                FIRE
+            </span>
+
+        </div>
+
+
+        <!-- YOU ARE HERE -->
+
+        <div class="map-center">
+
+            <span></span>
+
+            CAMP
+
+        </div>
+
+
+        <!-- TOP INFO -->
+
+        <div class="map-coordinates">
+            CAMP GRID • LIVE TRACKING
+        </div>
+
+
+        <div
+            class="map-alert-banner"
+            id="mapAlertBanner"
+        >
+            SYSTEM MONITORING
+        </div>
+
+
+        <!-- LEGEND -->
+
+        <div class="map-legend">
+
+            <span>
+                <i class="legend-normal"></i>
+                NORMAL
+            </span>
+
+            <span>
+                <i class="legend-alert"></i>
+                ALERT
+            </span>
+
+        </div>
+
     </div>
+
 </section>
 
 
