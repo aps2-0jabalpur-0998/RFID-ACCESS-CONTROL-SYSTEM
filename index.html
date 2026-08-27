@@ -3839,279 +3839,373 @@ body::after{
     </div>
 
 
-    <div class="health-gauge">
+   <div class="health-gauge">
 
-       <div class="health-jarvis-face">
 
-    <svg
-        class="jarvis-wireframe-face"
-        viewBox="0 0 300 350"
-        preserveAspectRatio="xMidYMid meet"
-        aria-hidden="true"
-    >
+    <!-- =================================================
+         CENTER JARVIS FACE
+    ================================================== -->
 
-        <!-- =========================
-             HEAD OUTLINE
-        ========================== -->
+    <div class="health-jarvis-face">
 
-        <path
-            class="face-line"
-            d="
-                M150 18
-                C90 18 48 55 43 118
-                C38 185 50 267 91 309
-                C108 326 128 337 150 340
-                C172 337 192 326 209 309
-                C250 267 262 185 257 118
-                C252 55 210 18 150 18
-                Z
-            "
-        />
+        <svg
+            class="jarvis-wireframe-face"
+            viewBox="0 0 300 350"
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden="true"
+        >
 
+            <!-- HEAD -->
 
-        <!-- =========================
-             HORIZONTAL HEAD MESH
-        ========================== -->
+            <path
+                class="face-line"
+                d="
+                    M150 18
+                    C90 18 48 58 43 120
+                    C38 190 51 268 91 309
+                    C108 326 130 337 150 340
+                    C170 337 192 326 209 309
+                    C249 268 262 190 257 120
+                    C252 58 210 18 150 18
+                    Z
+                "
+            />
 
-        <path class="mesh-line"
-            d="M58 62 Q150 82 242 62"/>
 
-        <path class="mesh-line"
-            d="M48 82 Q150 100 252 82"/>
+            <!-- HORIZONTAL MESH -->
 
-        <path class="mesh-line"
-            d="M44 104 Q150 118 256 104"/>
+            <path class="mesh-line"
+                d="M58 62 Q150 83 242 62"/>
 
-        <path class="mesh-line"
-            d="M42 128 Q150 137 258 128"/>
+            <path class="mesh-line"
+                d="M49 83 Q150 101 251 83"/>
 
-        <path class="mesh-line"
-            d="M42 153 Q150 157 258 153"/>
+            <path class="mesh-line"
+                d="M44 106 Q150 119 256 106"/>
 
-        <path class="mesh-line"
-            d="M43 178 Q150 178 257 178"/>
+            <path class="mesh-line"
+                d="M42 130 Q150 139 258 130"/>
 
-        <path class="mesh-line"
-            d="M46 203 Q150 199 254 203"/>
+            <path class="mesh-line"
+                d="M42 155 Q150 158 258 155"/>
 
-        <path class="mesh-line"
-            d="M51 228 Q150 220 249 228"/>
-
-        <path class="mesh-line"
-            d="M59 252 Q150 242 241 252"/>
+            <path class="mesh-line"
+                d="M43 180 Q150 179 257 180"/>
 
-        <path class="mesh-line"
-            d="M70 275 Q150 263 230 275"/>
+            <path class="mesh-line"
+                d="M46 205 Q150 200 254 205"/>
 
-        <path class="mesh-line"
-            d="M85 296 Q150 283 215 296"/>
+            <path class="mesh-line"
+                d="M51 230 Q150 221 249 230"/>
 
+            <path class="mesh-line"
+                d="M59 253 Q150 243 241 253"/>
 
-        <!-- =========================
-             VERTICAL MESH
-        ========================== -->
+            <path class="mesh-line"
+                d="M71 276 Q150 264 229 276"/>
 
-        <path class="mesh-line"
-            d="M76 42 Q62 150 91 286"/>
-
-        <path class="mesh-line"
-            d="M99 29 Q88 150 111 310"/>
-
-        <path class="mesh-line"
-            d="M124 21 Q116 140 130 329"/>
+            <path class="mesh-line"
+                d="M86 298 Q150 284 214 298"/>
 
-        <path class="mesh-line"
-            d="M150 19 L150 338"/>
 
-        <path class="mesh-line"
-            d="M176 21 Q184 140 170 329"/>
-
-        <path class="mesh-line"
-            d="M201 29 Q212 150 189 310"/>
-
-        <path class="mesh-line"
-            d="M224 42 Q238 150 209 286"/>
-
-
-        <!-- =========================
-             EARS
-        ========================== -->
-
-        <path
-            class="face-line"
-            d="
-                M44 117
-                C27 112 22 130 27 157
-                C30 175 38 185 48 181
-            "
-        />
-
-        <path
-            class="face-line"
-            d="
-                M256 117
-                C273 112 278 130 273 157
-                C270 175 262 185 252 181
-            "
-        />
-
-
-        <!-- =========================
-             EYEBROWS
-        ========================== -->
-
-        <path
-            class="mesh-line"
-            d="M70 119 Q101 100 130 118"
-        />
-
-        <path
-            class="mesh-line"
-            d="M170 118 Q199 100 230 119"
-        />
-
-
-        <!-- =========================
-             LEFT EYE
-        ========================== -->
-
-        <path
-            class="feature-line"
-            d="
-                M70 137
-                Q100 116 132 138
-                Q101 157 70 137
-                Z
-            "
-        />
-
-        <!-- RIGHT EYE -->
-
-        <path
-            class="feature-line"
-            d="
-                M168 138
-                Q200 116 230 137
-                Q199 157 168 138
-                Z
-            "
-        />
-
-
-        <!-- GLOWING EYE CORES -->
-
-        <ellipse
-            class="eye-core"
-            cx="102"
-            cy="137"
-            rx="10"
-            ry="4"
-        />
-
-        <ellipse
-            class="eye-core"
-            cx="198"
-            cy="137"
-            rx="10"
-            ry="4"
-        />
-
-
-        <!-- =========================
-             NOSE
-        ========================== -->
-
-        <path
-            class="feature-line"
-            d="
-                M150 140
-                L140 199
-                L128 220
-                Q150 232 172 220
-                L160 199
-                Z
-            "
-        />
-
-        <path
-            class="mesh-line"
-            d="M130 220 Q150 210 170 220"
-        />
-
-
-        <!-- =========================
-             CHEEK MESH
-        ========================== -->
-
-        <path
-            class="mesh-line"
-            d="M57 184 Q94 174 129 204"
-        />
-
-        <path
-            class="mesh-line"
-            d="M243 184 Q206 174 171 204"
-        />
-
-        <path
-            class="mesh-line"
-            d="M63 204 Q96 194 124 216"
-        />
-
-        <path
-            class="mesh-line"
-            d="M237 204 Q204 194 176 216"
-        />
-
-
-        <!-- =========================
-             MOUTH
-        ========================== -->
-
-        <path
-            class="feature-line"
-            d="
-                M106 264
-                Q150 244 194 264
-                Q150 283 106 264
-                Z
-            "
-        />
-
-        <path
-            class="mesh-line"
-            d="M114 264 Q150 271 186 264"
-        />
-
-
-        <!-- =========================
-             CHIN
-        ========================== -->
-
-        <path
-            class="mesh-line"
-            d="M98 292 Q150 311 202 292"
-        />
-
-        <path
-            class="mesh-line"
-            d="M112 309 Q150 324 188 309"
-        />
-
-
-        <!-- =========================
-             FOREHEAD SCAN
-        ========================== -->
-
-        <path
-            class="mesh-line"
-            d="M150 35 L150 106"
-        />
-
-    </svg>
-
-
-    <div class="jarvis-scan-beam"></div>
+            <!-- VERTICAL MESH -->
+
+            <path class="mesh-line"
+                d="M76 43 Q62 150 91 287"/>
+
+            <path class="mesh-line"
+                d="M99 30 Q88 150 111 310"/>
+
+            <path class="mesh-line"
+                d="M124 22 Q116 140 130 329"/>
+
+            <path class="mesh-line"
+                d="M150 19 L150 338"/>
+
+            <path class="mesh-line"
+                d="M176 22 Q184 140 170 329"/>
+
+            <path class="mesh-line"
+                d="M201 30 Q212 150 189 310"/>
+
+            <path class="mesh-line"
+                d="M224 43 Q238 150 209 287"/>
+
+
+            <!-- EARS -->
+
+            <path
+                class="face-line"
+                d="
+                    M44 118
+                    C27 112 22 132 27 157
+                    C30 175 38 185 48 181
+                "
+            />
+
+            <path
+                class="face-line"
+                d="
+                    M256 118
+                    C273 112 278 132 273 157
+                    C270 175 262 185 252 181
+                "
+            />
+
+
+            <!-- EYEBROWS -->
+
+            <path
+                class="mesh-line"
+                d="M70 119 Q101 101 130 118"
+            />
+
+            <path
+                class="mesh-line"
+                d="M170 118 Q199 101 230 119"
+            />
+
+
+            <!-- LEFT EYE -->
+
+            <path
+                class="feature-line"
+                d="
+                    M70 137
+                    Q101 116 132 138
+                    Q101 158 70 137
+                    Z
+                "
+            />
+
+
+            <!-- RIGHT EYE -->
+
+            <path
+                class="feature-line"
+                d="
+                    M168 138
+                    Q199 116 230 137
+                    Q199 158 168 138
+                    Z
+                "
+            />
+
+
+            <!-- EYE CORES -->
+
+            <ellipse
+                class="eye-core"
+                cx="102"
+                cy="137"
+                rx="10"
+                ry="4"
+            />
+
+            <ellipse
+                class="eye-core"
+                cx="198"
+                cy="137"
+                rx="10"
+                ry="4"
+            />
+
+
+            <!-- NOSE -->
+
+            <path
+                class="feature-line"
+                d="
+                    M150 140
+                    L140 199
+                    L128 220
+                    Q150 232 172 220
+                    L160 199
+                    Z
+                "
+            />
+
+            <path
+                class="mesh-line"
+                d="M130 220 Q150 210 170 220"
+            />
+
+
+            <!-- CHEEKS -->
+
+            <path
+                class="mesh-line"
+                d="M57 184 Q94 174 129 204"
+            />
+
+            <path
+                class="mesh-line"
+                d="M243 184 Q206 174 171 204"
+            />
+
+            <path
+                class="mesh-line"
+                d="M63 204 Q96 194 124 216"
+            />
+
+            <path
+                class="mesh-line"
+                d="M237 204 Q204 194 176 216"
+            />
+
+
+            <!-- MOUTH -->
+
+            <path
+                class="feature-line"
+                d="
+                    M106 264
+                    Q150 245 194 264
+                    Q150 283 106 264
+                    Z
+                "
+            />
+
+            <path
+                class="mesh-line"
+                d="M114 264 Q150 271 186 264"
+            />
+
+
+            <!-- CHIN -->
+
+            <path
+                class="mesh-line"
+                d="M98 292 Q150 311 202 292"
+            />
+
+            <path
+                class="mesh-line"
+                d="M112 309 Q150 324 188 309"
+            />
+
+        </svg>
+
+
+        <div class="jarvis-scan-beam"></div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         SECURITY
+    ================================================== -->
+
+    <div class="health-hud-item health-hud-security">
+
+        <span class="health-hud-star">★</span>
+
+        <span class="health-hud-label">
+            SECURITY
+        </span>
+
+        <span
+            class="health-hud-value"
+            id="healthSecurity"
+        >
+            0%
+        </span>
+
+    </div>
+
+
+
+    <!-- =================================================
+         ENERGY
+    ================================================== -->
+
+    <div class="health-hud-item health-hud-energy">
+
+        <span class="health-hud-star">★</span>
+
+        <span class="health-hud-label">
+            ENERGY
+        </span>
+
+        <span
+            class="health-hud-value"
+            id="healthEnergy"
+        >
+            0%
+        </span>
+
+    </div>
+
+
+
+    <!-- =================================================
+         ENVIRONMENT
+    ================================================== -->
+
+    <div class="health-hud-item health-hud-environment">
+
+        <span class="health-hud-star">★</span>
+
+        <span class="health-hud-label">
+            ENVIRONMENT
+        </span>
+
+        <span
+            class="health-hud-value"
+            id="healthEnvironment"
+        >
+            0%
+        </span>
+
+    </div>
+
+
+
+    <!-- =================================================
+         WATER
+    ================================================== -->
+
+    <div class="health-hud-item health-hud-water">
+
+        <span class="health-hud-star">★</span>
+
+        <span class="health-hud-label">
+            WATER
+        </span>
+
+        <span
+            class="health-hud-value"
+            id="healthWater"
+        >
+            0%
+        </span>
+
+    </div>
+
+
+
+    <!-- =================================================
+         EMERGENCY
+    ================================================== -->
+
+    <div class="health-hud-item health-hud-emergency">
+
+        <span class="health-hud-star">★</span>
+
+        <span class="health-hud-label">
+            EMERGENCY
+        </span>
+
+        <span
+            class="health-hud-value"
+            id="healthEmergency"
+        >
+            0%
+        </span>
+
+    </div>
+
 
 </div>
 
