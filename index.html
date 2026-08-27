@@ -9784,8 +9784,76 @@ document.addEventListener(
 
 
     
+    let guardianSirenTimer = null;
+    let guardianVoiceTimer = null;
     let guardianLastAlertKey = "";
     let guardianLastAlertAt = 0;
+
+    function playGuardianSiren(){
+
+        const siren =
+            document.getElementById(
+                "guardianAlertSiren"
+            );
+
+        if(!siren){
+            console.warn(
+                "guardianAlertSiren not found"
+            );
+            return;
+        }
+
+        clearTimeout(guardianSirenTimer);
+
+        try{
+            siren.pause();
+            siren.currentTime = 0;
+            siren.volume = 1.0;
+
+            const playPromise = siren.play();
+
+            if(
+                playPromise &&
+                typeof playPromise.catch === "function"
+            ){
+                playPromise.catch(function(error){
+                    console.warn(
+                        "Siren autoplay blocked:",
+                        error
+                    );
+                });
+            }
+        }catch(error){
+            console.error(
+                "Siren playback error:",
+                error
+            );
+        }
+
+        guardianSirenTimer =
+            setTimeout(function(){
+                try{
+                    siren.pause();
+                    siren.currentTime = 0;
+                }catch(error){}
+            }, 5000);
+    }
+
+    function stopGuardianSiren(){
+        clearTimeout(guardianSirenTimer);
+
+        const siren =
+            document.getElementById(
+                "guardianAlertSiren"
+            );
+
+        if(siren){
+            try{
+                siren.pause();
+                siren.currentTime = 0;
+            }catch(error){}
+        }
+    }
 
     function stopAllGuardianAudio(){
 
@@ -9863,13 +9931,21 @@ function hideGuardianAlert(){
         text
     ){
 
+        clearTimeout(guardianVoiceTimer);
+
         stopAllGuardianAudio();
+
+        // Every real alert starts the siren first.
+        playGuardianSiren();
 
         if(
             !("speechSynthesis" in window)
         ){
-
-            hideGuardianAlert();
+            guardianVoiceTimer =
+                setTimeout(
+                    hideGuardianAlert,
+                    5000
+                );
             return;
         }
 
@@ -9895,43 +9971,42 @@ function hideGuardianAlert(){
                 .getVoices();
 
         const hindiVoice =
-            voices.find(
-                function(voice){
-                    return /^hi-IN$/i.test(
-                        voice.lang
-                    );
-                }
-            ) ||
-            voices.find(
-                function(voice){
-                    return /^hi/i.test(
-                        voice.lang
-                    );
-                }
-            );
+            voices.find(function(voice){
+                return /^hi-IN$/i.test(
+                    voice.lang
+                );
+            }) ||
+            voices.find(function(voice){
+                return /^hi/i.test(
+                    voice.lang
+                );
+            });
 
-        if(
-            hindiVoice
-        ){
-            utterance.voice =
-                hindiVoice;
+        if(hindiVoice){
+            utterance.voice = hindiVoice;
         }
 
         utterance.onend =
             function(){
-
                 hideGuardianAlert();
             };
 
         utterance.onerror =
             function(){
-
                 hideGuardianAlert();
             };
 
-        window.speechSynthesis.speak(
-            utterance
-        );
+        // Siren runs for 5 seconds, then JARVIS speaks.
+        guardianVoiceTimer =
+            setTimeout(function(){
+                try{
+                    window.speechSynthesis.speak(
+                        utterance
+                    );
+                }catch(error){
+                    hideGuardianAlert();
+                }
+            }, 5000);
     }
 
 
@@ -10036,6 +10111,16 @@ function hideGuardianAlert(){
         }
 
         if(
+            type === "FIRE"
+        ){
+
+            title.textContent =
+                "FIRE DETECTED";
+
+            icon.textContent =
+                "🚨";
+
+        }else if(
             type === "INTRUDER"
         ){
 
@@ -10086,11 +10171,13 @@ function hideGuardianAlert(){
                     alert.zone +
                     " — " +
                     (
-                        type === "INTRUDER"
-                            ? "घुसपैठिया detected हुआ है।"
-                            : type === "DANGEROUS"
-                                ? "खतरनाक जानवर detected हुआ है।"
-                                : "सुरक्षा चेतावनी प्राप्त हुई है।"
+                        type === "FIRE"
+                            ? "आग का पता चला है। तुरंत फायर प्रोटेक्शन एरिया की जांच करें।"
+                            : type === "INTRUDER"
+                                ? "घुसपैठिया detected हुआ है।"
+                                : type === "DANGEROUS"
+                                    ? "खतरनाक जानवर detected हुआ है।"
+                                    : "सुरक्षा चेतावनी प्राप्त हुई है।"
                     )
                 )
                 : (
@@ -10139,6 +10226,15 @@ function hideGuardianAlert(){
         let voiceText = "";
 
         if(
+            type === "FIRE"
+        ){
+
+            voiceText =
+                "फायर अलर्ट! फायर डिटेक्ट हुआ है। "
+                + "जोन एक्स टू में आग का पता चला है। "
+                + "कृपया तुरंत फायर प्रोटेक्शन एरिया की जांच करें।";
+
+        }else if(
             type === "INTRUDER"
         ){
 
@@ -10370,7 +10466,7 @@ function hideGuardianAlert(){
 
 <script id="fire-cloudflare-integration">
 (() => {
-    const FIRE_WS_URL = 'wss://how-cards-documentation-adjust.trycloudflare.com/ws';
+    const FIRE_WS_URL = 'wss://how-cards-documentation-adjust.trycloudflare.com';
     let fireWS = null;
     let fireReconnectTimer = null;
 
@@ -10512,6 +10608,17 @@ function hideGuardianAlert(){
                 ) {
                     data.zone = "X2";
                     fireShowAlert(data);
+
+                    // Send Fire through the same full-screen alert
+                    // + 5-second siren + JARVIS voice pipeline.
+                    showRealtimeAlert({
+                        type: "FIRE",
+                        zone: "X2",
+                        sensor: data.sensor || "Fire sensor",
+                        time: data.time || data.timestamp || new Date().toLocaleTimeString(),
+                        id: data.id || ("fire-x2-" + Date.now())
+                    });
+
                     return;
                 }
 
@@ -10551,6 +10658,8 @@ function hideGuardianAlert(){
     }
 })();
 </script>
+
+<audio id="guardianAlertSiren" src="siren.mp3" preload="auto"></audio>
 
 </body>
 </html>
