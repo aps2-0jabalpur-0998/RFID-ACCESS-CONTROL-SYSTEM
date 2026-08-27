@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -726,520 +727,295 @@ body::after{
    REALISTIC JARVIS WIREFRAME FACE
 ========================================================= */
 
-/* =========================================================
-   FINAL CAMP HEALTH INDEX HUD
-   BIG + CENTERED + FULLY FITTED
-========================================================= */
-
-
-/* MAIN CIRCLE */
-
-.health-gauge{
-
-    width:205px !important;
-    height:205px !important;
-
-    margin:18px auto 10px !important;
-
-    position:relative !important;
-
-    display:flex !important;
-
-    align-items:center !important;
-    justify-content:center !important;
-
-    border-radius:50% !important;
-
-    overflow:hidden !important;
-
-}
-
-
-/* =========================================================
-   CENTER JARVIS FACE
-========================================================= */
-
-/* =========================================================
-   JARVIS FACE — 360° LEFT TO RIGHT ROTATION
-========================================================= */
-
-/* =========================================================
-   REAL 3D JARVIS FACE
-========================================================= */
-
-/* =========================================================
-   JARVIS 3D FACE
-========================================================= */
-
 .health-jarvis-face{
-
-    position:absolute;
-
-    left:50%;
-    top:50%;
-
-    width:125px;
-    height:145px;
-
-    transform:translate(-50%,-50%);
-
-    z-index:50;
+    width:190px;
+    height:220px;
+    position:relative;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
+    border:none;
     background:transparent;
 
-    border:0;
     box-shadow:none;
 
     overflow:visible;
 
+    animation:none;
+
+    transform-style:preserve-3d;
 }
 
 
-.jarvis-3d-face{
+/* OUTER HOLOGRAM RINGS */
 
-    width:125px;
-    height:145px;
+.jarvis-holo-ring{
+    position:absolute;
 
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    border-radius:50%;
+
+    pointer-events:none;
+}
+
+
+.jarvis-holo-ring.ring-1{
+    width:185px;
+    height:185px;
+
+    border:1px solid rgba(57,202,255,.20);
+
+    border-top-color:var(--cyan);
+    border-bottom-color:rgba(57,202,255,.05);
+
+    animation:
+        jarvisOuterSpin
+        7s linear infinite;
+}
+
+
+.jarvis-holo-ring.ring-2{
+    width:205px;
+    height:205px;
+
+    border:1px dashed rgba(66,223,108,.18);
+
+    animation:
+        jarvisOuterSpinReverse
+        10s linear infinite;
+}
+
+
+@keyframes jarvisOuterSpin{
+
+    from{
+        transform:translate(-50%,-50%) rotate(0deg);
+    }
+
+    to{
+        transform:translate(-50%,-50%) rotate(360deg);
+    }
+
+}
+
+
+@keyframes jarvisOuterSpinReverse{
+
+    from{
+        transform:translate(-50%,-50%) rotate(360deg);
+    }
+
+    to{
+        transform:translate(-50%,-50%) rotate(0deg);
+    }
+
+}
+
+
+/* SVG FACE */
+
+.jarvis-wireframe-face{
     position:relative;
 
-    background:transparent;
+    width:170px;
+    height:215px;
+
+    z-index:5;
 
     overflow:visible;
 
-}
-
-
-.jarvis-3d-face canvas{
-
-    width:100% !important;
-    height:100% !important;
-
-    display:block;
-
-    background:transparent !important;
-
-    pointer-events:none;
-
     filter:
-        drop-shadow(0 0 4px rgba(57,202,255,.95))
-        drop-shadow(0 0 12px rgba(57,202,255,.55))
-        drop-shadow(0 0 25px rgba(57,202,255,.18));
+        drop-shadow(0 0 5px rgba(57,202,255,.55))
+        drop-shadow(0 0 14px rgba(57,202,255,.20));
+
+    animation:
+        jarvisFaceFloat
+        4s ease-in-out infinite;
 }
 
-/* FACE SVG */
 
-<div class="jarvis-3d-face" id="jarvis3DFace"></div>
-/* =========================================================
-   FACE LINES
-========================================================= */
+@keyframes jarvisFaceFloat{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-3px);
+    }
+
+}
+
+
+/* MAIN FACE OUTLINE */
 
 .face-line{
+    fill:rgba(5,25,36,.30);
 
-    fill:rgba(4,20,30,.12) !important;
+    stroke:rgba(57,202,255,.90);
 
-    stroke:rgba(57,202,255,.95) !important;
+    stroke-width:1.7;
 
-    stroke-width:1.7 !important;
-
+    vector-effect:non-scaling-stroke;
 }
 
+
+/* MESH */
 
 .mesh-line{
+    fill:none;
 
-    fill:none !important;
+    stroke:rgba(57,202,255,.38);
 
-    stroke:rgba(57,202,255,.42) !important;
+    stroke-width:.8;
 
-    stroke-width:.75 !important;
-
+    vector-effect:non-scaling-stroke;
 }
 
 
+/* IMPORTANT FACIAL FEATURES */
+
 .feature-line{
+    fill:rgba(57,202,255,.035);
 
-    fill:rgba(57,202,255,.02) !important;
+    stroke:#6be3ff;
 
-    stroke:#83eaff !important;
+    stroke-width:1.8;
 
-    stroke-width:1.8 !important;
+    vector-effect:non-scaling-stroke;
 
     filter:
-        drop-shadow(0 0 4px rgba(57,202,255,.95)) !important;
-
+        drop-shadow(0 0 5px rgba(57,202,255,.85));
 }
 
 
 /* EYES */
 
 .eye-core{
-
-    fill:#ffffff !important;
+    fill:#dfffff;
 
     filter:
         drop-shadow(0 0 5px #39caff)
-        drop-shadow(0 0 12px #39caff) !important;
+        drop-shadow(0 0 13px #39caff);
 
+    animation:
+        jarvisEyeGlow
+        1.5s ease-in-out infinite;
 }
 
 
-/* =========================================================
-   SCAN BEAM
-========================================================= */
+@keyframes jarvisEyeGlow{
 
-.jarvis-scan-beam{
-
-    position:absolute !important;
-
-    left:50% !important;
-
-    top:25px !important;
-
-    width:72px !important;
-
-    height:1px !important;
-
-    transform:translateX(-50%) !important;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(57,202,255,.95),
-            transparent
-        ) !important;
-
-    box-shadow:
-        0 0 8px rgba(57,202,255,.9) !important;
-
-    z-index:30 !important;
-
-    animation:healthFaceScan 3s linear infinite !important;
-
-}
-
-
-@keyframes healthFaceScan{
-
-    0%{
-        top:24px;
-        opacity:.1;
+    0%,100%{
+        opacity:.75;
+        transform:scaleX(.9);
     }
 
     50%{
-        top:112px;
-        opacity:.9;
-    }
-
-    100%{
-        top:24px;
-        opacity:.1;
+        opacity:1;
+        transform:scaleX(1.15);
     }
 
 }
 
 
-/* =========================================================
-   HEALTH HUD ITEMS
-========================================================= */
+/* FOREHEAD SCAN */
 
-.health-hud-item{
+.scan-line{
 
-    position:absolute !important;
+    fill:none;
 
-    z-index:40 !important;
+    stroke:rgba(66,223,108,.55);
 
-    width:55px !important;
+    stroke-width:1;
 
-    text-align:center !important;
+    stroke-dasharray:5 5;
 
-    font-family:'Space Mono',monospace !important;
+    animation:
+        foreheadScan
+        2s linear infinite;
+}
 
-    pointer-events:none !important;
+
+@keyframes foreheadScan{
+
+    from{
+        opacity:.25;
+        transform:translateY(0);
+    }
+
+    50%{
+        opacity:1;
+    }
+
+    to{
+        opacity:.25;
+        transform:translateY(40px);
+    }
 
 }
 
 
-/* STAR */
+/* MOVING HOLOGRAM SCAN */
 
-.health-hud-star{
-
-    display:block !important;
-
-    color:#ffffff !important;
-
-    font-size:15px !important;
-
-    line-height:15px !important;
-
-    text-shadow:
-        0 0 4px #ffffff,
-        0 0 10px rgba(57,202,255,.9) !important;
-
-}
-
-
-/* LABEL */
-
-.health-hud-label{
-
-    display:block !important;
-
-    color:#8ca6b5 !important;
-
-    font-size:6.5px !important;
-
-    line-height:8px !important;
-
-    letter-spacing:.1px !important;
-
-    white-space:nowrap !important;
-
-}
-
-
-/* VALUE */
-
-.health-hud-value{
-
-    display:block !important;
-
-    color:var(--green) !important;
-
-    font-size:6.5px !important;
-
-    line-height:8px !important;
-
-    margin-top:1px !important;
-
-}
-
-
-/* =========================================================
-   EXACT POSITIONS
-========================================================= */
-
-
-/* SECURITY — TOP CENTER */
-
-.health-hud-security{
-
-    left:50% !important;
-
-    top:4px !important;
-
-    transform:translateX(-50%) !important;
-
-}
-
-
-/* ENERGY — LEFT CENTER */
-
-.health-hud-energy{
-
-    left:3px !important;
-
-    top:50% !important;
-
-    transform:translateY(-50%) !important;
-
-}
-
-
-/* ENVIRONMENT — RIGHT CENTER */
-
-.health-hud-environment{
-
-    right:3px !important;
-
-    top:50% !important;
-
-    transform:translateY(-50%) !important;
-
-}
-
-
-/* WATER — BOTTOM LEFT */
-
-.health-hud-water{
-
-    left:38px !important;
-
-    bottom:3px !important;
-
-}
-
-
-/* EMERGENCY — BOTTOM RIGHT */
-
-.health-hud-emergency{
-
-    right:38px !important;
-
-    bottom:3px !important;
-
-}
-
-
-/* =========================================================
-   CONNECTOR LINES
-========================================================= */
-
-.health-hud-item::after{
-
-    content:"";
+.jarvis-scan-beam{
 
     position:absolute;
 
-    width:18px;
+    left:35px;
+    right:35px;
 
-    height:1px;
+    top:20px;
+
+    height:2px;
+
+    z-index:10;
+
+    pointer-events:none;
 
     background:
         linear-gradient(
             90deg,
             transparent,
-            rgba(57,202,255,.7),
+            rgba(57,202,255,.9),
             transparent
         );
 
     box-shadow:
-        0 0 5px rgba(57,202,255,.5);
+        0 0 10px rgba(57,202,255,.9),
+        0 0 22px rgba(57,202,255,.35);
 
+    animation:
+        faceScan
+        3s ease-in-out infinite;
 }
 
 
-/* TOP */
+@keyframes faceScan{
 
-.health-hud-security::after{
+    0%{
+        transform:translateY(0);
+        opacity:.1;
+    }
 
-    left:50%;
+    50%{
+        transform:translateY(175px);
+        opacity:1;
+    }
 
-    top:30px;
-
-    transform:
-        translateX(-50%)
-        rotate(90deg);
-
-}
-
-
-/* LEFT */
-
-.health-hud-energy::after{
-
-    right:-10px;
-
-    top:50%;
-
-    transform:rotate(180deg);
+    100%{
+        transform:translateY(0);
+        opacity:.1;
+    }
 
 }
 
-
-/* RIGHT */
-
-.health-hud-environment::after{
-
-    left:-10px;
-
-    top:50%;
-
-}
-
-
-/* BOTTOM LEFT */
-
-.health-hud-water::after{
-
-    left:50%;
-
-    top:-8px;
-
-    transform:
-        translateX(-50%)
-        rotate(90deg);
-
-}
-
-
-/* BOTTOM RIGHT */
-
-.health-hud-emergency::after{
-
-    right:50%;
-
-    top:-8px;
-
-    transform:
-        translateX(50%)
-        rotate(90deg);
-
-}
-
-
-/* =========================================================
-   HIDE OLD HEALTH LIST VISUALLY
-   IDS REMAIN FOR JAVASCRIPT
-========================================================= */
-
-.health-list{
-
-    position:absolute !important;
-
-    width:1px !important;
-    height:1px !important;
-
-    overflow:hidden !important;
-
-    opacity:0 !important;
-
-    pointer-events:none !important;
-
-}
-
-
-/* OLD STARS */
-
-.health-stars{
-
-    display:none !important;
-
-}
-
-
-/* =========================================================
-   ALERT MODE
-========================================================= */
-
-.health-jarvis-face.jarvis-alert .face-line{
-
-    stroke:#ff4d4d !important;
-
-}
-
-.health-jarvis-face.jarvis-alert .mesh-line{
-
-    stroke:rgba(255,70,70,.55) !important;
-
-}
-
-.health-jarvis-face.jarvis-alert .feature-line{
-
-    stroke:#ff7777 !important;
-
-}
-
-.health-jarvis-face.jarvis-alert .eye-core{
-
-    filter:
-        drop-shadow(0 0 5px #ff3d3d)
-        drop-shadow(0 0 12px #ff3d3d) !important;
-
-}
 
 /* =========================================================
    ALERT MODE
@@ -1248,38 +1024,71 @@ body::after{
 .health-jarvis-face.jarvis-alert
 .face-line{
 
-    stroke:#ff5252;
-
-    filter:
-        drop-shadow(0 0 4px rgba(255,72,72,1));
+    stroke:rgba(255,72,72,.95);
 }
 
 
 .health-jarvis-face.jarvis-alert
 .mesh-line{
 
-    stroke:rgba(255,72,72,.55);
+    stroke:rgba(255,72,72,.45);
 }
 
 
 .health-jarvis-face.jarvis-alert
 .feature-line{
 
-    stroke:#ff7373;
+    stroke:#ff6b6b;
 
     filter:
-        drop-shadow(0 0 4px rgba(255,72,72,1));
+        drop-shadow(0 0 6px rgba(255,72,72,.95));
 }
 
 
 .health-jarvis-face.jarvis-alert
 .eye-core{
 
-    fill:#ffffff;
+    fill:#fff;
 
     filter:
-        drop-shadow(0 0 5px #ff3d3d)
-        drop-shadow(0 0 11px #ff3d3d);
+        drop-shadow(0 0 6px #ff4848)
+        drop-shadow(0 0 15px #ff4848);
+}
+
+
+/* =========================================================
+   SAFE MODE
+========================================================= */
+
+.health-jarvis-face.jarvis-safe
+.face-line{
+
+    stroke:rgba(66,223,108,.9);
+}
+
+
+.health-jarvis-face.jarvis-safe
+.mesh-line{
+
+    stroke:rgba(66,223,108,.38);
+}
+
+
+.health-jarvis-face.jarvis-safe
+.feature-line{
+
+    stroke:#71ff91;
+}
+
+
+.health-jarvis-face.jarvis-safe
+.eye-core{
+
+    fill:#effff2;
+
+    filter:
+        drop-shadow(0 0 6px #42df6c)
+        drop-shadow(0 0 15px #42df6c);
 }
 
 /* ALERT MODE */
@@ -3258,1416 +3067,6 @@ body::after{
             letter-spacing:2px;
         }
 
-   /* =========================================================
-   LIVE CAMP MAP
-========================================================= */
-
-.camp-map-panel{
-    overflow:hidden;
-}
-
-
-.camp-map-panel .panel-title span:last-child{
-    color:var(--green);
-}
-
-
-/* MAP */
-
-.camp-map{
-
-    position:relative;
-
-    width:100%;
-    height:100%;
-
-    min-height:230px;
-
-    overflow:hidden;
-
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(15,76,92,.22),
-            rgba(2,14,22,.96) 72%
-        );
-
-}
-
-
-/* GRID */
-
-.map-grid{
-
-    position:absolute;
-
-    inset:0;
-
-    opacity:.35;
-
-    background-image:
-        linear-gradient(
-            rgba(57,202,255,.13) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(57,202,255,.13) 1px,
-            transparent 1px
-        );
-
-    background-size:
-        22px 22px;
-
-}
-
-
-/* =========================================================
-   MAP ROADS
-========================================================= */
-
-.map-road{
-
-    position:absolute;
-
-    background:
-        rgba(42,114,127,.20);
-
-    border:
-        1px solid rgba(57,202,255,.18);
-
-}
-
-
-.road-main{
-
-    width:72%;
-
-    height:24px;
-
-    left:14%;
-    top:51%;
-
-    transform:
-        translateY(-50%)
-        rotate(-8deg);
-
-}
-
-
-.road-cross{
-
-    width:20px;
-
-    height:72%;
-
-    left:48%;
-
-    top:14%;
-
-    transform:
-        rotate(7deg);
-
-}
-
-
-/* =========================================================
-   BUILDINGS
-========================================================= */
-
-.map-building{
-
-    position:absolute;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font:
-
-        7px
-
-        "Space Mono",
-        monospace;
-
-    letter-spacing:.5px;
-
-    color:
-        rgba(127,213,234,.75);
-
-    background:
-        rgba(5,30,40,.82);
-
-    border:
-        1px solid rgba(57,202,255,.28);
-
-    box-shadow:
-        inset 0 0 15px rgba(57,202,255,.05);
-
-}
-
-
-.building-main{
-
-    width:72px;
-    height:42px;
-
-    left:36%;
-    top:28%;
-
-}
-
-
-.building-fire{
-
-    width:55px;
-    height:35px;
-
-    right:9%;
-    top:22%;
-
-    border-color:
-        rgba(255,92,70,.32);
-
-}
-
-
-.building-security{
-
-    width:58px;
-    height:36px;
-
-    left:8%;
-    bottom:19%;
-
-}
-
-
-/* =========================================================
-   MAP POINTS
-========================================================= */
-
-.map-point{
-
-    position:absolute;
-
-    width:20px;
-    height:20px;
-
-    z-index:20;
-
-}
-
-
-/* X3 */
-
-.point-x3{
-
-    left:22%;
-    top:28%;
-
-}
-
-
-/* X4 */
-
-.point-x4{
-
-    right:20%;
-    bottom:24%;
-
-}
-
-
-/* FIRE X2 */
-
-.point-x2{
-
-    right:18%;
-    top:55%;
-
-}
-
-
-/* CORE */
-
-.point-core{
-
-    position:absolute;
-
-    width:7px;
-    height:7px;
-
-    left:50%;
-    top:50%;
-
-    transform:
-        translate(-50%,-50%);
-
-    border-radius:50%;
-
-    background:#39caff;
-
-    box-shadow:
-        0 0 5px #39caff,
-        0 0 12px rgba(57,202,255,.9);
-
-}
-
-
-/* PULSE */
-
-.point-pulse{
-
-    position:absolute;
-
-    width:18px;
-    height:18px;
-
-    left:50%;
-    top:50%;
-
-    transform:
-        translate(-50%,-50%);
-
-    border:
-        1px solid rgba(57,202,255,.6);
-
-    border-radius:50%;
-
-    animation:
-        mapPulse 2.2s infinite;
-
-}
-
-
-@keyframes mapPulse{
-
-    0%{
-        transform:
-            translate(-50%,-50%)
-            scale(.45);
-
-        opacity:.9;
-    }
-
-    70%{
-        transform:
-            translate(-50%,-50%)
-            scale(1.8);
-
-        opacity:.05;
-    }
-
-    100%{
-        opacity:0;
-    }
-
-}
-
-
-/* =========================================================
-   POINT LABEL
-========================================================= */
-
-.point-label{
-
-    position:absolute;
-
-    left:50%;
-    top:23px;
-
-    transform:
-        translateX(-50%);
-
-    color:#8bdcf4;
-
-    font:
-
-        8px
-
-        "Space Mono",
-        monospace;
-
-    text-shadow:
-        0 0 6px rgba(57,202,255,.8);
-
-}
-
-
-.point-type{
-
-    position:absolute;
-
-    left:50%;
-    top:34px;
-
-    transform:
-        translateX(-50%);
-
-    color:#ff6958;
-
-    font:
-
-        5px
-
-        "Space Mono",
-        monospace;
-
-}
-
-
-/* =========================================================
-   ALERT BLINK
-========================================================= */
-
-.map-point.map-alert .point-core{
-
-    background:#ff3d32;
-
-    box-shadow:
-        0 0 5px #ff3d32,
-        0 0 15px #ff3d32,
-        0 0 28px rgba(255,61,50,.9);
-
-    animation:
-        pointAlertBlink .42s infinite alternate;
-
-}
-
-
-.map-point.map-alert .point-pulse{
-
-    border-color:#ff3d32;
-
-    animation:
-        alertPulse .65s infinite;
-
-}
-
-
-.map-point.map-alert .point-label{
-
-    color:#ff6258;
-
-}
-
-
-@keyframes pointAlertBlink{
-
-    from{
-        opacity:.25;
-    }
-
-    to{
-        opacity:1;
-    }
-
-}
-
-
-@keyframes alertPulse{
-
-    0%{
-        transform:
-            translate(-50%,-50%)
-            scale:.5;
-
-        opacity:1;
-    }
-
-    100%{
-        transform:
-            translate(-50%,-50%)
-            scale:2.4;
-
-        opacity:0;
-    }
-
-}
-
-
-/* =========================================================
-   CAMP CENTER
-========================================================= */
-
-.map-center{
-
-    position:absolute;
-
-    left:50%;
-    top:51%;
-
-    transform:
-        translate(-50%,-50%);
-
-    color:
-        rgba(115,216,236,.75);
-
-    font:
-
-        6px
-
-        "Space Mono",
-        monospace;
-
-    letter-spacing:1px;
-
-}
-
-
-.map-center span{
-
-    display:inline-block;
-
-    width:5px;
-    height:5px;
-
-    margin-right:4px;
-
-    border-radius:50%;
-
-    background:#39caff;
-
-    box-shadow:
-        0 0 8px #39caff;
-
-}
-
-
-/* =========================================================
-   MAP INFO
-========================================================= */
-
-.map-coordinates{
-
-    position:absolute;
-
-    left:10px;
-    top:8px;
-
-    font:
-
-        6px
-
-        "Space Mono",
-        monospace;
-
-    color:#527786;
-
-}
-
-
-.map-alert-banner{
-
-    position:absolute;
-
-    right:10px;
-    top:8px;
-
-    padding:3px 6px;
-
-    border:
-        1px solid rgba(57,202,255,.18);
-
-    color:#5f8997;
-
-    font:
-
-        6px
-
-        "Space Mono",
-        monospace;
-
-}
-
-
-.map-alert-banner.alert{
-
-    color:#ff5a50;
-
-    border-color:
-        rgba(255,70,60,.5);
-
-    box-shadow:
-        0 0 10px rgba(255,50,40,.15);
-
-}
-
-
-/* =========================================================
-   LEGEND
-========================================================= */
-
-.map-legend{
-
-    position:absolute;
-
-    left:10px;
-    bottom:8px;
-
-    display:flex;
-
-    gap:10px;
-
-    font:
-
-        6px
-
-        "Space Mono",
-        monospace;
-
-    color:#5c7e89;
-
-}
-
-
-.map-legend i{
-
-    display:inline-block;
-
-    width:5px;
-    height:5px;
-
-    border-radius:50%;
-
-    margin-right:3px;
-
-}
-
-
-.legend-normal{
-
-    background:#39caff;
-
-    box-shadow:
-        0 0 5px #39caff;
-
-}
-
-
-.legend-alert{
-
-    background:#ff3d32;
-
-    box-shadow:
-        0 0 5px #ff3d32;
-
-}
-
-   /* =========================================================
-   ECOGUARDIAN LIVE CAMP MAP + SIREN
-========================================================= */
-
-(function(){
-
-    "use strict";
-
-
-    /* =====================================================
-       MAP POINT CONFIGURATION
-
-       Change positions here if your actual camp layout
-       is different.
-    ===================================================== */
-
-    const MAP_POINTS = {
-
-        X3:
-            document.getElementById(
-                "mapPointX3"
-            ),
-
-        X4:
-            document.getElementById(
-                "mapPointX4"
-            ),
-
-        X2:
-            document.getElementById(
-                "mapPointX2"
-            )
-
-    };
-
-
-    /* =====================================================
-       SIREN
-    ===================================================== */
-
-    const siren =
-        new Audio(
-            "siren.mp3"
-        );
-
-
-    siren.preload =
-        "auto";
-
-
-    siren.volume =
-        1.0;
-
-
-    let sirenTimer =
-        null;
-
-
-    let speechTimer =
-        null;
-
-
-    let lastMapAlertKey =
-        "";
-
-
-    /* =====================================================
-       LOCATION DETECTION
-    ===================================================== */
-
-    function detectMapPoint(alert){
-
-        if(!alert){
-
-            return null;
-
-        }
-
-
-        const raw =
-            [
-
-                alert.zone,
-
-                alert.location,
-
-                alert.sensor,
-
-                alert.point,
-
-                alert.device,
-
-                alert.name,
-
-                alert.raw_message,
-
-                alert.speech
-
-            ]
-            .filter(Boolean)
-            .join(" ")
-            .toUpperCase();
-
-
-        /*
-           FIRE ALWAYS GOES TO X2
-        */
-
-        const type =
-            String(
-                alert.type || ""
-            ).toUpperCase();
-
-
-        if(
-            type === "FIRE" ||
-            type === "FIRE_ALERT" ||
-            raw.includes("FIRE")
-        ){
-
-            return "X2";
-
-        }
-
-
-        /*
-           Explicit X2 / X3 / X4
-        */
-
-        if(
-            /\bX2\b/.test(raw)
-        ){
-
-            return "X2";
-
-        }
-
-
-        if(
-            /\bX3\b/.test(raw)
-        ){
-
-            return "X3";
-
-        }
-
-
-        if(
-            /\bX4\b/.test(raw)
-        ){
-
-            return "X4";
-
-        }
-
-
-        /*
-           If security alert has no explicit point,
-           use X3 as default security point.
-        */
-
-        if(
-            type === "INTRUDER" ||
-            type === "DANGEROUS" ||
-            type === "UNKNOWN_VEHICLE"
-        ){
-
-            return "X3";
-
-        }
-
-
-        return "X3";
-
-    }
-
-
-    /* =====================================================
-       BLINK MAP POINT
-    ===================================================== */
-
-    function activateMapPoint(
-        point,
-        alert
-    ){
-
-        Object.values(
-            MAP_POINTS
-        ).forEach(
-            function(el){
-
-                if(el){
-
-                    el.classList.remove(
-                        "map-alert"
-                    );
-
-                }
-
-            }
-        );
-
-
-        const element =
-            MAP_POINTS[point];
-
-
-        if(!element){
-
-            return;
-
-        }
-
-
-        element.classList.add(
-            "map-alert"
-        );
-
-
-        const banner =
-            document.getElementById(
-                "mapAlertBanner"
-            );
-
-
-        if(banner){
-
-            const type =
-                String(
-                    alert?.type ||
-                    "ALERT"
-                ).toUpperCase();
-
-
-            banner.textContent =
-                "⚠ " +
-                type +
-                " • " +
-                point;
-
-
-            banner.classList.add(
-                "alert"
-            );
-
-        }
-
-    }
-
-
-    /* =====================================================
-       CLEAR MAP ALERT
-    ===================================================== */
-
-    function clearMapPoint(){
-
-        Object.values(
-            MAP_POINTS
-        ).forEach(
-            function(el){
-
-                if(el){
-
-                    el.classList.remove(
-                        "map-alert"
-                    );
-
-                }
-
-            }
-        );
-
-
-        const banner =
-            document.getElementById(
-                "mapAlertBanner"
-            );
-
-
-        if(banner){
-
-            banner.textContent =
-                "SYSTEM MONITORING";
-
-            banner.classList.remove(
-                "alert"
-            );
-
-        }
-
-    }
-
-
-    /* =====================================================
-       CLEAN TEXT FOR SPEECH
-    ===================================================== */
-
-    function cleanSpeech(
-        text
-    ){
-
-        return String(
-            text || ""
-        )
-        .replace(
-            /[*_`#]/g,
-            ""
-        )
-        .replace(
-            /\s+/g,
-            " "
-        )
-        .trim();
-
-    }
-
-
-    /* =====================================================
-       SPEAK AFTER SIREN
-    ===================================================== */
-
-    function speakAfterSiren(
-        text
-    ){
-
-        const message =
-            cleanSpeech(
-                text
-            );
-
-
-        if(!message){
-
-            return;
-
-        }
-
-
-        if(
-            "speechSynthesis"
-            in window
-        ){
-
-            window.speechSynthesis.cancel();
-
-
-            const utterance =
-                new SpeechSynthesisUtterance(
-                    message
-                );
-
-
-            utterance.lang =
-                "hi-IN";
-
-
-            utterance.rate =
-                0.90;
-
-
-            utterance.pitch =
-                0.88;
-
-
-            utterance.volume =
-                1.0;
-
-
-            /*
-               Prefer Hindi voice
-            */
-
-            const voices =
-                window.speechSynthesis
-                    .getVoices();
-
-
-            const hindiVoice =
-                voices.find(
-                    function(voice){
-
-                        return /^hi-IN$/i
-                            .test(
-                                voice.lang
-                            );
-
-                    }
-                )
-                ||
-                voices.find(
-                    function(voice){
-
-                        return /^hi/i
-                            .test(
-                                voice.lang
-                            );
-
-                    }
-                );
-
-
-            if(hindiVoice){
-
-                utterance.voice =
-                    hindiVoice;
-
-            }
-
-
-            utterance.onend =
-                function(){
-
-                    clearMapPoint();
-
-                };
-
-
-            utterance.onerror =
-                function(){
-
-                    clearMapPoint();
-
-                };
-
-
-            window.speechSynthesis.speak(
-                utterance
-            );
-
-        }
-
-    }
-
-
-    /* =====================================================
-       DEFAULT JARVIS MESSAGE
-    ===================================================== */
-
-    function getAlertSpeech(
-        alert,
-        point
-    ){
-
-        const type =
-            String(
-                alert?.type ||
-                "ALERT"
-            ).toUpperCase();
-
-
-        if(
-            alert?.speech ||
-            alert?.raw_message
-        ){
-
-            return cleanSpeech(
-                alert.speech ||
-                alert.raw_message
-            );
-
-        }
-
-
-        if(type === "INTRUDER"){
-
-            return (
-                "अलर्ट! अलर्ट! "
-                +
-                point
-                +
-                " में घुसपैठिया detected हुआ है। "
-                +
-                "तुरंत सुरक्षित स्थान पर चले जाएं।"
-            );
-
-        }
-
-
-        if(type === "DANGEROUS"){
-
-            return (
-                "खतरा! "
-                +
-                point
-                +
-                " में खतरनाक स्थिति detected हुई है। "
-                +
-                "तुरंत सुरक्षित स्थान पर चले जाएं।"
-            );
-
-        }
-
-
-        if(
-            type === "FIRE" ||
-            type === "FIRE_ALERT"
-        ){
-
-            return (
-                "फायर अलर्ट! "
-                +
-                point
-                +
-                " में आग detected हुई है। "
-                +
-                "तुरंत सुरक्षित स्थान पर चले जाएं।"
-            );
-
-        }
-
-
-        if(
-            type === "UNKNOWN_VEHICLE"
-        ){
-
-            return (
-                "सावधान! "
-                +
-                point
-                +
-                " पर अनजान वाहन detected हुआ है।"
-            );
-
-        }
-
-
-        return (
-            "सुरक्षा चेतावनी प्राप्त हुई है। "
-            +
-            point
-            +
-            " पर अलर्ट detected हुआ है।"
-        );
-
-    }
-
-
-    /* =====================================================
-       MAIN ALERT SEQUENCE
-    ===================================================== */
-
-    window.ecoGuardianMapAlert =
-        function(alert){
-
-            if(!alert){
-
-                return;
-
-            }
-
-
-            const point =
-                detectMapPoint(
-                    alert
-                );
-
-
-            if(!point){
-
-                return;
-
-            }
-
-
-            /*
-               Create unique alert key
-            */
-
-            const key =
-                String(
-                    alert.telegram_message_id ||
-                    alert.id ||
-                    (
-                        alert.type +
-                        "|" +
-                        alert.date +
-                        "|" +
-                        alert.time +
-                        "|" +
-                        alert.zone +
-                        "|" +
-                        alert.raw_message
-                    )
-                );
-
-
-            /*
-               Prevent duplicate sirens
-            */
-
-            if(
-                key ===
-                lastMapAlertKey
-            ){
-
-                return;
-
-            }
-
-
-            lastMapAlertKey =
-                key;
-
-
-            /* Stop previous sequence */
-
-            clearTimeout(
-                sirenTimer
-            );
-
-
-            clearTimeout(
-                speechTimer
-            );
-
-
-            try{
-
-                siren.pause();
-
-                siren.currentTime =
-                    0;
-
-            }catch(error){}
-
-
-            if(
-                "speechSynthesis"
-                in window
-            ){
-
-                window.speechSynthesis.cancel();
-
-            }
-
-
-            /* MAP */
-
-            activateMapPoint(
-                point,
-                alert
-            );
-
-
-            /* SPEECH */
-
-            const speech =
-                getAlertSpeech(
-                    alert,
-                    point
-                );
-
-
-            /*
-               SIREN FIRST
-            */
-
-            siren.currentTime =
-                0;
-
-
-            const playPromise =
-                siren.play();
-
-
-            if(
-                playPromise &&
-                typeof playPromise.catch ===
-                "function"
-            ){
-
-                playPromise.catch(
-                    function(error){
-
-                        console.warn(
-                            "Siren autoplay blocked. Click ENABLE JARVIS VOICE once.",
-                            error
-                        );
-
-                    }
-                );
-
-            }
-
-
-            /*
-               EXACTLY 5 SECONDS
-            */
-
-            sirenTimer =
-                setTimeout(
-                    function(){
-
-                        try{
-
-                            siren.pause();
-
-                            siren.currentTime =
-                                0;
-
-                        }catch(error){}
-
-
-                        speakAfterSiren(
-                            speech
-                        );
-
-                    },
-                    5000
-                );
-
-        };
-
-
-    /* =====================================================
-       CONNECT EXISTING REAL-TIME ALERT SYSTEM
-    ===================================================== */
-
-    /*
-       We don't replace your WebSocket.
-       We hook into showRealtimeAlert.
-    */
-
-    if(
-        typeof window.showRealtimeAlert ===
-        "function"
-    ){
-
-        const originalRealtimeAlert =
-            window.showRealtimeAlert;
-
-
-        window.showRealtimeAlert =
-            function(alert){
-
-                try{
-
-                    window.ecoGuardianMapAlert(
-                        alert
-                    );
-
-                }catch(error){
-
-                    console.warn(
-                        "Map alert error:",
-                        error
-                    );
-
-                }
-
-
-                return originalRealtimeAlert(
-                    alert
-                );
-
-            };
-
-    }
-
-
-    /* =====================================================
-       FIRE ALERT HOOK
-    ===================================================== */
-
-    window.ecoGuardianFireAlert =
-        function(data){
-
-            const isAlert =
-                data &&
-                (
-                    data.type === "alert" ||
-                    data.alert === true ||
-                    data.fire === true ||
-                    String(
-                        data.status || ""
-                    ).toLowerCase()
-                    ===
-                    "danger"
-                );
-
-
-            if(!isAlert){
-
-                return;
-
-            }
-
-
-            window.ecoGuardianMapAlert({
-
-                ...data,
-
-                type:"FIRE",
-
-                zone:
-                    data.zone ||
-                    data.sensor ||
-                    "X2"
-
-            });
-
-        };
-
-
-    console.log(
-        "🗺️ EcoGuardian Live Camp Map ready"
-    );
-
-})();
-
-
 </style>
 
 <style>
@@ -5323,137 +3722,140 @@ body::after{
     </div>
 
 
-   <div class="health-gauge">
+    <div class="health-gauge">
 
+       <div class="health-jarvis-face">
 
-    <!-- =================================================
-         CENTER JARVIS FACE
-    ================================================== -->
+    <div class="jarvis-holo-ring ring-1"></div>
+    <div class="jarvis-holo-ring ring-2"></div>
 
-    <div class="health-jarvis-face">
+    <svg class="jarvis-wireframe-face"
+         viewBox="0 0 300 380"
+         preserveAspectRatio="xMidYMid meet">
 
-    <div
-        class="jarvis-3d-face"
-        id="jarvis3DFace">
-    </div>
+        <!-- HEAD OUTLINE -->
+        <path class="face-line"
+              d="M150 20
+                 C82 20 42 72 42 150
+                 C42 245 68 315 150 350
+                 C232 315 258 245 258 150
+                 C258 72 218 20 150 20Z"/>
 
-</div>
+        <!-- HEAD HORIZONTAL SCAN LINES -->
+        <path class="mesh-line"
+              d="M58 75 Q150 105 242 75"/>
+        <path class="mesh-line"
+              d="M48 95 Q150 120 252 95"/>
+        <path class="mesh-line"
+              d="M44 118 Q150 138 256 118"/>
+        <path class="mesh-line"
+              d="M43 142 Q150 157 257 142"/>
+        <path class="mesh-line"
+              d="M43 166 Q150 174 257 166"/>
+        <path class="mesh-line"
+              d="M46 190 Q150 192 254 190"/>
+        <path class="mesh-line"
+              d="M50 214 Q150 210 250 214"/>
+        <path class="mesh-line"
+              d="M56 238 Q150 230 244 238"/>
+        <path class="mesh-line"
+              d="M64 262 Q150 250 236 262"/>
+        <path class="mesh-line"
+              d="M76 286 Q150 270 224 286"/>
+        <path class="mesh-line"
+              d="M92 308 Q150 292 208 308"/>
 
+        <!-- VERTICAL FACE MESH -->
+        <path class="mesh-line"
+              d="M82 45 Q65 180 105 315"/>
+        <path class="mesh-line"
+              d="M105 32 Q92 150 120 330"/>
+        <path class="mesh-line"
+              d="M128 25 Q120 130 138 342"/>
+        <path class="mesh-line"
+              d="M150 22 L150 348"/>
+        <path class="mesh-line"
+              d="M172 25 Q180 130 162 342"/>
+        <path class="mesh-line"
+              d="M195 32 Q208 150 180 330"/>
+        <path class="mesh-line"
+              d="M218 45 Q235 180 195 315"/>
 
+        <!-- EARS -->
+        <path class="face-line"
+              d="M43 125
+                 C20 120 17 145 27 180
+                 C31 197 43 203 49 190"/>
 
-    <!-- =================================================
-         SECURITY
-    ================================================== -->
+        <path class="face-line"
+              d="M257 125
+                 C280 120 283 145 273 180
+                 C269 197 257 203 251 190"/>
 
-    <div class="health-hud-item health-hud-security">
+        <!-- LEFT EYE -->
+        <path class="feature-line"
+              d="M72 145
+                 Q102 119 133 145
+                 Q103 169 72 145Z"/>
 
-        <span class="health-hud-star">★</span>
+        <!-- RIGHT EYE -->
+        <path class="feature-line"
+              d="M167 145
+                 Q198 119 228 145
+                 Q198 169 167 145Z"/>
 
-        <span class="health-hud-label">
-            SECURITY
-        </span>
+        <!-- EYE GLOW -->
+        <ellipse class="eye-core"
+                 cx="103"
+                 cy="145"
+                 rx="12"
+                 ry="5"/>
 
-        <span
-            class="health-hud-value"
-            id="healthSecurity"
-        >
-            0%
-        </span>
+        <ellipse class="eye-core"
+                 cx="197"
+                 cy="145"
+                 rx="12"
+                 ry="5"/>
 
-    </div>
+        <!-- NOSE -->
+        <path class="feature-line"
+              d="M150 145
+                 L139 205
+                 L128 224
+                 Q150 236 172 224
+                 L161 205
+                 Z"/>
 
+        <path class="mesh-line"
+              d="M130 224 Q150 214 170 224"/>
 
+        <!-- CHEEKS -->
+        <path class="mesh-line"
+              d="M62 190 Q95 180 128 205"/>
 
-    <!-- =================================================
-         ENERGY
-    ================================================== -->
+        <path class="mesh-line"
+              d="M238 190 Q205 180 172 205"/>
 
-    <div class="health-hud-item health-hud-energy">
+        <!-- MOUTH -->
+        <path class="feature-line"
+              d="M105 267
+                 Q150 248 195 267
+                 Q150 286 105 267Z"/>
 
-        <span class="health-hud-star">★</span>
+        <path class="mesh-line"
+              d="M112 267 Q150 273 188 267"/>
 
-        <span class="health-hud-label">
-            ENERGY
-        </span>
+        <!-- CHIN -->
+        <path class="mesh-line"
+              d="M100 292 Q150 315 200 292"/>
 
-        <span
-            class="health-hud-value"
-            id="healthEnergy"
-        >
-            0%
-        </span>
+        <!-- FOREHEAD CENTER -->
+        <path class="scan-line"
+              d="M150 32 L150 120"/>
 
-    </div>
+    </svg>
 
-
-
-    <!-- =================================================
-         ENVIRONMENT
-    ================================================== -->
-
-    <div class="health-hud-item health-hud-environment">
-
-        <span class="health-hud-star">★</span>
-
-        <span class="health-hud-label">
-            ENVIRONMENT
-        </span>
-
-        <span
-            class="health-hud-value"
-            id="healthEnvironment"
-        >
-            0%
-        </span>
-
-    </div>
-
-
-
-    <!-- =================================================
-         WATER
-    ================================================== -->
-
-    <div class="health-hud-item health-hud-water">
-
-        <span class="health-hud-star">★</span>
-
-        <span class="health-hud-label">
-            WATER
-        </span>
-
-        <span
-            class="health-hud-value"
-            id="healthWater"
-        >
-            0%
-        </span>
-
-    </div>
-
-
-
-    <!-- =================================================
-         EMERGENCY
-    ================================================== -->
-
-    <div class="health-hud-item health-hud-emergency">
-
-        <span class="health-hud-star">★</span>
-
-        <span class="health-hud-label">
-            EMERGENCY
-        </span>
-
-        <span
-            class="health-hud-value"
-            id="healthEmergency"
-        >
-            0%
-        </span>
-
-    </div>
-
+    <div class="jarvis-scan-beam"></div>
 
 </div>
 
@@ -5931,159 +4333,29 @@ body::after{
 <div class="right-column">
 
 
-<!-- =====================================================
-     LIVE CAMP MAP
-===================================================== -->
-
-<section class="panel camp-map-panel">
+<section class="panel alert-panel">
 
     <div class="panel-title">
 
-        <span>
-            LIVE CAMP MAP
+        <span style="color:var(--red)">
+            LIVE ALERTS
         </span>
 
-        <span id="mapStatus">
-            LIVE
+        <span id="alertCount">
+            0 EVENTS
         </span>
 
     </div>
-
-
-    <div class="camp-map">
-
-        <!-- GRID -->
-
-        <div class="map-grid"></div>
-
-
-        <!-- ROAD / PATHS -->
-
-        <div class="map-road road-main"></div>
-
-        <div class="map-road road-cross"></div>
-
-
-        <!-- CAMP BUILDINGS -->
-
-        <div class="map-building building-main">
-            COMMAND
+    <div id="alertList">
+        <div class="alert ok">
+            <div class="alert-icon">✓</div>
+            <div>
+                <div class="alert-title">NO ACTIVE ALERTS</div>
+                <div class="alert-sub">Waiting for real sensor events</div>
+            </div>
+            <div class="alert-time">—</div>
         </div>
-
-        <div class="map-building building-fire">
-            FIRE
-        </div>
-
-        <div class="map-building building-security">
-            SECURITY
-        </div>
-
-
-        <!-- X3 -->
-
-        <div
-            class="map-point point-x3"
-            id="mapPointX3"
-            data-location="X3"
-        >
-
-            <span class="point-pulse"></span>
-
-            <span class="point-core"></span>
-
-            <span class="point-label">
-                X3
-            </span>
-
-        </div>
-
-
-        <!-- X4 -->
-
-        <div
-            class="map-point point-x4"
-            id="mapPointX4"
-            data-location="X4"
-        >
-
-            <span class="point-pulse"></span>
-
-            <span class="point-core"></span>
-
-            <span class="point-label">
-                X4
-            </span>
-
-        </div>
-
-
-        <!-- FIRE X2 -->
-
-        <div
-            class="map-point point-x2"
-            id="mapPointX2"
-            data-location="X2"
-        >
-
-            <span class="point-pulse"></span>
-
-            <span class="point-core"></span>
-
-            <span class="point-label">
-                X2
-            </span>
-
-            <span class="point-type">
-                FIRE
-            </span>
-
-        </div>
-
-
-        <!-- YOU ARE HERE -->
-
-        <div class="map-center">
-
-            <span></span>
-
-            CAMP
-
-        </div>
-
-
-        <!-- TOP INFO -->
-
-        <div class="map-coordinates">
-            CAMP GRID • LIVE TRACKING
-        </div>
-
-
-        <div
-            class="map-alert-banner"
-            id="mapAlertBanner"
-        >
-            SYSTEM MONITORING
-        </div>
-
-
-        <!-- LEGEND -->
-
-        <div class="map-legend">
-
-            <span>
-                <i class="legend-normal"></i>
-                NORMAL
-            </span>
-
-            <span>
-                <i class="legend-alert"></i>
-                ALERT
-            </span>
-
-        </div>
-
     </div>
-
 </section>
 
 
@@ -8682,355 +6954,7 @@ async function processVoiceCommand(originalText){
     );
 }
 
-   /* =========================================================
-   REAL 3D JARVIS FACE
-   THREE.JS
-========================================================= */
-
-/* =========================================================
-   REAL 3D JARVIS HOLOGRAM FACE
-========================================================= */
-
-const jarvisFaceContainer =
-    document.getElementById("jarvis3DFace");
-
-let jarvisScene;
-let jarvisCamera;
-let jarvisRenderer;
-let jarvisHead;
-let jarvisClock;
-
-
-/* LOAD THREE */
-
-const threeScript = document.createElement("script");
-
-threeScript.src =
-    "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js";
-
-threeScript.onload = () => {
-
-    const loaderScript = document.createElement("script");
-
-    loaderScript.src =
-        "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/js/loaders/GLTFLoader.js";
-
-    loaderScript.onload = () => {
-
-        initJarvis3D();
-
-    };
-
-    document.head.appendChild(loaderScript);
-
-};
-
-document.head.appendChild(threeScript);
-
-
-/* =========================================================
-   INIT
-========================================================= */
-
-function initJarvis3D(){
-
-    if(!jarvisFaceContainer) return;
-
-
-    /* SCENE */
-
-    jarvisScene = new THREE.Scene();
-
-
-    /* CAMERA */
-
-    jarvisCamera = new THREE.PerspectiveCamera(
-        28,
-        120 / 145,
-        0.01,
-        100
-    );
-
-    jarvisCamera.position.set(
-        0,
-        0,
-        3.2
-    );
-
-
-    /* RENDERER */
-
-    jarvisRenderer = new THREE.WebGLRenderer({
-
-        antialias:true,
-        alpha:true
-
-    });
-
-    jarvisRenderer.setPixelRatio(
-        Math.min(window.devicePixelRatio,2)
-    );
-
-    jarvisRenderer.setSize(
-        120,
-        145,
-        false
-    );
-
-    jarvisRenderer.setClearColor(
-        0x000000,
-        0
-    );
-
-    jarvisFaceContainer.innerHTML = "";
-
-    jarvisFaceContainer.appendChild(
-        jarvisRenderer.domElement
-    );
-
-
-    /* =====================================================
-       LIGHT
-    ===================================================== */
-
-    const ambient =
-        new THREE.AmbientLight(
-            0x39caff,
-            1.5
-        );
-
-    jarvisScene.add(ambient);
-
-
-    /* =====================================================
-       LOAD MODEL
-    ===================================================== */
-
-    const loader =
-        new THREE.GLTFLoader();
-
-
-    loader.load(
-
-        "/models/facecap.glb",
-
-        function(gltf){
-
-            jarvisHead =
-                gltf.scene;
-
-
-            /*
-             * IMPORTANT:
-             * NO BLACK MATERIAL
-             */
-
-            jarvisHead.traverse(
-                function(object){
-
-                    if(!object.isMesh) return;
-
-
-                    /* Hide original solid mesh */
-
-                    object.visible = false;
-
-
-                    /* =========================================
-                       REAL 3D WIREFRAME
-                    ========================================= */
-
-                    const wireMaterial =
-                        new THREE.MeshBasicMaterial({
-
-                            color:0x55ddff,
-
-                            wireframe:true,
-
-                            transparent:true,
-
-                            opacity:.78,
-
-                            depthTest:true,
-
-                            depthWrite:false
-
-                        });
-
-
-                    const wireMesh =
-                        new THREE.Mesh(
-                            object.geometry,
-                            wireMaterial
-                        );
-
-
-                    /*
-                     * Copy actual 3D transform
-                     */
-
-                    wireMesh.position.copy(
-                        object.position
-                    );
-
-                    wireMesh.rotation.copy(
-                        object.rotation
-                    );
-
-                    wireMesh.scale.copy(
-                        object.scale
-                    );
-
-
-                    /*
-                     * Slight glow layer
-                     */
-
-                    const glowMaterial =
-                        new THREE.MeshBasicMaterial({
-
-                            color:0x159bd1,
-
-                            wireframe:true,
-
-                            transparent:true,
-
-                            opacity:.16,
-
-                            depthTest:false,
-
-                            depthWrite:false
-
-                        });
-
-
-                    const glowMesh =
-                        new THREE.Mesh(
-                            object.geometry,
-                            glowMaterial
-                        );
-
-
-                    glowMesh.position.copy(
-                        object.position
-                    );
-
-                    glowMesh.rotation.copy(
-                        object.rotation
-                    );
-
-                    glowMesh.scale.set(
-                        object.scale.x * 1.012,
-                        object.scale.y * 1.012,
-                        object.scale.z * 1.012
-                    );
-
-
-                    object.parent.add(
-                        wireMesh
-                    );
-
-                    object.parent.add(
-                        glowMesh
-                    );
-
-                }
-            );
-
-
-            /* =================================================
-               MODEL SIZE
-            ================================================= */
-
-            jarvisHead.scale.set(
-                1.65,
-                1.65,
-                1.65
-            );
-
-
-            /* CENTER */
-
-            jarvisHead.position.set(
-                0,
-                -0.68,
-                0
-            );
-
-
-            jarvisScene.add(
-                jarvisHead
-            );
-
-
-            jarvisClock =
-                new THREE.Clock();
-
-
-            animateJarvis3D();
-
-        },
-
-        undefined,
-
-        function(error){
-
-            console.error(
-                "3D JARVIS FACE ERROR:",
-                error
-            );
-
-        }
-
-    );
-
-}
-
-
-/* =========================================================
-   REAL 3D ROTATION
-========================================================= */
-
-function animateJarvis3D(){
-
-    requestAnimationFrame(
-        animateJarvis3D
-    );
-
-
-    if(!jarvisHead) return;
-
-
-    const t =
-        jarvisClock.getElapsedTime();
-
-
-    /*
-     * FULL REAL 3D ROTATION
-     */
-
-    jarvisHead.rotation.y =
-        t * 0.55;
-
-
-    /*
-     * VERY SMALL HEAD TILT
-     */
-
-    jarvisHead.rotation.x =
-        Math.sin(t * 0.7) * 0.025;
-
-
-    /*
-     * Render
-     */
-
-    jarvisRenderer.render(
-        jarvisScene,
-        jarvisCamera
-    );
-
-}
+</script>
    <!-- =====================================================
      AI VOICE ASSISTANT
 ===================================================== -->
@@ -10037,40 +7961,22 @@ function connectFire() {
                 isAlert ? "ALERT" : "MONITORING";
 
             if (isAlert) {
+                addRealActivity(
+                    "🔥",
+                    `Fire alert — ${safeText(data.sensor,"sensor")}`
+                );
 
-    /* LIVE MAP + SIREN */
-
-    if(
-        typeof window.ecoGuardianFireAlert ===
-        "function"
-    ){
-
-        window.ecoGuardianFireAlert(
-            data
-        );
-
-    }
-
-
-    addRealActivity(
-        "🔥",
-        `Fire alert — ${safeText(data.sensor,"sensor")}`
-    );
-
-
-    addRealAlert(
-        "fire",
-        "FIRE DETECTED",
-        safeText(
-            data.sensor,
-            "Fire sensor alert"
-        ),
-        data.time ||
-        data.timestamp ||
-        nowShort()
-    );
-
-}
+                addRealAlert(
+                    "fire",
+                    "FIRE DETECTED",
+                    safeText(
+                        data.sensor,
+                        "Fire sensor alert"
+                    ),
+                    data.time ||
+                    data.timestamp ||
+                    nowShort()
+                );
             } else {
                 addRealActivity(
                     "✓",
@@ -12079,20 +9985,6 @@ function hideGuardianAlert(){
 
         guardianLastAlertAt =
             nowMs;
-       /* =====================================================
-   LIVE CAMP MAP
-===================================================== */
-
-if(
-    typeof window.ecoGuardianMapAlert ===
-    "function"
-){
-
-    window.ecoGuardianMapAlert(
-        alert
-    );
-
-}
 
         const overlay =
             document.getElementById(
@@ -12474,367 +10366,6 @@ if(
 
 })();
 </script>
-<script type="module">
 
-import * as THREE
-from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
-
-import { GLTFLoader }
-from "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/loaders/GLTFLoader.js";
-
-
-/* =========================================================
-   CONTAINER
-========================================================= */
-
-const container =
-    document.getElementById("jarvis3DFace");
-
-if(!container){
-
-    console.error(
-        "JARVIS 3D CONTAINER NOT FOUND"
-    );
-
-}
-
-
-/* =========================================================
-   SCENE
-========================================================= */
-
-const scene =
-    new THREE.Scene();
-
-
-/* =========================================================
-   CAMERA
-========================================================= */
-
-const camera =
-    new THREE.PerspectiveCamera(
-        28,
-        125 / 145,
-        0.01,
-        100
-    );
-
-camera.position.set(
-    0,
-    0.05,
-    3.2
-);
-
-
-/* =========================================================
-   RENDERER
-========================================================= */
-
-const renderer =
-    new THREE.WebGLRenderer({
-
-        antialias:true,
-        alpha:true
-
-    });
-
-
-renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio,2)
-);
-
-
-renderer.setSize(
-    125,
-    145,
-    false
-);
-
-
-renderer.setClearColor(
-    0x000000,
-    0
-);
-
-
-container.appendChild(
-    renderer.domElement
-);
-
-
-/* =========================================================
-   LIGHTS
-========================================================= */
-
-scene.add(
-    new THREE.AmbientLight(
-        0x39caff,
-        1.5
-    )
-);
-
-
-const light =
-    new THREE.DirectionalLight(
-        0x9eeeff,
-        2
-    );
-
-light.position.set(
-    2,
-    2,
-    4
-);
-
-scene.add(light);
-
-
-/* =========================================================
-   FACE GROUP
-========================================================= */
-
-const faceGroup =
-    new THREE.Group();
-
-scene.add(faceGroup);
-
-
-/* =========================================================
-   LOAD REAL 3D FACE
-========================================================= */
-
-const loader =
-    new GLTFLoader();
-
-
-loader.load(
-
-    "https://threejs.org/examples/models/gltf/facecap.glb",
-
-    function(gltf){
-
-        console.log(
-            "JARVIS 3D FACE LOADED"
-        );
-
-
-        const model =
-            gltf.scene;
-
-
-        /* =============================================
-           FIND 3D MESHES
-        ============================================= */
-
-        model.traverse(
-            function(object){
-
-                if(!object.isMesh)
-                    return;
-
-
-                /* Hide original solid face */
-
-                object.visible = false;
-
-
-                /* =========================================
-                   REAL 3D WIREFRAME
-                ========================================= */
-
-                const wireMaterial =
-                    new THREE.MeshBasicMaterial({
-
-                        color:0x42dfff,
-
-                        wireframe:true,
-
-                        transparent:true,
-
-                        opacity:.82,
-
-                        depthTest:true,
-
-                        depthWrite:false
-
-                    });
-
-
-                const wire =
-                    new THREE.Mesh(
-                        object.geometry,
-                        wireMaterial
-                    );
-
-
-                wire.position.copy(
-                    object.position
-                );
-
-                wire.rotation.copy(
-                    object.rotation
-                );
-
-                wire.scale.copy(
-                    object.scale
-                );
-
-
-                object.parent.add(
-                    wire
-                );
-
-
-                /* =========================================
-                   SECOND GLOW WIREFRAME
-                ========================================= */
-
-                const glowMaterial =
-                    new THREE.MeshBasicMaterial({
-
-                        color:0x0ba8e8,
-
-                        wireframe:true,
-
-                        transparent:true,
-
-                        opacity:.18,
-
-                        depthTest:false,
-
-                        depthWrite:false
-
-                    });
-
-
-                const glow =
-                    new THREE.Mesh(
-                        object.geometry,
-                        glowMaterial
-                    );
-
-
-                glow.position.copy(
-                    object.position
-                );
-
-                glow.rotation.copy(
-                    object.rotation
-                );
-
-                glow.scale.set(
-                    object.scale.x * 1.015,
-                    object.scale.y * 1.015,
-                    object.scale.z * 1.015
-                );
-
-
-                object.parent.add(
-                    glow
-                );
-
-            }
-        );
-
-
-        /* =============================================
-           SIZE
-        ============================================= */
-
-        model.scale.set(
-            1.55,
-            1.55,
-            1.55
-        );
-
-
-        /* =============================================
-           CENTER
-        ============================================= */
-
-        model.position.set(
-            0,
-            -0.70,
-            0
-        );
-
-
-        faceGroup.add(
-            model
-        );
-
-
-        animate();
-
-    },
-
-    undefined,
-
-    function(error){
-
-        console.error(
-            "JARVIS 3D MODEL FAILED:",
-            error
-        );
-
-    }
-
-);
-
-
-/* =========================================================
-   3D ROTATION
-========================================================= */
-
-const clock =
-    new THREE.Clock();
-
-
-function animate(){
-
-    requestAnimationFrame(
-        animate
-    );
-
-
-    const time =
-        clock.getElapsedTime();
-
-
-    /*
-       REAL 3D ROTATION
-
-       FRONT
-          ↓
-       3/4
-          ↓
-       SIDE
-          ↓
-       3/4
-          ↓
-       FRONT
-    */
-
-    faceGroup.rotation.y =
-        time * 0.55;
-
-
-    /*
-       Small natural vertical movement
-    */
-
-    faceGroup.position.y =
-        Math.sin(time * 0.8) * 0.015;
-
-
-    renderer.render(
-        scene,
-        camera
-    );
-
-}
-
-
-</script>
 </body>
 </html>
