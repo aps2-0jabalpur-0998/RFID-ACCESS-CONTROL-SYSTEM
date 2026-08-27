@@ -3258,6 +3258,605 @@ body::after{
             letter-spacing:2px;
         }
 
+   /* =========================================================
+   LIVE CAMP MAP
+========================================================= */
+
+.camp-map-panel{
+    overflow:hidden;
+}
+
+
+.camp-map-panel .panel-title span:last-child{
+    color:var(--green);
+}
+
+
+/* MAP */
+
+.camp-map{
+
+    position:relative;
+
+    width:100%;
+    height:100%;
+
+    min-height:230px;
+
+    overflow:hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(15,76,92,.22),
+            rgba(2,14,22,.96) 72%
+        );
+
+}
+
+
+/* GRID */
+
+.map-grid{
+
+    position:absolute;
+
+    inset:0;
+
+    opacity:.35;
+
+    background-image:
+        linear-gradient(
+            rgba(57,202,255,.13) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(57,202,255,.13) 1px,
+            transparent 1px
+        );
+
+    background-size:
+        22px 22px;
+
+}
+
+
+/* =========================================================
+   MAP ROADS
+========================================================= */
+
+.map-road{
+
+    position:absolute;
+
+    background:
+        rgba(42,114,127,.20);
+
+    border:
+        1px solid rgba(57,202,255,.18);
+
+}
+
+
+.road-main{
+
+    width:72%;
+
+    height:24px;
+
+    left:14%;
+    top:51%;
+
+    transform:
+        translateY(-50%)
+        rotate(-8deg);
+
+}
+
+
+.road-cross{
+
+    width:20px;
+
+    height:72%;
+
+    left:48%;
+
+    top:14%;
+
+    transform:
+        rotate(7deg);
+
+}
+
+
+/* =========================================================
+   BUILDINGS
+========================================================= */
+
+.map-building{
+
+    position:absolute;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font:
+
+        7px
+
+        "Space Mono",
+        monospace;
+
+    letter-spacing:.5px;
+
+    color:
+        rgba(127,213,234,.75);
+
+    background:
+        rgba(5,30,40,.82);
+
+    border:
+        1px solid rgba(57,202,255,.28);
+
+    box-shadow:
+        inset 0 0 15px rgba(57,202,255,.05);
+
+}
+
+
+.building-main{
+
+    width:72px;
+    height:42px;
+
+    left:36%;
+    top:28%;
+
+}
+
+
+.building-fire{
+
+    width:55px;
+    height:35px;
+
+    right:9%;
+    top:22%;
+
+    border-color:
+        rgba(255,92,70,.32);
+
+}
+
+
+.building-security{
+
+    width:58px;
+    height:36px;
+
+    left:8%;
+    bottom:19%;
+
+}
+
+
+/* =========================================================
+   MAP POINTS
+========================================================= */
+
+.map-point{
+
+    position:absolute;
+
+    width:20px;
+    height:20px;
+
+    z-index:20;
+
+}
+
+
+/* X3 */
+
+.point-x3{
+
+    left:22%;
+    top:28%;
+
+}
+
+
+/* X4 */
+
+.point-x4{
+
+    right:20%;
+    bottom:24%;
+
+}
+
+
+/* FIRE X2 */
+
+.point-x2{
+
+    right:18%;
+    top:55%;
+
+}
+
+
+/* CORE */
+
+.point-core{
+
+    position:absolute;
+
+    width:7px;
+    height:7px;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    border-radius:50%;
+
+    background:#39caff;
+
+    box-shadow:
+        0 0 5px #39caff,
+        0 0 12px rgba(57,202,255,.9);
+
+}
+
+
+/* PULSE */
+
+.point-pulse{
+
+    position:absolute;
+
+    width:18px;
+    height:18px;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    border:
+        1px solid rgba(57,202,255,.6);
+
+    border-radius:50%;
+
+    animation:
+        mapPulse 2.2s infinite;
+
+}
+
+
+@keyframes mapPulse{
+
+    0%{
+        transform:
+            translate(-50%,-50%)
+            scale(.45);
+
+        opacity:.9;
+    }
+
+    70%{
+        transform:
+            translate(-50%,-50%)
+            scale(1.8);
+
+        opacity:.05;
+    }
+
+    100%{
+        opacity:0;
+    }
+
+}
+
+
+/* =========================================================
+   POINT LABEL
+========================================================= */
+
+.point-label{
+
+    position:absolute;
+
+    left:50%;
+    top:23px;
+
+    transform:
+        translateX(-50%);
+
+    color:#8bdcf4;
+
+    font:
+
+        8px
+
+        "Space Mono",
+        monospace;
+
+    text-shadow:
+        0 0 6px rgba(57,202,255,.8);
+
+}
+
+
+.point-type{
+
+    position:absolute;
+
+    left:50%;
+    top:34px;
+
+    transform:
+        translateX(-50%);
+
+    color:#ff6958;
+
+    font:
+
+        5px
+
+        "Space Mono",
+        monospace;
+
+}
+
+
+/* =========================================================
+   ALERT BLINK
+========================================================= */
+
+.map-point.map-alert .point-core{
+
+    background:#ff3d32;
+
+    box-shadow:
+        0 0 5px #ff3d32,
+        0 0 15px #ff3d32,
+        0 0 28px rgba(255,61,50,.9);
+
+    animation:
+        pointAlertBlink .42s infinite alternate;
+
+}
+
+
+.map-point.map-alert .point-pulse{
+
+    border-color:#ff3d32;
+
+    animation:
+        alertPulse .65s infinite;
+
+}
+
+
+.map-point.map-alert .point-label{
+
+    color:#ff6258;
+
+}
+
+
+@keyframes pointAlertBlink{
+
+    from{
+        opacity:.25;
+    }
+
+    to{
+        opacity:1;
+    }
+
+}
+
+
+@keyframes alertPulse{
+
+    0%{
+        transform:
+            translate(-50%,-50%)
+            scale:.5;
+
+        opacity:1;
+    }
+
+    100%{
+        transform:
+            translate(-50%,-50%)
+            scale:2.4;
+
+        opacity:0;
+    }
+
+}
+
+
+/* =========================================================
+   CAMP CENTER
+========================================================= */
+
+.map-center{
+
+    position:absolute;
+
+    left:50%;
+    top:51%;
+
+    transform:
+        translate(-50%,-50%);
+
+    color:
+        rgba(115,216,236,.75);
+
+    font:
+
+        6px
+
+        "Space Mono",
+        monospace;
+
+    letter-spacing:1px;
+
+}
+
+
+.map-center span{
+
+    display:inline-block;
+
+    width:5px;
+    height:5px;
+
+    margin-right:4px;
+
+    border-radius:50%;
+
+    background:#39caff;
+
+    box-shadow:
+        0 0 8px #39caff;
+
+}
+
+
+/* =========================================================
+   MAP INFO
+========================================================= */
+
+.map-coordinates{
+
+    position:absolute;
+
+    left:10px;
+    top:8px;
+
+    font:
+
+        6px
+
+        "Space Mono",
+        monospace;
+
+    color:#527786;
+
+}
+
+
+.map-alert-banner{
+
+    position:absolute;
+
+    right:10px;
+    top:8px;
+
+    padding:3px 6px;
+
+    border:
+        1px solid rgba(57,202,255,.18);
+
+    color:#5f8997;
+
+    font:
+
+        6px
+
+        "Space Mono",
+        monospace;
+
+}
+
+
+.map-alert-banner.alert{
+
+    color:#ff5a50;
+
+    border-color:
+        rgba(255,70,60,.5);
+
+    box-shadow:
+        0 0 10px rgba(255,50,40,.15);
+
+}
+
+
+/* =========================================================
+   LEGEND
+========================================================= */
+
+.map-legend{
+
+    position:absolute;
+
+    left:10px;
+    bottom:8px;
+
+    display:flex;
+
+    gap:10px;
+
+    font:
+
+        6px
+
+        "Space Mono",
+        monospace;
+
+    color:#5c7e89;
+
+}
+
+
+.map-legend i{
+
+    display:inline-block;
+
+    width:5px;
+    height:5px;
+
+    border-radius:50%;
+
+    margin-right:3px;
+
+}
+
+
+.legend-normal{
+
+    background:#39caff;
+
+    box-shadow:
+        0 0 5px #39caff;
+
+}
+
+
+.legend-alert{
+
+    background:#ff3d32;
+
+    box-shadow:
+        0 0 5px #ff3d32;
+
+}
+
 </style>
 
 <style>
