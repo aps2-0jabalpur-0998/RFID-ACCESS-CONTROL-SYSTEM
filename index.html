@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7068,7 +7071,7 @@ const ECO_CONFIG = {
     rfidDustbinWS: "wss://nacho-plunder-oblivion.ngrok-free.dev",
     dustbinHTTP: "https://nacho-plunder-oblivion.ngrok-free.dev/data",
 
-    fireWS: "wss://how-cards-documentation-adjust.trycloudflare.com",
+    fireWS: "ws://localhost:8766",
 
     surveillanceWS: "ws://localhost:8768",
     surveillanceHTTP: "http://localhost:8081/state",
@@ -10361,6 +10364,191 @@ function hideGuardianAlert(){
 
     connect();
 
+})();
+</script>
+
+
+<script id="fire-cloudflare-integration">
+(() => {
+    const FIRE_WS_URL = 'wss://how-cards-documentation-adjust.trycloudflare.com';
+    let fireWS = null;
+    let fireReconnectTimer = null;
+
+    function fireLog(...args) {
+        console.log("[FIRE/X2]", ...args);
+    }
+
+    function fireSetText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    }
+
+    function fireShowAlert(data) {
+        // Use the dashboard's existing alert function when available.
+        if (typeof window.triggerAlert === "function") {
+            try {
+                window.triggerAlert(data.sensor || "FIRE SENSOR", "X2");
+            } catch (e) {
+                fireLog("triggerAlert failed", e);
+            }
+        }
+
+        // Existing X2 UI hooks, if present.
+        document.body.classList.add("fire-alert-active");
+
+        const banner =
+            document.getElementById("systemStatus") ||
+            document.querySelector(".status-banner");
+
+        if (banner) banner.classList.add("alert");
+
+        fireSetText("statusText", "FIRE DETECTED");
+        fireSetText("statusIcon", "⚠️");
+        fireSetText(
+            "statusSub",
+            "Emergency fire alert received — Zone X2"
+        );
+
+        const x2State =
+            document.getElementById("zoneStateX2") ||
+            document.querySelector("#zoneX2 .zone-state");
+
+        if (x2State) x2State.textContent = "ALERT";
+
+        const x2Box =
+            document.getElementById("boxX2") ||
+            document.getElementById("zoneX2");
+
+        if (x2Box) x2Box.classList.add("alert");
+
+        // If the existing dashboard has an alert/activity helper, use it.
+        if (typeof window.addRealAlert === "function") {
+            try {
+                window.addRealAlert(
+                    "fire",
+                    "FIRE DETECTED — X2",
+                    data.sensor || "Fire sensor",
+                    data.time || data.timestamp || new Date().toLocaleTimeString()
+                );
+            } catch (e) {}
+        }
+
+        if (typeof window.addRealActivity === "function") {
+            try {
+                window.addRealActivity(
+                    "🔥",
+                    "Fire detected — X2"
+                );
+            } catch (e) {}
+        }
+
+        if (typeof window.render === "function") {
+            try { window.render(); } catch (e) {}
+        }
+
+        fireLog("ALERT", data);
+    }
+
+    function fireClearAlert(data) {
+        document.body.classList.remove("fire-alert-active");
+
+        const banner =
+            document.getElementById("systemStatus") ||
+            document.querySelector(".status-banner");
+
+        if (banner) banner.classList.remove("alert");
+
+        if (typeof window.setSafe === "function") {
+            try {
+                window.setSafe();
+                return;
+            } catch (e) {}
+        }
+
+        fireSetText("statusText", "ALL SYSTEMS SAFE");
+        fireSetText("statusIcon", "🛡️");
+        fireSetText(
+            "statusSub",
+            "No active fire detection across monitored zones"
+        );
+
+        fireLog("SAFE", data);
+    }
+
+    function connectFire() {
+        if (fireWS &&
+            (fireWS.readyState === WebSocket.OPEN ||
+             fireWS.readyState === WebSocket.CONNECTING)) {
+            return;
+        }
+
+        try {
+            fireWS = new WebSocket(FIRE_WS_URL);
+
+            fireWS.onopen = () => {
+                fireLog("Cloudflare connected:", FIRE_WS_URL);
+            };
+
+            fireWS.onmessage = (event) => {
+                let data;
+
+                try {
+                    data = JSON.parse(event.data);
+                } catch {
+                    fireLog("Non-JSON message:", event.data);
+                    return;
+                }
+
+                // Only Fire/X2 events belong to this connection.
+                if (data.project && data.project !== "fire") return;
+
+                const type = String(data.type || "").toLowerCase();
+
+                if (
+                    type === "alert" ||
+                    data.alert === true ||
+                    data.fire === true ||
+                    String(data.status || "").toLowerCase() === "danger"
+                ) {
+                    data.zone = "X2";
+                    fireShowAlert(data);
+                    return;
+                }
+
+                if (
+                    type === "safe" ||
+                    data.alert === false ||
+                    String(data.status || "").toLowerCase() === "safe"
+                ) {
+                    data.zone = "X2";
+                    fireClearAlert(data);
+                }
+            };
+
+            fireWS.onerror = (err) => {
+                fireLog("WebSocket error", err);
+            };
+
+            fireWS.onclose = () => {
+                fireLog("Disconnected; retrying in 2 seconds...");
+                clearTimeout(fireReconnectTimer);
+                fireReconnectTimer = setTimeout(connectFire, 2000);
+            };
+        } catch (e) {
+            fireLog("Connection failed", e);
+            clearTimeout(fireReconnectTimer);
+            fireReconnectTimer = setTimeout(connectFire, 2000);
+        }
+    }
+
+    // Expose only the connector for debugging; existing dashboard logic remains.
+    window.connectFireCloudflare = connectFire;
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", connectFire);
+    } else {
+        connectFire();
+    }
 })();
 </script>
 
