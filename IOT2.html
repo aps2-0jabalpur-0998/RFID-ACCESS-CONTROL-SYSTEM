@@ -196,9 +196,37 @@ body{overflow-x:hidden}
 }
 </style>
 
+
+<style id="alert-audio-css">
+#alertAudioControl{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    z-index:100000;
+    border:1px solid #ff5555;
+    background:#18060a;
+    color:#fff;
+    padding:10px 14px;
+    font:700 12px monospace;
+    letter-spacing:.5px;
+    cursor:pointer;
+    box-shadow:0 0 16px rgba(255,0,0,.2);
+}
+#alertAudioControl.enabled{
+    border-color:#45e38a;
+    background:#07160e;
+}
+</style>
+
 </head>
 
 <body>
+
+<button id="alertAudioControl" type="button">
+    🔊 ENABLE ALERT AUDIO
+</button>
+<audio id="fireSirenAudio" preload="auto" src="siren.mp3"></audio>
+
 
 <div id="fireAlertOverlay" aria-live="assertive">
     <div class="fire-alert-box">
@@ -737,6 +765,181 @@ function connectFire() {
 setSafe();
 
 connectFire();
+
+
+/* =========================================================
+   ALERT AUDIO + VOICE
+   ========================================================= */
+
+const alertAudioControl =
+    document.getElementById("alertAudioControl");
+
+const fireSirenAudio =
+    document.getElementById("fireSirenAudio");
+
+let alertAudioEnabled = false;
+let sirenStopTimer = null;
+let voiceTimer = null;
+
+function enableAlertAudio() {
+    alertAudioEnabled = true;
+
+    if (alertAudioControl) {
+        alertAudioControl.textContent =
+            "🔊 ALERT AUDIO ENABLED";
+        alertAudioControl.classList.add("enabled");
+    }
+
+    /*
+     * Unlock browser audio/speech after a real user click.
+     */
+    try {
+        fireSirenAudio.volume = 0;
+        const p = fireSirenAudio.play();
+
+        if (p && typeof p.then === "function") {
+            p.then(() => {
+                fireSirenAudio.pause();
+                fireSirenAudio.currentTime = 0;
+                fireSirenAudio.volume = 1;
+            }).catch(() => {});
+        }
+    } catch (e) {}
+
+    try {
+        const u = new SpeechSynthesisUtterance("Alert audio enabled");
+        u.volume = 0.01;
+        u.rate = 1;
+        speechSynthesis.cancel();
+        speechSynthesis.speak(u);
+    } catch (e) {}
+
+    console.log("🔊 Alert audio enabled");
+}
+
+if (alertAudioControl) {
+    alertAudioControl.addEventListener(
+        "click",
+        enableAlertAudio
+    );
+}
+
+function speakFireAlert() {
+
+    clearTimeout(voiceTimer);
+
+    voiceTimer = setTimeout(() => {
+
+        const message =
+            "Fire alert. Fire detected in zone X2. Please check the fire protection area.";
+
+        try {
+            if ("speechSynthesis" in window) {
+
+                speechSynthesis.cancel();
+
+                const utterance =
+                    new SpeechSynthesisUtterance(message);
+
+                utterance.lang = "en-IN";
+                utterance.rate = 0.95;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+
+                /*
+                 * Try to select an English/Indian voice
+                 * when the browser exposes voices.
+                 */
+                const voices =
+                    speechSynthesis.getVoices();
+
+                const voice =
+                    voices.find(v =>
+                        /^en-IN$/i.test(v.lang)
+                    ) ||
+                    voices.find(v =>
+                        /^en-/i.test(v.lang)
+                    );
+
+                if (voice) {
+                    utterance.voice = voice;
+                }
+
+                speechSynthesis.speak(
+                    utterance
+                );
+
+                console.log(
+                    "🔊 Speaking fire alert"
+                );
+            }
+
+        } catch (e) {
+            console.error(
+                "Speech failed:",
+                e
+            );
+        }
+
+    }, 5000);
+}
+
+function playFireSiren() {
+
+    clearTimeout(sirenStopTimer);
+
+    try {
+
+        /*
+         * siren.mp3 must be beside this HTML file.
+         * If the browser blocks autoplay, the user must
+         * press ENABLE ALERT AUDIO once.
+         */
+        fireSirenAudio.currentTime = 0;
+        fireSirenAudio.volume = 1;
+
+        const p =
+            fireSirenAudio.play();
+
+        if (p && typeof p.catch === "function") {
+            p.catch(err => {
+                console.warn(
+                    "Siren autoplay blocked. Press ENABLE ALERT AUDIO.",
+                    err
+                );
+            });
+        }
+
+        sirenStopTimer =
+            setTimeout(() => {
+
+                try {
+                    fireSirenAudio.pause();
+                    fireSirenAudio.currentTime = 0;
+                } catch (e) {}
+
+            }, 5000);
+
+    } catch (e) {
+        console.error(
+            "Siren failed:",
+            e
+        );
+    }
+}
+
+/*
+ * This is the function fireAlert() already calls.
+ * It now performs:
+ * 1. 5-second siren
+ * 2. Fire voice announcement
+ */
+window.playGuardianSiren = function () {
+
+    playFireSiren();
+    speakFireAlert();
+
+};
 
 </script>
 
