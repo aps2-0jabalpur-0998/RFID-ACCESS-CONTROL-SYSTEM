@@ -727,219 +727,445 @@ body::after{
 ========================================================= */
 
 /* =========================================================
-   JARVIS FACE — HEALTH GAUGE ONLY
-   POSITION / GAUGE / LAYOUT UNCHANGED
+   CAMP HEALTH INDEX — JARVIS HUD
+   OUTER HEALTH GAUGE POSITION/ SIZE UNCHANGED
+========================================================= */
+
+.health-gauge{
+    position:relative;
+    overflow:hidden;
+}
+
+
+/* =========================================================
+   CENTER FACE
 ========================================================= */
 
 .health-jarvis-face{
-    width:108px;
-    height:126px;
 
-    position:relative;
-    z-index:5;
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:82px;
+    height:100px;
+
+    transform:translate(-50%,-50%);
+
+    z-index:20;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    flex:none;
-
     border:0;
+    border-radius:0;
+
     background:transparent;
+
     box-shadow:none;
 
     overflow:visible;
 
-    /* NO POSITION MOVEMENT */
-    transform:none;
     animation:none;
+
 }
 
 
-/* REALISTIC WIREFRAME HEAD */
+/* FACE SVG */
 
 .jarvis-wireframe-face{
-    width:108px;
-    height:126px;
+
+    width:82px;
+    height:100px;
 
     display:block;
 
     overflow:visible;
 
     transform:none;
-    animation:none;
 
     filter:
-        drop-shadow(0 0 4px rgba(57,202,255,.75))
-        drop-shadow(0 0 10px rgba(57,202,255,.25));
+        drop-shadow(0 0 3px rgba(57,202,255,.9))
+        drop-shadow(0 0 8px rgba(57,202,255,.35));
 }
 
 
-/* OUTER HEAD */
+/* =========================================================
+   WIREFRAME
+========================================================= */
 
 .face-line{
-    fill:rgba(5,20,30,.16);
 
-    stroke:rgba(57,202,255,.92);
+    fill:rgba(4,20,29,.12);
 
-    stroke-width:1.5;
+    stroke:rgba(57,202,255,.95);
+
+    stroke-width:2;
 
     vector-effect:non-scaling-stroke;
 }
 
-
-/* FACE MESH */
 
 .mesh-line{
+
     fill:none;
 
-    stroke:rgba(57,202,255,.42);
+    stroke:rgba(57,202,255,.43);
 
-    stroke-width:.65;
+    stroke-width:.9;
 
     vector-effect:non-scaling-stroke;
 }
 
 
-/* EYES / NOSE / MOUTH */
-
 .feature-line{
+
     fill:rgba(57,202,255,.025);
 
-    stroke:#79e6ff;
+    stroke:#8beaff;
 
-    stroke-width:1.45;
+    stroke-width:2;
 
     vector-effect:non-scaling-stroke;
 
     filter:
-        drop-shadow(0 0 3px rgba(57,202,255,.9));
+        drop-shadow(0 0 3px rgba(57,202,255,1));
 }
 
 
-/* EYES */
+/* =========================================================
+   EYES
+========================================================= */
 
 .eye-core{
-    fill:#eaffff;
+
+    fill:#ffffff;
 
     filter:
         drop-shadow(0 0 4px #39caff)
         drop-shadow(0 0 9px #39caff);
 
-    animation:jarvisEyeGlow 1.8s ease-in-out infinite;
+    animation:jarvisEyeGlow 1.4s ease-in-out infinite;
 }
 
 @keyframes jarvisEyeGlow{
 
     0%,100%{
-        opacity:.78;
+        opacity:.75;
     }
 
     50%{
         opacity:1;
     }
+
 }
 
 
-/* SCAN LINE — FACE KE ANDAR ONLY */
+/* =========================================================
+   FACE SCAN
+========================================================= */
 
 .jarvis-scan-beam{
 
     position:absolute;
 
-    width:74px;
-    height:1px;
-
     left:50%;
-    top:16px;
+    top:20px;
+
+    width:55px;
+    height:1px;
 
     transform:translateX(-50%);
 
     pointer-events:none;
 
+    z-index:30;
+
     background:
         linear-gradient(
             90deg,
             transparent,
-            rgba(57,202,255,.9),
+            rgba(57,202,255,.95),
             transparent
         );
 
     box-shadow:
-        0 0 7px rgba(57,202,255,.8);
+        0 0 7px rgba(57,202,255,.9);
 
-    animation:jarvisFaceScan 3s linear infinite;
+    animation:faceScanSmall 2.8s linear infinite;
 }
 
-@keyframes jarvisFaceScan{
+@keyframes faceScanSmall{
 
     0%{
-        top:17px;
+        top:18px;
         opacity:.1;
     }
 
     50%{
-        top:108px;
-        opacity:.8;
+        top:82px;
+        opacity:.9;
     }
 
     100%{
-        top:17px;
+        top:18px;
         opacity:.1;
     }
+
 }
 
 
 /* =========================================================
-   ALERT — EXISTING ALERT SYSTEM STILL WORKS
+   FIVE HEALTH POINTS AROUND FACE
 ========================================================= */
 
-.health-jarvis-face.jarvis-alert .face-line{
-    stroke:rgba(255,72,72,.95);
+.health-hud-item{
+
+    position:absolute;
+
+    z-index:25;
+
+    width:55px;
+
+    text-align:center;
+
+    font-family:'Space Mono',monospace;
+
+    pointer-events:none;
+
 }
 
-.health-jarvis-face.jarvis-alert .mesh-line{
-    stroke:rgba(255,72,72,.48);
+
+/* STAR */
+
+.health-hud-star{
+
+    display:block;
+
+    font-size:13px;
+
+    line-height:13px;
+
+    color:#ffffff;
+
+    text-shadow:
+        0 0 4px rgba(255,255,255,.95),
+        0 0 9px rgba(57,202,255,.85);
+
+    margin-bottom:2px;
+
 }
 
-.health-jarvis-face.jarvis-alert .feature-line{
-    stroke:#ff7777;
 
-    filter:
-        drop-shadow(0 0 4px rgba(255,72,72,.95));
+/* LABEL */
+
+.health-hud-label{
+
+    display:block;
+
+    color:#8da7b5;
+
+    font-size:6px;
+
+    line-height:7px;
+
+    letter-spacing:.15px;
+
+    white-space:nowrap;
+
 }
 
-.health-jarvis-face.jarvis-alert .eye-core{
 
-    fill:#ffffff;
+/* VALUE */
 
-    filter:
-        drop-shadow(0 0 5px #ff4848)
-        drop-shadow(0 0 11px #ff4848);
+.health-hud-value{
+
+    display:block;
+
+    color:var(--green);
+
+    font-size:6px;
+
+    line-height:7px;
+
+    margin-top:1px;
+
 }
 
 
 /* =========================================================
-   SAFE MODE
+   POSITIONS
+   ONLY INSIDE THE 155px GAUGE
 ========================================================= */
 
-.health-jarvis-face.jarvis-safe .face-line{
-    stroke:rgba(66,223,108,.9);
+
+/* TOP */
+
+.health-hud-security{
+
+    left:50%;
+
+    top:5px;
+
+    transform:translateX(-50%);
 }
 
-.health-jarvis-face.jarvis-safe .mesh-line{
-    stroke:rgba(66,223,108,.4);
+
+/* LEFT */
+
+.health-hud-energy{
+
+    left:3px;
+
+    top:50%;
+
+    transform:translateY(-50%);
 }
 
-.health-jarvis-face.jarvis-safe .feature-line{
-    stroke:#71ff91;
+
+/* RIGHT */
+
+.health-hud-environment{
+
+    right:3px;
+
+    top:50%;
+
+    transform:translateY(-50%);
 }
 
-.health-jarvis-face.jarvis-safe .eye-core{
-    filter:
-        drop-shadow(0 0 5px #42df6c)
-        drop-shadow(0 0 11px #42df6c);
+
+/* BOTTOM LEFT */
+
+.health-hud-water{
+
+    left:27px;
+
+    bottom:4px;
+
 }
+
+
+/* BOTTOM RIGHT */
+
+.health-hud-emergency{
+
+    right:27px;
+
+    bottom:4px;
+
+}
+
+
+/* =========================================================
+   SMALL CONNECTOR LINES
+========================================================= */
+
+.health-hud-item::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:16px;
+
+    height:1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(57,202,255,.65),
+            transparent
+        );
+
+    box-shadow:
+        0 0 5px rgba(57,202,255,.45);
+
+}
+
+
+/* TOP CONNECTOR */
+
+.health-hud-security::after{
+
+    left:50%;
+    top:28px;
+
+    transform:translateX(-50%) rotate(90deg);
+}
+
+
+/* LEFT CONNECTOR */
+
+.health-hud-energy::after{
+
+    right:-9px;
+    top:50%;
+
+    transform:rotate(180deg);
+}
+
+
+/* RIGHT CONNECTOR */
+
+.health-hud-environment::after{
+
+    left:-9px;
+    top:50%;
+}
+
+
+/* BOTTOM CONNECTORS */
+
+.health-hud-water::after{
+
+    left:50%;
+    top:-7px;
+
+    transform:translateX(-50%) rotate(90deg);
+}
+
+
+.health-hud-emergency::after{
+
+    right:50%;
+    top:-7px;
+
+    transform:translateX(50%) rotate(90deg);
+}
+
+
+/* =========================================================
+   HIDE OLD VISIBLE HEALTH LIST
+   JS IDs ARE STILL KEPT IN HTML
+========================================================= */
+
+.health-list{
+
+    position:absolute;
+
+    width:1px;
+    height:1px;
+
+    overflow:hidden;
+
+    opacity:0;
+
+    pointer-events:none;
+
+}
+
+
+/* OLD STAR ROW HIDDEN */
+
+.health-stars{
+
+    display:none;
+}
+
 
 /* =========================================================
    ALERT MODE
@@ -948,71 +1174,38 @@ body::after{
 .health-jarvis-face.jarvis-alert
 .face-line{
 
-    stroke:rgba(255,72,72,.95);
+    stroke:#ff5252;
+
+    filter:
+        drop-shadow(0 0 4px rgba(255,72,72,1));
 }
 
 
 .health-jarvis-face.jarvis-alert
 .mesh-line{
 
-    stroke:rgba(255,72,72,.45);
+    stroke:rgba(255,72,72,.55);
 }
 
 
 .health-jarvis-face.jarvis-alert
 .feature-line{
 
-    stroke:#ff6b6b;
+    stroke:#ff7373;
 
     filter:
-        drop-shadow(0 0 6px rgba(255,72,72,.95));
+        drop-shadow(0 0 4px rgba(255,72,72,1));
 }
 
 
 .health-jarvis-face.jarvis-alert
 .eye-core{
 
-    fill:#fff;
+    fill:#ffffff;
 
     filter:
-        drop-shadow(0 0 6px #ff4848)
-        drop-shadow(0 0 15px #ff4848);
-}
-
-
-/* =========================================================
-   SAFE MODE
-========================================================= */
-
-.health-jarvis-face.jarvis-safe
-.face-line{
-
-    stroke:rgba(66,223,108,.9);
-}
-
-
-.health-jarvis-face.jarvis-safe
-.mesh-line{
-
-    stroke:rgba(66,223,108,.38);
-}
-
-
-.health-jarvis-face.jarvis-safe
-.feature-line{
-
-    stroke:#71ff91;
-}
-
-
-.health-jarvis-face.jarvis-safe
-.eye-core{
-
-    fill:#effff2;
-
-    filter:
-        drop-shadow(0 0 6px #42df6c)
-        drop-shadow(0 0 15px #42df6c);
+        drop-shadow(0 0 5px #ff3d3d)
+        drop-shadow(0 0 11px #ff3d3d);
 }
 
 /* ALERT MODE */
