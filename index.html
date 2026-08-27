@@ -763,6 +763,10 @@ body::after{
    JARVIS FACE — 360° LEFT TO RIGHT ROTATION
 ========================================================= */
 
+/* =========================================================
+   REAL 3D JARVIS FACE
+========================================================= */
+
 .health-jarvis-face{
 
     position:absolute;
@@ -770,14 +774,15 @@ body::after{
     left:50%;
     top:50%;
 
-    width:108px;
-    height:135px;
+    width:120px;
+    height:145px;
 
     transform:translate(-50%,-50%);
 
     z-index:20;
 
     display:flex;
+
     align-items:center;
     justify-content:center;
 
@@ -788,33 +793,45 @@ body::after{
 
     overflow:visible;
 
-    /* 3D rotation */
-    transform-style:preserve-3d;
-
-    animation:jarvis360 5s linear infinite;
+    perspective:700px;
 }
 
 
-/* =========================================================
-   FULL 360° ROTATION
-========================================================= */
+/* THREE.JS CANVAS */
 
-@keyframes jarvis360{
+.jarvis-3d-face{
 
-    0%{
-        transform:
-            translate(-50%,-50%)
-            rotateY(0deg);
-    }
+    width:120px;
+    height:145px;
 
-    100%{
-        transform:
-            translate(-50%,-50%)
-            rotateY(360deg);
-    }
+    position:relative;
 
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    background:transparent;
+
+    overflow:visible;
 }
 
+
+.jarvis-3d-face canvas{
+
+    width:100% !important;
+    height:100% !important;
+
+    display:block;
+
+    background:transparent;
+
+    pointer-events:none;
+
+    filter:
+        drop-shadow(0 0 5px rgba(57,202,255,.95))
+        drop-shadow(0 0 14px rgba(57,202,255,.4));
+}
 
 /* FACE SVG */
 
