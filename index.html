@@ -9961,6 +9961,14 @@ function hideGuardianAlert(){
     ){
 
         stopAllGuardianAudio();
+       /*
+ * 🔊 EVERY REAL ALERT → SIREN
+ *
+ * Fire / Intruder / Dangerous Animal /
+ * Unknown Vehicle / any other alert
+ */
+
+playGuardianSiren();
 
         if(
             !("speechSynthesis" in window)
@@ -10265,9 +10273,27 @@ function hideGuardianAlert(){
                 "सुरक्षा चेतावनी प्राप्त हुई है।";
         }
 
-        speakAlertHindi(
-            voiceText
-        );
+       /*
+ * 🔊 Siren 5 sec
+ * ⏱️ 1 sec gap
+ * 🗣️ Then JARVIS voice
+ */
+
+clearTimeout(
+    guardianVoiceTimer
+);
+
+guardianVoiceTimer =
+    setTimeout(
+        function(){
+
+            speakAlertHindi(
+                voiceText
+            );
+
+        },
+        6000
+    );
     }
 
 
