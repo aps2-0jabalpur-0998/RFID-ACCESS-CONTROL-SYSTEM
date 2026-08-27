@@ -759,57 +759,84 @@ body::after{
    CENTER JARVIS FACE
 ========================================================= */
 
+/* =========================================================
+   JARVIS FACE — 360° LEFT TO RIGHT ROTATION
+========================================================= */
+
 .health-jarvis-face{
 
-    position:absolute !important;
+    position:absolute;
 
-    left:50% !important;
-    top:50% !important;
+    left:50%;
+    top:50%;
 
-    width:108px !important;
-    height:135px !important;
+    width:108px;
+    height:135px;
 
-    transform:translate(-50%,-50%) !important;
+    transform:translate(-50%,-50%);
 
-    z-index:20 !important;
+    z-index:20;
 
-    display:flex !important;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-    align-items:center !important;
-    justify-content:center !important;
+    background:transparent;
 
-    background:transparent !important;
+    border:0;
+    box-shadow:none;
 
-    border:0 !important;
+    overflow:visible;
 
-    box-shadow:none !important;
+    /* 3D rotation */
+    transform-style:preserve-3d;
 
-    overflow:visible !important;
+    animation:jarvis360 5s linear infinite;
+}
 
-    animation:none !important;
+
+/* =========================================================
+   FULL 360° ROTATION
+========================================================= */
+
+@keyframes jarvis360{
+
+    0%{
+        transform:
+            translate(-50%,-50%)
+            rotateY(0deg);
+    }
+
+    100%{
+        transform:
+            translate(-50%,-50%)
+            rotateY(360deg);
+    }
 
 }
 
 
-/* FACE */
+/* FACE SVG */
 
 .jarvis-wireframe-face{
 
-    width:108px !important;
-    height:135px !important;
+    width:108px;
+    height:135px;
 
-    display:block !important;
+    display:block;
 
-    transform:none !important;
+    overflow:visible;
 
-    overflow:visible !important;
+    transform:none;
+
+    transform-style:preserve-3d;
+
+    backface-visibility:visible;
 
     filter:
         drop-shadow(0 0 4px rgba(57,202,255,.95))
-        drop-shadow(0 0 12px rgba(57,202,255,.4)) !important;
-
+        drop-shadow(0 0 12px rgba(57,202,255,.4));
 }
-
 
 /* =========================================================
    FACE LINES
