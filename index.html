@@ -767,6 +767,10 @@ body::after{
    REAL 3D JARVIS FACE
 ========================================================= */
 
+/* =========================================================
+   JARVIS 3D FACE
+========================================================= */
+
 .health-jarvis-face{
 
     position:absolute;
@@ -774,15 +778,14 @@ body::after{
     left:50%;
     top:50%;
 
-    width:120px;
+    width:125px;
     height:145px;
 
     transform:translate(-50%,-50%);
 
-    z-index:20;
+    z-index:50;
 
     display:flex;
-
     align-items:center;
     justify-content:center;
 
@@ -793,28 +796,22 @@ body::after{
 
     overflow:visible;
 
-    perspective:700px;
 }
 
 
-/* THREE.JS CANVAS */
-
 .jarvis-3d-face{
-    width:120px;
+
+    width:125px;
     height:145px;
 
     position:relative;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
 
     background:transparent;
 
     overflow:visible;
 
-    perspective:800px;
 }
+
 
 .jarvis-3d-face canvas{
 
@@ -828,8 +825,9 @@ body::after{
     pointer-events:none;
 
     filter:
-        drop-shadow(0 0 4px rgba(57,202,255,.9))
-        drop-shadow(0 0 10px rgba(57,202,255,.45));
+        drop-shadow(0 0 4px rgba(57,202,255,.95))
+        drop-shadow(0 0 12px rgba(57,202,255,.55))
+        drop-shadow(0 0 25px rgba(57,202,255,.18));
 }
 
 /* FACE SVG */
@@ -10904,6 +10902,367 @@ function hideGuardianAlert(){
 
 })();
 </script>
+<script type="module">
 
+import * as THREE
+from "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
+
+import { GLTFLoader }
+from "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/loaders/GLTFLoader.js";
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+const container =
+    document.getElementById("jarvis3DFace");
+
+if(!container){
+
+    console.error(
+        "JARVIS 3D CONTAINER NOT FOUND"
+    );
+
+}
+
+
+/* =========================================================
+   SCENE
+========================================================= */
+
+const scene =
+    new THREE.Scene();
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+const camera =
+    new THREE.PerspectiveCamera(
+        28,
+        125 / 145,
+        0.01,
+        100
+    );
+
+camera.position.set(
+    0,
+    0.05,
+    3.2
+);
+
+
+/* =========================================================
+   RENDERER
+========================================================= */
+
+const renderer =
+    new THREE.WebGLRenderer({
+
+        antialias:true,
+        alpha:true
+
+    });
+
+
+renderer.setPixelRatio(
+    Math.min(window.devicePixelRatio,2)
+);
+
+
+renderer.setSize(
+    125,
+    145,
+    false
+);
+
+
+renderer.setClearColor(
+    0x000000,
+    0
+);
+
+
+container.appendChild(
+    renderer.domElement
+);
+
+
+/* =========================================================
+   LIGHTS
+========================================================= */
+
+scene.add(
+    new THREE.AmbientLight(
+        0x39caff,
+        1.5
+    )
+);
+
+
+const light =
+    new THREE.DirectionalLight(
+        0x9eeeff,
+        2
+    );
+
+light.position.set(
+    2,
+    2,
+    4
+);
+
+scene.add(light);
+
+
+/* =========================================================
+   FACE GROUP
+========================================================= */
+
+const faceGroup =
+    new THREE.Group();
+
+scene.add(faceGroup);
+
+
+/* =========================================================
+   LOAD REAL 3D FACE
+========================================================= */
+
+const loader =
+    new GLTFLoader();
+
+
+loader.load(
+
+    "https://threejs.org/examples/models/gltf/facecap.glb",
+
+    function(gltf){
+
+        console.log(
+            "JARVIS 3D FACE LOADED"
+        );
+
+
+        const model =
+            gltf.scene;
+
+
+        /* =============================================
+           FIND 3D MESHES
+        ============================================= */
+
+        model.traverse(
+            function(object){
+
+                if(!object.isMesh)
+                    return;
+
+
+                /* Hide original solid face */
+
+                object.visible = false;
+
+
+                /* =========================================
+                   REAL 3D WIREFRAME
+                ========================================= */
+
+                const wireMaterial =
+                    new THREE.MeshBasicMaterial({
+
+                        color:0x42dfff,
+
+                        wireframe:true,
+
+                        transparent:true,
+
+                        opacity:.82,
+
+                        depthTest:true,
+
+                        depthWrite:false
+
+                    });
+
+
+                const wire =
+                    new THREE.Mesh(
+                        object.geometry,
+                        wireMaterial
+                    );
+
+
+                wire.position.copy(
+                    object.position
+                );
+
+                wire.rotation.copy(
+                    object.rotation
+                );
+
+                wire.scale.copy(
+                    object.scale
+                );
+
+
+                object.parent.add(
+                    wire
+                );
+
+
+                /* =========================================
+                   SECOND GLOW WIREFRAME
+                ========================================= */
+
+                const glowMaterial =
+                    new THREE.MeshBasicMaterial({
+
+                        color:0x0ba8e8,
+
+                        wireframe:true,
+
+                        transparent:true,
+
+                        opacity:.18,
+
+                        depthTest:false,
+
+                        depthWrite:false
+
+                    });
+
+
+                const glow =
+                    new THREE.Mesh(
+                        object.geometry,
+                        glowMaterial
+                    );
+
+
+                glow.position.copy(
+                    object.position
+                );
+
+                glow.rotation.copy(
+                    object.rotation
+                );
+
+                glow.scale.set(
+                    object.scale.x * 1.015,
+                    object.scale.y * 1.015,
+                    object.scale.z * 1.015
+                );
+
+
+                object.parent.add(
+                    glow
+                );
+
+            }
+        );
+
+
+        /* =============================================
+           SIZE
+        ============================================= */
+
+        model.scale.set(
+            1.55,
+            1.55,
+            1.55
+        );
+
+
+        /* =============================================
+           CENTER
+        ============================================= */
+
+        model.position.set(
+            0,
+            -0.70,
+            0
+        );
+
+
+        faceGroup.add(
+            model
+        );
+
+
+        animate();
+
+    },
+
+    undefined,
+
+    function(error){
+
+        console.error(
+            "JARVIS 3D MODEL FAILED:",
+            error
+        );
+
+    }
+
+);
+
+
+/* =========================================================
+   3D ROTATION
+========================================================= */
+
+const clock =
+    new THREE.Clock();
+
+
+function animate(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    const time =
+        clock.getElapsedTime();
+
+
+    /*
+       REAL 3D ROTATION
+
+       FRONT
+          ↓
+       3/4
+          ↓
+       SIDE
+          ↓
+       3/4
+          ↓
+       FRONT
+    */
+
+    faceGroup.rotation.y =
+        time * 0.55;
+
+
+    /*
+       Small natural vertical movement
+    */
+
+    faceGroup.position.y =
+        Math.sin(time * 0.8) * 0.015;
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+</script>
 </body>
 </html>
