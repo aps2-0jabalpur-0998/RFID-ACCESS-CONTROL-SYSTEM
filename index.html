@@ -7065,17 +7065,19 @@ Sensor Network / Drone:
 */
 
 const ECO_CONFIG = {
+    rfidDustbinWS: "wss://nacho-plunder-oblivion.ngrok-free.dev",
+    dustbinHTTP: "https://nacho-plunder-oblivion.ngrok-free.dev/data",
 
-    // Existing connections — SAME RAKHNA
-    rfidWS: "YOUR_EXISTING_RFID_WS",
-    dustbinWS: "YOUR_EXISTING_DUSTBIN_WS",
-    surveillanceWS: "YOUR_EXISTING_SURVEILLANCE_WS",
-    sensorsWS: "YOUR_EXISTING_SENSORS_WS",
-    droneWS: "YOUR_EXISTING_DRONE_WS",
+    fireWS: "wss://how-cards-documentation-adjust.trycloudflare.com",
 
-    // 🔥 FIRE BRIDGE — CLOUDFLARE
-    fireWS: "wss://how-cards-documentation-adjust.trycloudflare.com"
+    surveillanceWS: "ws://localhost:8768",
+    surveillanceHTTP: "http://localhost:8081/state",
 
+    sensorWS: null,
+    sensorHTTP: null,
+
+    droneWS: null,
+    droneHTTP: null
 };
 
 const live = {
