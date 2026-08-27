@@ -726,255 +726,134 @@ body::after{
    REALISTIC JARVIS WIREFRAME FACE
 ========================================================= */
 
+/* =========================================================
+   JARVIS FACE — HEALTH GAUGE ONLY
+   POSITION / GAUGE / LAYOUT UNCHANGED
+========================================================= */
+
 .health-jarvis-face{
-    width:190px;
-    height:220px;
+    width:108px;
+    height:126px;
+
     position:relative;
+    z-index:5;
 
     display:flex;
     align-items:center;
     justify-content:center;
 
-    border:none;
-    background:transparent;
+    flex:none;
 
+    border:0;
+    background:transparent;
     box-shadow:none;
 
     overflow:visible;
 
+    /* NO POSITION MOVEMENT */
+    transform:none;
     animation:none;
-
-    transform-style:preserve-3d;
 }
 
 
-/* OUTER HOLOGRAM RINGS */
-
-.jarvis-holo-ring{
-    position:absolute;
-
-    left:50%;
-    top:50%;
-
-    transform:translate(-50%,-50%);
-
-    border-radius:50%;
-
-    pointer-events:none;
-}
-
-
-.jarvis-holo-ring.ring-1{
-    width:185px;
-    height:185px;
-
-    border:1px solid rgba(57,202,255,.20);
-
-    border-top-color:var(--cyan);
-    border-bottom-color:rgba(57,202,255,.05);
-
-    animation:
-        jarvisOuterSpin
-        7s linear infinite;
-}
-
-
-.jarvis-holo-ring.ring-2{
-    width:205px;
-    height:205px;
-
-    border:1px dashed rgba(66,223,108,.18);
-
-    animation:
-        jarvisOuterSpinReverse
-        10s linear infinite;
-}
-
-
-@keyframes jarvisOuterSpin{
-
-    from{
-        transform:translate(-50%,-50%) rotate(0deg);
-    }
-
-    to{
-        transform:translate(-50%,-50%) rotate(360deg);
-    }
-
-}
-
-
-@keyframes jarvisOuterSpinReverse{
-
-    from{
-        transform:translate(-50%,-50%) rotate(360deg);
-    }
-
-    to{
-        transform:translate(-50%,-50%) rotate(0deg);
-    }
-
-}
-
-
-/* SVG FACE */
+/* REALISTIC WIREFRAME HEAD */
 
 .jarvis-wireframe-face{
-    position:relative;
+    width:108px;
+    height:126px;
 
-    width:170px;
-    height:215px;
-
-    z-index:5;
+    display:block;
 
     overflow:visible;
 
+    transform:none;
+    animation:none;
+
     filter:
-        drop-shadow(0 0 5px rgba(57,202,255,.55))
-        drop-shadow(0 0 14px rgba(57,202,255,.20));
-
-    animation:
-        jarvisFaceFloat
-        4s ease-in-out infinite;
+        drop-shadow(0 0 4px rgba(57,202,255,.75))
+        drop-shadow(0 0 10px rgba(57,202,255,.25));
 }
 
 
-@keyframes jarvisFaceFloat{
-
-    0%,100%{
-        transform:translateY(0);
-    }
-
-    50%{
-        transform:translateY(-3px);
-    }
-
-}
-
-
-/* MAIN FACE OUTLINE */
+/* OUTER HEAD */
 
 .face-line{
-    fill:rgba(5,25,36,.30);
+    fill:rgba(5,20,30,.16);
 
-    stroke:rgba(57,202,255,.90);
+    stroke:rgba(57,202,255,.92);
 
-    stroke-width:1.7;
+    stroke-width:1.5;
 
     vector-effect:non-scaling-stroke;
 }
 
 
-/* MESH */
+/* FACE MESH */
 
 .mesh-line{
     fill:none;
 
-    stroke:rgba(57,202,255,.38);
+    stroke:rgba(57,202,255,.42);
 
-    stroke-width:.8;
+    stroke-width:.65;
 
     vector-effect:non-scaling-stroke;
 }
 
 
-/* IMPORTANT FACIAL FEATURES */
+/* EYES / NOSE / MOUTH */
 
 .feature-line{
-    fill:rgba(57,202,255,.035);
+    fill:rgba(57,202,255,.025);
 
-    stroke:#6be3ff;
+    stroke:#79e6ff;
 
-    stroke-width:1.8;
+    stroke-width:1.45;
 
     vector-effect:non-scaling-stroke;
 
     filter:
-        drop-shadow(0 0 5px rgba(57,202,255,.85));
+        drop-shadow(0 0 3px rgba(57,202,255,.9));
 }
 
 
 /* EYES */
 
 .eye-core{
-    fill:#dfffff;
+    fill:#eaffff;
 
     filter:
-        drop-shadow(0 0 5px #39caff)
-        drop-shadow(0 0 13px #39caff);
+        drop-shadow(0 0 4px #39caff)
+        drop-shadow(0 0 9px #39caff);
 
-    animation:
-        jarvisEyeGlow
-        1.5s ease-in-out infinite;
+    animation:jarvisEyeGlow 1.8s ease-in-out infinite;
 }
-
 
 @keyframes jarvisEyeGlow{
 
     0%,100%{
-        opacity:.75;
-        transform:scaleX(.9);
-    }
-
-    50%{
-        opacity:1;
-        transform:scaleX(1.15);
-    }
-
-}
-
-
-/* FOREHEAD SCAN */
-
-.scan-line{
-
-    fill:none;
-
-    stroke:rgba(66,223,108,.55);
-
-    stroke-width:1;
-
-    stroke-dasharray:5 5;
-
-    animation:
-        foreheadScan
-        2s linear infinite;
-}
-
-
-@keyframes foreheadScan{
-
-    from{
-        opacity:.25;
-        transform:translateY(0);
+        opacity:.78;
     }
 
     50%{
         opacity:1;
     }
-
-    to{
-        opacity:.25;
-        transform:translateY(40px);
-    }
-
 }
 
 
-/* MOVING HOLOGRAM SCAN */
+/* SCAN LINE — FACE KE ANDAR ONLY */
 
 .jarvis-scan-beam{
 
     position:absolute;
 
-    left:35px;
-    right:35px;
+    width:74px;
+    height:1px;
 
-    top:20px;
+    left:50%;
+    top:16px;
 
-    height:2px;
-
-    z-index:10;
+    transform:translateX(-50%);
 
     pointer-events:none;
 
@@ -987,34 +866,80 @@ body::after{
         );
 
     box-shadow:
-        0 0 10px rgba(57,202,255,.9),
-        0 0 22px rgba(57,202,255,.35);
+        0 0 7px rgba(57,202,255,.8);
 
-    animation:
-        faceScan
-        3s ease-in-out infinite;
+    animation:jarvisFaceScan 3s linear infinite;
 }
 
-
-@keyframes faceScan{
+@keyframes jarvisFaceScan{
 
     0%{
-        transform:translateY(0);
+        top:17px;
         opacity:.1;
     }
 
     50%{
-        transform:translateY(175px);
-        opacity:1;
+        top:108px;
+        opacity:.8;
     }
 
     100%{
-        transform:translateY(0);
+        top:17px;
         opacity:.1;
     }
-
 }
 
+
+/* =========================================================
+   ALERT — EXISTING ALERT SYSTEM STILL WORKS
+========================================================= */
+
+.health-jarvis-face.jarvis-alert .face-line{
+    stroke:rgba(255,72,72,.95);
+}
+
+.health-jarvis-face.jarvis-alert .mesh-line{
+    stroke:rgba(255,72,72,.48);
+}
+
+.health-jarvis-face.jarvis-alert .feature-line{
+    stroke:#ff7777;
+
+    filter:
+        drop-shadow(0 0 4px rgba(255,72,72,.95));
+}
+
+.health-jarvis-face.jarvis-alert .eye-core{
+
+    fill:#ffffff;
+
+    filter:
+        drop-shadow(0 0 5px #ff4848)
+        drop-shadow(0 0 11px #ff4848);
+}
+
+
+/* =========================================================
+   SAFE MODE
+========================================================= */
+
+.health-jarvis-face.jarvis-safe .face-line{
+    stroke:rgba(66,223,108,.9);
+}
+
+.health-jarvis-face.jarvis-safe .mesh-line{
+    stroke:rgba(66,223,108,.4);
+}
+
+.health-jarvis-face.jarvis-safe .feature-line{
+    stroke:#71ff91;
+}
+
+.health-jarvis-face.jarvis-safe .eye-core{
+    filter:
+        drop-shadow(0 0 5px #42df6c)
+        drop-shadow(0 0 11px #42df6c);
+}
 
 /* =========================================================
    ALERT MODE
