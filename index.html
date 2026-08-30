@@ -9564,8 +9564,89 @@ setTimeout(sync,100);
 
     "use strict";
 
-    const JARVIS_WS_URL =
-        "wss://echo-silence-camcorder-main.trycloudflare.com/ws";
+    let JARVIS_WS_URL = "";
+
+let intruderUrlCheckTimer = null;
+
+async function loadIntruderURL(){
+
+    try{
+
+        const response =
+            await fetch(
+                "intruder_url.txt?t=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+        if(!response.ok){
+            throw new Error(
+                "intruder_url.txt not found"
+            );
+        }
+
+        const url =
+            (await response.text()).trim();
+
+        if(!url){
+            return;
+        }
+
+        const newURL =
+            url.replace(
+                /^http:/,
+                "ws:"
+            ).replace(
+                /^https:/,
+                "wss:"
+            );
+
+        const finalURL =
+            newURL.endsWith("/ws")
+                ? newURL
+                : newURL + "/ws";
+
+        if(
+            JARVIS_WS_URL !== finalURL
+        ){
+
+            console.log(
+                "🔄 Intruder URL changed:",
+                finalURL
+            );
+
+            JARVIS_WS_URL =
+                finalURL;
+
+            if(
+                socket &&
+                (
+                    socket.readyState ===
+                    WebSocket.OPEN ||
+                    socket.readyState ===
+                    WebSocket.CONNECTING
+                )
+            ){
+
+                socket.close();
+            }
+
+            else{
+
+                connect();
+            }
+        }
+
+    }catch(error){
+
+        console.warn(
+            "Intruder URL check failed:",
+            error
+        );
+    }
+}
 
     const button =
         document.getElementById(
@@ -10400,12 +10481,17 @@ function hideGuardianAlert(){
             );
     }
 
-    setLiveStatus(
-        false
+setLiveStatus(
+    false
+);
+
+loadIntruderURL();
+
+intruderUrlCheckTimer =
+    setInterval(
+        loadIntruderURL,
+        5000
     );
-
-    connect();
-
 })();
 </script>
 
