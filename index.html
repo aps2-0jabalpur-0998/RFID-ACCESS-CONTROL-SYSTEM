@@ -3400,49 +3400,103 @@ body::after{
         drop-shadow(0 0 16px rgba(66,223,108,.35));
 }
 </style>\n
-<style id="tagda-upgrade-css">
+<style id="tagda-upgrade-css-v2">
 /* =========================================================================
-   ECOGUARDIAN — "TAGDA MODE" VISUAL UPGRADE LAYER
-   Pure aesthetic overlay. No IDs/classes renamed, no structure touched,
-   no JS logic affected. Same selectors, richer visuals, glass + neon.
+   ECOGUARDIAN — "TAGDA MODE v2" — FULL VISUAL OVERHAUL
+   Pure CSS layer. Zero HTML/JS/ID/class changes. Same selectors only.
+   Fixes: voice-assistant now TRUE fixed-to-viewport (no filter-on-body bug).
    ========================================================================= */
 
 :root{
-    --bg:#020508;
+    --bg:#010306;
 
-    --panel:#081826;
-    --panel2:#0a1c2b;
-    --panel3:#0e2233;
+    --panel:#081726;
+    --panel2:#0a1c2e;
+    --panel3:#0e2436;
 
-    --border:rgba(83,190,224,.28);
-    --border-bright:rgba(64,220,255,.55);
+    --border:rgba(90,210,255,.30);
+    --border-bright:rgba(80,235,255,.65);
 
-    --text:#f1fbff;
-    --muted:#7fa0b0;
+    --text:#f3fcff;
+    --muted:#82a4b6;
 
-    --green:#39ff9e;
-    --cyan:#33d6ff;
-    --blue:#4d8bff;
+    --green:#2bffa8;
+    --cyan:#22e2ff;
+    --blue:#5b8fff;
 
-    --yellow:#ffd23d;
-    --orange:#ff9c3d;
-    --red:#ff3b5c;
-    --purple:#b768ff;
+    --yellow:#ffd93d;
+    --orange:#ff9a3d;
+    --red:#ff2f5e;
+    --purple:#c264ff;
 
-    --green-soft:rgba(57,255,158,.10);
-    --cyan-soft:rgba(51,214,255,.10);
-    --red-soft:rgba(255,59,92,.10);
+    --green-soft:rgba(43,255,168,.10);
+    --cyan-soft:rgba(34,226,255,.10);
+    --red-soft:rgba(255,47,94,.10);
 
-    --shadow:0 20px 55px rgba(0,0,0,.55);
+    --shadow:0 25px 60px rgba(0,0,0,.6);
 
-    /* new tokens for this layer only */
-    --glass-blur:18px;
-    --glow-cyan:0 0 22px rgba(51,214,255,.35);
-    --glow-green:0 0 22px rgba(57,255,158,.30);
-    --glow-red:0 0 24px rgba(255,59,92,.40);
-    --glow-purple:0 0 22px rgba(183,104,255,.32);
-    --edge-light:inset 0 1px rgba(255,255,255,.06);
-    --ease-snap:cubic-bezier(.2,.9,.25,1.2);
+    --glass-blur:20px;
+    --glow-cyan:0 0 26px rgba(34,226,255,.40);
+    --glow-green:0 0 26px rgba(43,255,168,.35);
+    --glow-red:0 0 28px rgba(255,47,94,.45);
+    --glow-purple:0 0 26px rgba(194,100,255,.38);
+    --edge-light:inset 0 1px rgba(255,255,255,.07);
+    --ease-snap:cubic-bezier(.19,1,.22,1);
+}
+
+/* ---------------------------------------------------------------------
+   AMBIENT BACKGROUND
+   NOTE: uses background-position animation only (NOT filter/transform on
+   body) — filter/transform on <body> breaks position:fixed descendants
+   like .voice-assistant, which is why it drifted with scroll before.
+--------------------------------------------------------------------- */
+
+body{
+    background:
+        radial-gradient(circle at 15% 10%, rgba(34,226,255,.16), transparent 40%),
+        radial-gradient(circle at 88% 8%,  rgba(194,100,255,.13), transparent 36%),
+        radial-gradient(circle at 10% 90%, rgba(43,255,168,.11), transparent 38%),
+        radial-gradient(circle at 92% 88%, rgba(255,47,94,.07), transparent 34%),
+        linear-gradient(180deg, #02060a, var(--bg) 45%, #010203);
+    background-size:220% 220%, 220% 220%, 220% 220%, 220% 220%, 100% 100%;
+    background-attachment:fixed;
+    animation:auroraDrift 26s ease-in-out infinite alternate;
+}
+
+@keyframes auroraDrift{
+    0%{ background-position:0% 0%, 100% 0%, 0% 100%, 100% 100%, 0 0; }
+    100%{ background-position:12% 8%, 88% 12%, 8% 88%, 88% 92%, 0 0; }
+}
+
+body::before{
+    opacity:.30;
+    mix-blend-mode:overlay;
+}
+
+body::after{
+    box-shadow:
+        inset 0 0 70px rgba(0,0,0,.6),
+        inset 0 0 240px rgba(0,0,0,.7);
+}
+
+/* full-bleed animated HUD grid, purely decorative, sits behind content */
+.command-center::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    background-image:
+        linear-gradient(rgba(34,226,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,226,255,.05) 1px, transparent 1px);
+    background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+    mask-image:radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+}
+
+.command-center > *{
+    position:relative;
+    z-index:1;
 }
 
 *{
@@ -3450,59 +3504,42 @@ body::after{
 }
 
 ::selection{
-    background:rgba(51,214,255,.30);
+    background:rgba(34,226,255,.32);
     color:#fff;
 }
 
 /* ---------------------------------------------------------------------
-   AMBIENT BACKGROUND — deeper nebula + moving aurora + grain
+   GLASS BASE
 --------------------------------------------------------------------- */
 
-body{
-    background:
-        radial-gradient(circle at 18% 8%,  rgba(51,214,255,.14), transparent 38%),
-        radial-gradient(circle at 85% 12%, rgba(183,104,255,.10), transparent 32%),
-        radial-gradient(circle at 12% 88%, rgba(57,255,158,.09),  transparent 34%),
-        radial-gradient(circle at 90% 85%, rgba(255,59,92,.05),   transparent 30%),
-        linear-gradient(180deg, #030a10, var(--bg) 40%, #010305);
-    background-attachment:fixed;
-    animation:auroraDrift 22s ease-in-out infinite alternate;
-}
-
-@keyframes auroraDrift{
-    0%{ filter:hue-rotate(0deg) brightness(1); }
-    50%{ filter:hue-rotate(6deg) brightness(1.05); }
-    100%{ filter:hue-rotate(-4deg) brightness(1); }
-}
-
-body::before{
-    opacity:.28;
-    mix-blend-mode:overlay;
-}
-
-body::after{
-    box-shadow:
-        inset 0 0 60px rgba(0,0,0,.55),
-        inset 0 0 220px rgba(0,0,0,.65);
+.top-header, .navbar, .panel, .kpi, .hardware-grid, .hardware,
+.footer, .dashboard-btn, .voice-status, .voice-response, .system-status,
+.hub-status, .alert-icon, .ai-btn, .weather-item{
+    backdrop-filter:blur(var(--glass-blur)) saturate(1.4);
+    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.4);
 }
 
 /* ---------------------------------------------------------------------
-   GLASS PANEL BASE — applied generically, color logic untouched
+   HUD CORNER BRACKETS — sci-fi frame accents on major panels
 --------------------------------------------------------------------- */
 
-.top-header,
-.navbar,
-.panel,
-.kpi,
-.hardware-grid,
-.hardware,
-.footer,
-.dashboard-btn,
-.voice-status,
-.voice-response,
-.system-status{
-    backdrop-filter:blur(var(--glass-blur)) saturate(1.3);
-    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.3);
+.top-header, .panel, .control-hub, .kpi, .hardware-grid{
+    position:relative;
+}
+
+.top-header::after, .panel::after, .control-hub::after{
+    content:"";
+    position:absolute;
+    top:6px; left:6px; right:6px; bottom:6px;
+    border-radius:12px;
+    pointer-events:none;
+    background:
+        linear-gradient(90deg, var(--cyan) 0 14px, transparent 14px) top left / 100% 2px no-repeat,
+        linear-gradient(90deg, var(--cyan) 0 14px, transparent 14px) top right / 100% 2px no-repeat,
+        linear-gradient(0deg, var(--cyan) 0 14px, transparent 14px) top left / 2px 100% no-repeat,
+        linear-gradient(0deg, var(--cyan) 0 14px, transparent 14px) top right / 2px 100% no-repeat;
+    opacity:.55;
+    filter:drop-shadow(0 0 6px rgba(34,226,255,.6));
 }
 
 /* ---------------------------------------------------------------------
@@ -3510,75 +3547,69 @@ body::after{
 --------------------------------------------------------------------- */
 
 .top-header{
-    border-radius:16px;
+    border-radius:18px;
     border:1px solid var(--border);
-    box-shadow:
-        var(--shadow),
-        var(--edge-light),
-        0 0 40px rgba(51,214,255,.06);
-    position:relative;
+    box-shadow:var(--shadow), var(--edge-light), 0 0 50px rgba(34,226,255,.08);
     overflow:visible;
 }
 
 .top-header::before{
     content:"";
     position:absolute;
-    inset:-1px;
-    border-radius:16px;
-    padding:1px;
-    background:linear-gradient(120deg,
-        rgba(51,214,255,.55),
-        transparent 30%,
-        transparent 70%,
-        rgba(183,104,255,.45));
-    -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
+    inset:-1.5px;
+    border-radius:18px;
+    padding:1.5px;
+    background:conic-gradient(from var(--ang,0deg),
+        rgba(34,226,255,.9), rgba(194,100,255,.7), rgba(43,255,168,.7), rgba(34,226,255,.9));
+    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite:xor;
     mask-composite:exclude;
-    opacity:.55;
-    animation:borderSweep 6s linear infinite;
+    animation:rotateBorder 5s linear infinite;
+    opacity:.65;
     pointer-events:none;
 }
 
-@keyframes borderSweep{
-    0%{ filter:hue-rotate(0deg); }
-    100%{ filter:hue-rotate(360deg); }
+@property --ang{
+    syntax:'<angle>';
+    inherits:false;
+    initial-value:0deg;
+}
+
+@keyframes rotateBorder{
+    from{ --ang:0deg; }
+    to{ --ang:360deg; }
 }
 
 .brand-logo{
-    border-radius:16px;
-    position:relative;
+    border-radius:18px;
     box-shadow:var(--glow-cyan), var(--edge-light);
-    animation:logoPulse 3.4s ease-in-out infinite;
+    animation:logoPulse 3.2s ease-in-out infinite;
 }
 
 @keyframes logoPulse{
-    0%,100%{ box-shadow:0 0 18px rgba(51,214,255,.30), var(--edge-light); }
-    50%{ box-shadow:0 0 32px rgba(51,214,255,.55), var(--edge-light); }
+    0%,100%{ box-shadow:0 0 20px rgba(34,226,255,.32), var(--edge-light); }
+    50%{ box-shadow:0 0 38px rgba(34,226,255,.6), var(--edge-light); }
 }
 
 .brand-name{
-    text-shadow:0 0 18px rgba(51,214,255,.45);
-    background:linear-gradient(90deg,#f1fbff,#bdeeff 55%,#8be3ff);
-    -webkit-background-clip:text;
-    background-clip:text;
-    -webkit-text-fill-color:transparent;
+    background:linear-gradient(90deg,#f3fcff,#bdf3ff 55%,#7fe6ff);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    text-shadow:0 0 22px rgba(34,226,255,.5);
 }
 
-.brand-name span{
-    -webkit-text-fill-color:var(--cyan);
-    color:var(--cyan);
-}
+.brand-name span{ -webkit-text-fill-color:var(--cyan); color:var(--cyan); }
 
 .command-title h1{
-    text-shadow:
-        0 0 12px rgba(255,255,255,.35),
-        0 0 30px rgba(51,214,255,.35);
-    background:linear-gradient(180deg,#ffffff,#cdeeff);
-    -webkit-background-clip:text;
-    background-clip:text;
-    -webkit-text-fill-color:transparent;
+    background:linear-gradient(180deg,#ffffff,#c7f1ff);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    text-shadow:0 0 16px rgba(255,255,255,.4), 0 0 36px rgba(34,226,255,.4);
+    animation:titleFlicker 6s ease-in-out infinite;
+}
+
+@keyframes titleFlicker{
+    0%,96%,100%{ opacity:1; }
+    97%{ opacity:.82; }
+    98%{ opacity:1; }
 }
 
 .system-status{
@@ -3587,8 +3618,10 @@ body::after{
     transition:.3s;
 }
 
-.system-status:hover{
-    transform:translateY(-2px);
+.system-status:hover{ transform:translateY(-2px); }
+
+.clock-time{
+    text-shadow:0 0 12px rgba(34,226,255,.4);
 }
 
 /* ---------------------------------------------------------------------
@@ -3602,186 +3635,156 @@ body::after{
 }
 
 .nav-btn{
-    border-radius:9px;
+    border-radius:10px;
     position:relative;
     overflow:hidden;
 }
 
+.nav-btn::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(34,226,255,.14), transparent);
+    opacity:0;
+    transition:.25s;
+}
+
+.nav-btn:hover::before{ opacity:1; }
+
 .nav-btn::after{
     content:"";
     position:absolute;
-    left:50%;
-    bottom:3px;
-    width:0;
-    height:2px;
+    left:50%; bottom:2px;
+    width:0; height:2px;
     background:var(--cyan);
-    box-shadow:0 0 8px var(--cyan);
+    box-shadow:0 0 10px var(--cyan);
     transform:translateX(-50%);
     transition:.25s var(--ease-snap);
 }
 
-.nav-btn:hover{
-    transform:translateY(-1px);
-}
-
-.nav-btn:hover::after{
-    width:60%;
-}
+.nav-btn:hover{ transform:translateY(-1px); }
+.nav-btn:hover::after{ width:65%; }
 
 .nav-btn.active{
     box-shadow:var(--glow-cyan), var(--edge-light);
+    border-radius:10px;
 }
 
-.nav-btn.active::after{
-    width:70%;
-}
+.nav-btn.active::after{ width:75%; }
 
 /* ---------------------------------------------------------------------
    KPI STRIP
 --------------------------------------------------------------------- */
 
 .kpi{
-    border-radius:14px;
-    transition:.3s var(--ease-snap);
+    border-radius:16px;
+    transition:.35s var(--ease-snap);
 }
 
 .kpi::before{
     content:"";
     position:absolute;
     inset:0;
-    border-radius:14px;
+    border-radius:16px;
     padding:1px;
-    background:linear-gradient(135deg, rgba(51,214,255,.35), transparent 60%);
+    background:linear-gradient(135deg, rgba(34,226,255,.4), transparent 55%, rgba(194,100,255,.25));
     -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite:xor;
-    mask-composite:exclude;
-    opacity:.7;
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    opacity:.8;
     pointer-events:none;
 }
 
 .kpi:hover{
-    transform:translateY(-5px) scale(1.015);
+    transform:translateY(-6px) scale(1.02);
     border-color:var(--border-bright);
-    box-shadow:0 18px 34px rgba(0,0,0,.45), var(--glow-cyan);
+    box-shadow:0 20px 38px rgba(0,0,0,.5), var(--glow-cyan);
 }
 
 .kpi-icon{
-    filter:drop-shadow(0 0 8px rgba(51,214,255,.45));
-    transition:.3s;
+    filter:drop-shadow(0 0 10px rgba(34,226,255,.5));
+    transition:.35s var(--ease-snap);
+    display:inline-block;
 }
 
-.kpi:hover .kpi-icon{
-    transform:scale(1.15) rotate(-4deg);
-}
+.kpi:hover .kpi-icon{ transform:scale(1.2) rotate(-6deg); }
 
-.kpi-value{
-    text-shadow:0 0 14px rgba(255,255,255,.25);
-}
+.kpi-value{ text-shadow:0 0 16px rgba(255,255,255,.3); }
 
 /* ---------------------------------------------------------------------
    PANELS
 --------------------------------------------------------------------- */
 
 .panel{
-    border-radius:14px;
+    border-radius:16px;
     box-shadow:var(--shadow), var(--edge-light);
-    animation:panelRise .5s var(--ease-snap) both;
+    animation:panelRise .55s var(--ease-snap) both;
 }
 
 @keyframes panelRise{
-    from{ opacity:0; transform:translateY(10px); }
-    to{ opacity:1; transform:translateY(0); }
+    from{ opacity:0; transform:translateY(14px) scale(.985); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
 }
 
 .panel-title{
-    border-radius:14px 14px 0 0;
-    letter-spacing:1.2px;
+    border-radius:16px 16px 0 0;
+    letter-spacing:1.4px;
+    position:relative;
 }
 
-.panel-title .live{
-    text-shadow:0 0 8px var(--green);
+.panel-title::after{
+    content:"";
+    position:absolute;
+    left:13px; right:13px; bottom:-1px;
+    height:1px;
+    background:linear-gradient(90deg, var(--cyan), transparent 70%);
+    opacity:.6;
 }
+
+.panel-title .live{ text-shadow:0 0 10px var(--green); }
 
 /* ---------------------------------------------------------------------
    CONTROL HUB / DASHBOARD BUTTONS
 --------------------------------------------------------------------- */
 
-.control-hub{
-    border-radius:16px;
-}
+.control-hub{ border-radius:18px; }
 
-.hub-title{
-    text-shadow:0 0 20px rgba(51,214,255,.35);
-}
+.hub-title{ text-shadow:0 0 22px rgba(34,226,255,.4); }
 
-.hub-status{
-    border-radius:10px;
-    box-shadow:var(--glow-green);
-}
+.hub-status{ border-radius:10px; box-shadow:var(--glow-green); }
 
 .dashboard-btn{
-    border-radius:14px;
+    border-radius:16px;
     box-shadow:var(--edge-light);
 }
 
 .dashboard-btn::before{
     width:4px;
     border-radius:0 4px 4px 0;
-    filter:blur(.3px);
 }
 
 .dashboard-btn:hover{
-    transform:translateY(-6px) scale(1.012);
-    box-shadow:
-        0 18px 36px rgba(0,0,0,.45),
-        inset 0 0 30px rgba(51,214,255,.06),
-        var(--edge-light);
+    transform:translateY(-7px) scale(1.015);
+    box-shadow:0 20px 40px rgba(0,0,0,.5), inset 0 0 34px rgba(34,226,255,.07), var(--edge-light);
 }
 
-.dashboard-icon{
-    border-radius:14px;
-    transition:.3s var(--ease-snap);
-}
+.dashboard-icon{ border-radius:16px; transition:.35s var(--ease-snap); }
+.dashboard-btn:hover .dashboard-icon{ transform:scale(1.12) rotate(-4deg); }
 
-.dashboard-btn:hover .dashboard-icon{
-    transform:scale(1.1) rotate(-3deg);
-}
-
-.hub-footer .green-dot{
-    animation:blink 1.5s infinite, dotGlow 1.5s infinite;
-}
-
-@keyframes dotGlow{
-    50%{ box-shadow:0 0 14px var(--green); }
-}
+.hub-footer .green-dot{ animation:blink 1.5s infinite, dotGlow 1.5s infinite; }
+@keyframes dotGlow{ 50%{ box-shadow:0 0 16px var(--green); } }
 
 /* ---------------------------------------------------------------------
    ALERTS / AI PANEL
 --------------------------------------------------------------------- */
 
-.alert{
-    border-radius:10px;
-    margin:6px;
-    transition:.25s;
-    border-bottom:1px solid rgba(255,255,255,.04);
-}
+.alert{ border-radius:10px; margin:6px; transition:.25s; }
+.alert:hover{ background:rgba(255,255,255,.035); transform:translateX(4px); }
 
-.alert:hover{
-    background:rgba(255,255,255,.03);
-    transform:translateX(3px);
-}
+.alert-icon{ box-shadow:0 0 16px rgba(255,47,94,.4); }
+.alert.warning .alert-icon{ box-shadow:0 0 16px rgba(255,217,61,.4); }
+.alert.ok .alert-icon{ box-shadow:0 0 16px rgba(43,255,168,.4); }
 
-.alert-icon{
-    box-shadow:0 0 14px rgba(255,59,92,.35);
-}
-
-.alert.warning .alert-icon{ box-shadow:0 0 14px rgba(255,210,61,.35); }
-.alert.ok .alert-icon{ box-shadow:0 0 14px rgba(57,255,158,.35); }
-
-.ai-header{
-    border-radius:14px 14px 0 0;
-    text-shadow:0 0 12px rgba(183,104,255,.5);
-}
+.ai-header{ border-radius:16px 16px 0 0; text-shadow:0 0 14px rgba(194,100,255,.55); }
 
 .ai-btn{
     border-radius:10px;
@@ -3789,197 +3792,126 @@ body::after{
     box-shadow:var(--glow-purple);
 }
 
-.ai-btn:hover{
-    transform:translateY(-2px);
-    background:rgba(183,104,255,.16);
-}
+.ai-btn:hover{ transform:translateY(-2px) scale(1.01); background:rgba(194,100,255,.18); }
 
-.threat{
-    border-radius:6px;
-    box-shadow:0 0 10px rgba(255,59,92,.35);
-}
+.threat{ border-radius:6px; box-shadow:0 0 12px rgba(255,47,94,.4); }
 
 /* ---------------------------------------------------------------------
    DRONE FEED
 --------------------------------------------------------------------- */
 
-.feed-screen{
-    border-radius:10px 10px 0 0;
-}
-
-.live-tag{
-    border-radius:5px;
-    box-shadow:0 0 14px rgba(255,59,92,.6);
-    animation:blink 1.6s infinite;
-}
-
-.feed-control:hover{
-    text-shadow:0 0 8px var(--cyan);
-}
+.feed-screen{ border-radius:12px 12px 0 0; }
+.live-tag{ border-radius:5px; box-shadow:0 0 16px rgba(255,47,94,.65); animation:blink 1.6s infinite; }
+.feed-control:hover{ text-shadow:0 0 10px var(--cyan); }
 
 /* ---------------------------------------------------------------------
    WEATHER / AIR / HEALTH
 --------------------------------------------------------------------- */
 
-.weather-panel,
-.air-panel,
-.health-panel{
-    border-radius:14px;
-}
+.weather-panel, .air-panel, .health-panel{ border-radius:16px; }
 
-.weather-item{
-    border-radius:8px;
-    transition:.25s;
-}
-
-.weather-item:hover{
-    border-color:rgba(51,214,255,.3);
-    background:rgba(51,214,255,.04);
-}
+.weather-item{ border-radius:8px; transition:.25s; }
+.weather-item:hover{ border-color:rgba(34,226,255,.35); background:rgba(34,226,255,.05); transform:translateY(-2px); }
 
 .air-circle{
-    box-shadow:
-        0 0 26px rgba(57,255,158,.25),
-        inset 0 0 18px rgba(57,255,158,.12);
+    box-shadow:0 0 28px rgba(43,255,168,.28), inset 0 0 20px rgba(43,255,168,.14);
     animation:airPulse 3s ease-in-out infinite;
 }
 
 @keyframes airPulse{
-    0%,100%{ box-shadow:0 0 26px rgba(57,255,158,.20), inset 0 0 18px rgba(57,255,158,.10); }
-    50%{ box-shadow:0 0 38px rgba(57,255,158,.38), inset 0 0 22px rgba(57,255,158,.16); }
+    0%,100%{ box-shadow:0 0 28px rgba(43,255,168,.22), inset 0 0 20px rgba(43,255,168,.12); }
+    50%{ box-shadow:0 0 42px rgba(43,255,168,.42), inset 0 0 24px rgba(43,255,168,.18); }
 }
 
-.health-bar{
-    border-radius:6px;
-}
-
-.health-fill{
-    border-radius:6px;
-    background:linear-gradient(90deg, var(--green), #7dffc0);
-}
+.health-bar{ border-radius:6px; }
+.health-fill{ border-radius:6px; background:linear-gradient(90deg, var(--green), #9dffd4); }
 
 /* ---------------------------------------------------------------------
    ANALYTICS / HARDWARE / ACTIVITY
 --------------------------------------------------------------------- */
 
-.donut{
-    box-shadow:0 0 26px rgba(57,255,158,.18);
-}
+.donut{ box-shadow:0 0 28px rgba(43,255,168,.2); }
 
-.hardware-grid{
-    border-radius:14px;
-}
+.hardware-grid{ border-radius:16px; }
+.hardware{ border-radius:12px; transition:.25s var(--ease-snap); }
+.hardware:hover{ transform:translateY(-5px) scale(1.04); box-shadow:0 16px 28px rgba(0,0,0,.45), var(--glow-cyan); }
+.hardware-icon{ transition:.25s; }
+.hardware:hover .hardware-icon{ transform:scale(1.18); }
 
-.hardware{
-    border-radius:12px;
-    transition:.25s var(--ease-snap);
-}
-
-.hardware:hover{
-    transform:translateY(-4px) scale(1.03);
-    box-shadow:0 14px 26px rgba(0,0,0,.4), var(--glow-cyan);
-}
-
-.hardware-icon{
-    transition:.25s;
-}
-
-.hardware:hover .hardware-icon{
-    transform:scale(1.15);
-}
-
-.activity-row{
-    border-radius:6px;
-    transition:.2s;
-}
-
-.activity-row:hover{
-    background:rgba(255,255,255,.025);
-    padding-left:6px;
-}
+.activity-row{ border-radius:6px; transition:.2s; }
+.activity-row:hover{ background:rgba(255,255,255,.03); padding-left:6px; }
 
 /* ---------------------------------------------------------------------
    FOOTER
 --------------------------------------------------------------------- */
 
-.footer{
-    border-radius:12px;
-}
-
-.dot{
-    animation:blink 1.5s infinite, dotGlow 1.5s infinite;
-}
+.footer{ border-radius:12px; }
+.dot{ animation:blink 1.5s infinite, dotGlow 1.5s infinite; }
 
 /* ---------------------------------------------------------------------
    VOICE ASSISTANT / JARVIS MINI
+   Forced true viewport-fixed positioning — always bottom-left, always
+   on top, independent of scroll (this is the fix for the reported bug).
 --------------------------------------------------------------------- */
 
+.voice-assistant{
+    position:fixed !important;
+    left:24px !important;
+    right:auto !important;
+    top:auto !important;
+    bottom:24px !important;
+    z-index:99999 !important;
+}
+
 .voice-button{
-    box-shadow:
-        0 0 26px rgba(51,214,255,.28),
-        var(--edge-light);
+    box-shadow:0 0 28px rgba(34,226,255,.3), var(--edge-light);
 }
 
 .voice-button:hover{
-    box-shadow:
-        0 0 40px rgba(51,214,255,.5),
-        var(--edge-light);
+    box-shadow:0 0 44px rgba(34,226,255,.55), var(--edge-light);
 }
 
-.voice-status{
-    border-radius:10px;
-}
+.voice-status{ border-radius:10px; }
 
 .voice-response{
-    border-radius:14px;
-    box-shadow:
-        0 20px 45px rgba(0,0,0,.55),
-        0 0 30px rgba(51,214,255,.10),
-        var(--edge-light);
+    border-radius:16px;
+    box-shadow:0 22px 48px rgba(0,0,0,.6), 0 0 34px rgba(34,226,255,.12), var(--edge-light);
 }
 
 .jarvis-mini-button{
-    box-shadow:
-        0 0 22px rgba(51,214,255,.22),
-        var(--edge-light);
+    box-shadow:0 0 24px rgba(34,226,255,.25), var(--edge-light);
 }
 
 /* ---------------------------------------------------------------------
-   SCROLLBAR — gradient glass thumb
+   SCROLLBAR
 --------------------------------------------------------------------- */
 
 ::-webkit-scrollbar-thumb{
     background:linear-gradient(180deg, var(--cyan), #0d3d4d);
     border-radius:10px;
-    box-shadow:0 0 8px rgba(51,214,255,.35);
+    box-shadow:0 0 10px rgba(34,226,255,.4);
 }
 
 ::-webkit-scrollbar-thumb:hover{
-    background:linear-gradient(180deg, #7fe8ff, var(--cyan));
+    background:linear-gradient(180deg, #9df2ff, var(--cyan));
 }
 
 /* ---------------------------------------------------------------------
-   FOCUS-VISIBLE ACCESSIBILITY GLOW (keyboard nav polish)
+   ACCESSIBILITY FOCUS GLOW
 --------------------------------------------------------------------- */
 
-button:focus-visible,
-.nav-btn:focus-visible,
-.dashboard-btn:focus-visible,
-.hardware:focus-visible{
+button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .hardware:focus-visible{
     outline:2px solid var(--cyan);
     outline-offset:2px;
     box-shadow:var(--glow-cyan);
 }
 
 @media(max-width:700px){
-    .top-header,
-    .navbar,
-    .panel,
-    .kpi,
-    .dashboard-btn{
+    .top-header, .navbar, .panel, .kpi, .dashboard-btn{
         backdrop-filter:blur(10px);
         -webkit-backdrop-filter:blur(10px);
     }
+    .top-header::after, .panel::after, .control-hub::after{ display:none; }
 }
 </style>
 
