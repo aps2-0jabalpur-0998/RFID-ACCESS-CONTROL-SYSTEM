@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -4504,6 +4505,571 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 }
 </style>
 
+
+<style id="vehicle-drone-motion-final">
+/* ===== LIVE MOBILITY ICONS ===== */
+.kpi-icon.vehicle-icon,
+.kpi-icon.drone-icon{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:38px;
+    min-width:38px;
+    height:38px;
+    overflow:visible;
+    will-change:transform;
+}
+
+/* subtle motion track behind the vehicle */
+.vehicle-icon::after{
+    content:"";
+    position:absolute;
+    left:-8px;
+    bottom:6px;
+    width:26px;
+    height:2px;
+    border-radius:999px;
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(57,202,255,.12),
+        rgba(57,202,255,.65)
+    );
+    filter:drop-shadow(0 0 5px rgba(57,202,255,.4));
+    opacity:0;
+    transform:translateX(-8px);
+    animation:vehicleTrail 1.65s ease-in-out infinite;
+}
+
+.vehicle-icon{
+    animation:vehicleDrive 1.65s cubic-bezier(.45,.05,.55,.95) infinite;
+}
+
+@keyframes vehicleDrive{
+    0%{
+        transform:translateX(-2px) translateY(0) rotate(0deg);
+    }
+    25%{
+        transform:translateX(2px) translateY(-1px) rotate(-1deg);
+    }
+    50%{
+        transform:translateX(7px) translateY(0) rotate(1deg);
+    }
+    75%{
+        transform:translateX(3px) translateY(-1px) rotate(0deg);
+    }
+    100%{
+        transform:translateX(-2px) translateY(0) rotate(0deg);
+    }
+}
+
+@keyframes vehicleTrail{
+    0%,100%{
+        opacity:0;
+        transform:translateX(-8px) scaleX(.5);
+    }
+    35%{
+        opacity:.85;
+        transform:translateX(0) scaleX(1);
+    }
+    60%{
+        opacity:.18;
+        transform:translateX(-5px) scaleX(.7);
+    }
+}
+
+/* Drone: forward drift + hover */
+.drone-icon{
+    animation:droneFly 2.05s ease-in-out infinite;
+}
+
+.drone-icon::after{
+    content:"";
+    position:absolute;
+    width:22px;
+    height:7px;
+    left:50%;
+    bottom:1px;
+    transform:translateX(-50%);
+    border-radius:50%;
+    border-bottom:2px solid rgba(173,98,255,.4);
+    filter:blur(.2px) drop-shadow(0 0 6px rgba(173,98,255,.35));
+    opacity:.35;
+    animation:droneShadow 2.05s ease-in-out infinite;
+}
+
+@keyframes droneFly{
+    0%{
+        transform:translate(-1px,2px) rotate(0deg);
+    }
+    20%{
+        transform:translate(2px,-2px) rotate(-2deg);
+    }
+    45%{
+        transform:translate(8px,-5px) rotate(1deg);
+    }
+    70%{
+        transform:translate(5px,-2px) rotate(2deg);
+    }
+    100%{
+        transform:translate(-1px,2px) rotate(0deg);
+    }
+}
+
+@keyframes droneShadow{
+    0%,100%{
+        transform:translateX(-50%) scaleX(.7);
+        opacity:.25;
+    }
+    45%{
+        transform:translateX(-50%) scaleX(1.15);
+        opacity:.6;
+    }
+    70%{
+        transform:translateX(-50%) scaleX(.9);
+        opacity:.35;
+    }
+}
+
+@media (prefers-reduced-motion: reduce){
+    .vehicle-icon,
+    .drone-icon,
+    .vehicle-icon::after,
+    .drone-icon::after{
+        animation:none !important;
+    }
+}
+</style>
+
+
+<style id="iot-all-kpi-motion">
+/* IOT — animated KPI icons */
+.kpi-icon{
+    position:relative;
+    display:inline-flex !important;
+    align-items:center;
+    justify-content:center;
+    transform-origin:center;
+    will-change:transform;
+}
+
+.power-icon{
+    animation:powerPulse 1.35s ease-in-out infinite;
+    filter:drop-shadow(0 0 8px rgba(255,157,56,.45));
+}
+@keyframes powerPulse{
+    0%,100%{transform:translateY(0) scale(1) rotate(0)}
+    30%{transform:translateY(-2px) scale(1.05) rotate(-3deg)}
+    55%{transform:translateY(1px) scale(.97) rotate(2deg)}
+    80%{transform:translateY(-1px) scale(1.03) rotate(0)}
+}
+
+.water-icon{
+    animation:waterFloat 2.2s ease-in-out infinite;
+    filter:drop-shadow(0 0 9px rgba(83,190,255,.38));
+}
+@keyframes waterFloat{
+    0%,100%{transform:translateY(0) scale(1)}
+    25%{transform:translateY(-3px) scale(1.03)}
+    50%{transform:translateY(1px) scale(.98)}
+    75%{transform:translateY(-2px) scale(1.02)}
+}
+
+.co2-icon{
+    animation:leafSway 2.6s ease-in-out infinite;
+    transform-origin:bottom center;
+    filter:drop-shadow(0 0 8px rgba(66,223,108,.38));
+}
+@keyframes leafSway{
+    0%,100%{transform:rotate(-3deg) translateY(0)}
+    25%{transform:rotate(4deg) translateY(-2px)}
+    50%{transform:rotate(-1deg) translateY(-3px)}
+    75%{transform:rotate(5deg) translateY(-1px)}
+}
+
+.personnel-icon{
+    animation:peopleBob 1.9s ease-in-out infinite;
+    filter:drop-shadow(0 0 9px rgba(173,98,255,.42));
+}
+@keyframes peopleBob{
+    0%,100%{transform:translateY(0)}
+    35%{transform:translateY(-3px)}
+    65%{transform:translateY(1px)}
+}
+
+.rfid-icon{
+    animation:rfidScan 1.65s ease-in-out infinite;
+    filter:drop-shadow(0 0 9px rgba(57,202,255,.48));
+}
+@keyframes rfidScan{
+    0%,100%{transform:translateX(0) scale(1);opacity:.8}
+    35%{transform:translateX(3px) scale(1.04);opacity:1}
+    70%{transform:translateX(6px) scale(1);opacity:.9}
+}
+
+/* Existing moving vehicle and drone icons get a slightly richer trail. */
+.vehicle-icon::after,
+.drone-icon::after{
+    content:"" !important;
+    position:absolute;
+    pointer-events:none;
+}
+.vehicle-icon::after{
+    width:22px;
+    height:2px;
+    left:-20px;
+    top:50%;
+    background:linear-gradient(90deg,transparent,rgba(57,202,255,.55));
+    animation:vehicleTrail2 1.8s ease-in-out infinite;
+}
+.drone-icon::after{
+    width:20px;
+    height:2px;
+    left:-18px;
+    top:55%;
+    background:linear-gradient(90deg,transparent,rgba(173,98,255,.58));
+    animation:droneTrail2 2.2s ease-in-out infinite;
+}
+@keyframes vehicleTrail2{
+    0%,100%{opacity:0;transform:translateX(7px)}
+    45%{opacity:.85;transform:translateX(-2px)}
+}
+@keyframes droneTrail2{
+    0%,100%{opacity:0;transform:translateX(6px)}
+    45%{opacity:.8;transform:translateX(-3px)}
+}
+
+@media(prefers-reduced-motion:reduce){
+    .power-icon,.water-icon,.co2-icon,.personnel-icon,.rfid-icon,
+    .vehicle-icon,.drone-icon{
+        animation:none !important;
+    }
+}
+</style>
+
+
+<style id="iot-power-water-co2-cinematic-motion">
+/* =========================================================
+   POWER — lightning bolt falls from above
+   ========================================================= */
+.power-icon{
+    position:relative !important;
+    overflow:visible !important;
+    z-index:3;
+    animation:none !important;
+    filter:drop-shadow(0 0 9px rgba(255,157,56,.55));
+}
+
+.power-icon::before{
+    content:"⚡";
+    position:absolute;
+    left:50%;
+    top:-34px;
+    transform:translateX(-50%);
+    font-size:25px;
+    line-height:1;
+    opacity:0;
+    pointer-events:none;
+    animation:thunderDrop 1.9s cubic-bezier(.18,.82,.22,1) infinite;
+    filter:
+        drop-shadow(0 0 5px rgba(255,220,90,.9))
+        drop-shadow(0 0 14px rgba(255,130,50,.55));
+}
+
+.power-icon::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:-22px;
+    width:2px;
+    height:24px;
+    transform:translateX(-50%);
+    background:linear-gradient(180deg,transparent,rgba(255,210,90,.85),transparent);
+    opacity:0;
+    animation:thunderTrail 1.9s ease-in infinite;
+    pointer-events:none;
+}
+
+@keyframes thunderDrop{
+    0%{
+        opacity:0;
+        transform:translate(-50%,-15px) rotate(-8deg) scale(.72);
+    }
+    12%{opacity:1}
+    48%{
+        opacity:1;
+        transform:translate(-50%,25px) rotate(4deg) scale(1.05);
+    }
+    58%{
+        transform:translate(-50%,31px) rotate(-3deg) scale(.92);
+    }
+    68%{
+        opacity:.15;
+        transform:translate(-50%,34px) rotate(0) scale(.82);
+    }
+    100%{
+        opacity:0;
+        transform:translate(-50%,40px) scale(.7);
+    }
+}
+
+@keyframes thunderTrail{
+    0%,8%,70%,100%{opacity:0}
+    25%,52%{opacity:.72}
+    62%{opacity:.15}
+}
+
+
+/* =========================================================
+   WATER — droplets continuously fall
+   ========================================================= */
+.water-icon{
+    position:relative !important;
+    overflow:visible !important;
+    z-index:3;
+    animation:none !important;
+    filter:drop-shadow(0 0 9px rgba(83,190,255,.48));
+}
+
+.water-icon::before,
+.water-icon::after{
+    content:"💧";
+    position:absolute;
+    left:50%;
+    top:-26px;
+    font-size:13px;
+    line-height:1;
+    opacity:0;
+    pointer-events:none;
+    filter:drop-shadow(0 0 6px rgba(70,200,255,.75));
+}
+
+.water-icon::before{
+    animation:waterDrop1 1.55s linear infinite;
+}
+
+.water-icon::after{
+    animation:waterDrop2 1.55s linear infinite .76s;
+}
+
+@keyframes waterDrop1{
+    0%{
+        opacity:0;
+        transform:translate(-50%,-13px) scale(.7);
+    }
+    14%{opacity:.9}
+    82%{
+        opacity:.95;
+        transform:translate(-50%,25px) scale(1);
+    }
+    100%{
+        opacity:0;
+        transform:translate(-50%,31px) scale(.75);
+    }
+}
+
+@keyframes waterDrop2{
+    0%{
+        opacity:0;
+        transform:translate(-50%,-13px) scale(.65);
+    }
+    14%{opacity:.8}
+    82%{
+        opacity:.9;
+        transform:translate(calc(-50% + 5px),24px) scale(.95);
+    }
+    100%{
+        opacity:0;
+        transform:translate(calc(-50% + 5px),30px) scale(.7);
+    }
+}
+
+
+/* =========================================================
+   CO₂ CAPTURED — leaves moving as if wind is passing
+   ========================================================= */
+.co2-icon{
+    position:relative !important;
+    overflow:visible !important;
+    z-index:3;
+    animation:leafWind 2.5s ease-in-out infinite !important;
+    transform-origin:bottom center !important;
+    filter:drop-shadow(0 0 8px rgba(66,223,108,.45));
+}
+
+.co2-icon::before{
+    content:"";
+    position:absolute;
+    left:50%;
+    bottom:-5px;
+    width:30px;
+    height:2px;
+    transform:translateX(-50%);
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(66,223,108,.35),
+        transparent
+    );
+    opacity:.35;
+    filter:blur(1px);
+    animation:windTrail 1.3s ease-in-out infinite;
+    pointer-events:none;
+}
+
+@keyframes leafWind{
+    0%,100%{
+        transform:rotate(-5deg) translateX(0);
+    }
+    20%{
+        transform:rotate(5deg) translateX(2px);
+    }
+    42%{
+        transform:rotate(-7deg) translateX(-2px);
+    }
+    64%{
+        transform:rotate(7deg) translateX(3px);
+    }
+    82%{
+        transform:rotate(-3deg) translateX(-1px);
+    }
+}
+
+@keyframes windTrail{
+    0%,100%{
+        opacity:.15;
+        transform:translateX(-50%) scaleX(.7);
+    }
+    50%{
+        opacity:.55;
+        transform:translateX(-55%) scaleX(1.2);
+    }
+}
+
+
+/* Respect reduced-motion accessibility. */
+@media(prefers-reduced-motion:reduce){
+    .power-icon::before,
+    .power-icon::after,
+    .water-icon::before,
+    .water-icon::after,
+    .co2-icon,
+    .co2-icon::before{
+        animation:none !important;
+    }
+}
+</style>
+
+
+<style id="iot-personnel-rfid-motion">
+/* =========================================================
+   PERSONNEL — subtle walking / group sway
+   ========================================================= */
+.personnel-icon{
+    position:relative !important;
+    overflow:visible !important;
+    z-index:3;
+    animation:personnelWalk 1.75s ease-in-out infinite !important;
+    transform-origin:center bottom !important;
+    filter:drop-shadow(0 0 9px rgba(173,98,255,.48));
+}
+.personnel-icon::before{
+    content:"";
+    position:absolute;
+    left:50%;
+    bottom:-7px;
+    width:28px;
+    height:4px;
+    transform:translateX(-50%);
+    border-radius:50%;
+    background:rgba(173,98,255,.20);
+    filter:blur(2px);
+    animation:personnelShadow 1.75s ease-in-out infinite;
+}
+@keyframes personnelWalk{
+    0%,100%{transform:translate(0,0) rotate(0deg)}
+    20%{transform:translateX(2px) translateY(-1px) rotate(-2deg)}
+    45%{transform:translateX(5px) translateY(-2px) rotate(2deg)}
+    65%{transform:translateX(3px) translateY(0) rotate(-1deg)}
+    82%{transform:translateX(1px) translateY(-1px) rotate(1deg)}
+}
+@keyframes personnelShadow{
+    0%,100%{opacity:.18;transform:translateX(-50%) scaleX(.78)}
+    45%{opacity:.42;transform:translateX(-35%) scaleX(1.05)}
+}
+
+/* =========================================================
+   RFID — card scan / signal sweep
+   ========================================================= */
+.rfid-icon{
+    position:relative !important;
+    overflow:visible !important;
+    z-index:3;
+    animation:rfidCardMove 1.6s ease-in-out infinite !important;
+    filter:drop-shadow(0 0 10px rgba(57,202,255,.55));
+}
+.rfid-icon::before{
+    content:"";
+    position:absolute;
+    left:-5px;
+    top:50%;
+    width:4px;
+    height:30px;
+    transform:translateY(-50%);
+    border-radius:2px;
+    background:linear-gradient(
+        180deg,
+        transparent,
+        rgba(57,202,255,.9),
+        transparent
+    );
+    box-shadow:0 0 10px rgba(57,202,255,.7);
+    animation:rfidSweep 1.15s ease-in-out infinite;
+}
+.rfid-icon::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:46px;
+    height:46px;
+    transform:translate(-50%,-50%) scale(.72);
+    border-radius:50%;
+    border:1px solid rgba(57,202,255,.24);
+    opacity:0;
+    animation:rfidSignal 1.6s ease-out infinite;
+    pointer-events:none;
+}
+@keyframes rfidCardMove{
+    0%,100%{transform:translateX(0) scale(1)}
+    30%{transform:translateX(3px) scale(1.03)}
+    58%{transform:translateX(7px) scale(1)}
+    78%{transform:translateX(3px) scale(1.02)}
+}
+@keyframes rfidSweep{
+    0%,100%{opacity:0;transform:translate(-7px,-50%)}
+    25%{opacity:1}
+    70%{opacity:.65;transform:translate(19px,-50%)}
+    80%,100%{opacity:0}
+}
+@keyframes rfidSignal{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}
+    20%{opacity:.8}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1.35)}
+}
+
+@media(prefers-reduced-motion:reduce){
+    .personnel-icon,
+    .personnel-icon::before,
+    .rfid-icon,
+    .rfid-icon::before,
+    .rfid-icon::after{
+        animation:none !important;
+    }
+}
+</style>
+
 </head>
 
 
@@ -4700,7 +5266,7 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 
     <div class="kpi">
 
-        <div class="kpi-icon">
+        <div class="kpi-icon personnel-icon">
             👥
         </div>
 
@@ -4721,7 +5287,7 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 
     <div class="kpi">
 
-        <div class="kpi-icon">
+        <div class="kpi-icon rfid-icon">
             🪪
         </div>
 
@@ -4749,7 +5315,7 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 
     <div class="kpi">
 
-        <div class="kpi-icon">
+        <div class="kpi-icon vehicle-icon">
             🚗
         </div>
 
@@ -4772,7 +5338,7 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 
     <div class="kpi">
 
-        <div class="kpi-icon">
+        <div class="kpi-icon drone-icon">
             🛸
         </div>
 
@@ -4795,7 +5361,7 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 
     <div class="kpi">
 
-        <div class="kpi-icon">
+        <div class="kpi-icon  power-icon">
             ⚡
         </div>
 
@@ -4820,7 +5386,7 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 
     <div class="kpi">
 
-        <div class="kpi-icon">
+        <div class="kpi-icon  water-icon">
             💧
         </div>
 
@@ -4843,7 +5409,7 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 
     <div class="kpi">
 
-        <div class="kpi-icon">
+        <div class="kpi-icon  co2-icon">
             🌿
         </div>
 
@@ -8728,8 +9294,6 @@ function render() {
     }
 }
 
-<span class="vehicle-icon">🚗</span>
- <span class="drone-icon">🛸</span>
 /* =========================================================
    REAL RFID + SMART DUSTBIN
 ========================================================= */
