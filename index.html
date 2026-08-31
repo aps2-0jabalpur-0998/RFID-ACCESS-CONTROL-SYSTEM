@@ -4086,10 +4086,246 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 }
 </style>
 
+
+<style id="prana-setu-intro-animation">
+/* ===== PRANA SETU BOOT INTRO ===== */
+#pranaIntro{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(25,75,55,.22),transparent 28%),
+    radial-gradient(circle at 50% 50%,rgba(0,210,180,.08),transparent 48%),
+    #020607;
+  overflow:hidden;
+  pointer-events:auto;
+  opacity:1;
+  transition:opacity .75s ease;
+}
+
+#pranaIntro::before{
+  content:"";
+  position:absolute;
+  width:min(62vw,620px);
+  height:min(62vw,620px);
+  border-radius:50%;
+  border:1px solid rgba(91,235,205,.18);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.025),
+    0 0 80px rgba(0,230,190,.10),
+    inset 0 0 70px rgba(0,210,180,.05);
+  animation:introRingIn 1.15s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+#pranaIntro::after{
+  content:"PRANA SETU AI  //  ECO-DEFENCE SYSTEM";
+  position:absolute;
+  bottom:7.5%;
+  left:0;
+  width:100%;
+  text-align:center;
+  color:rgba(126,178,166,.45);
+  font:9px "DM Mono",monospace;
+  letter-spacing:.28em;
+  opacity:0;
+  animation:introBootText .7s ease 1.35s forwards;
+}
+
+.intro-orbit{
+  position:absolute;
+  width:min(70vw,700px);
+  height:min(70vw,700px);
+  border-radius:50%;
+  border:1px dashed rgba(181,243,74,.16);
+  animation:introOrbit 9s linear infinite;
+}
+
+.intro-orbit::before,
+.intro-orbit::after{
+  content:"";
+  position:absolute;
+  width:7px;height:7px;border-radius:50%;
+  background:#b5f34a;
+  box-shadow:0 0 18px #b5f34a;
+}
+.intro-orbit::before{left:13%;top:8%}
+.intro-orbit::after{right:8%;bottom:21%;background:#63ddff;box-shadow:0 0 18px #63ddff}
+
+.intro-logo{
+  position:relative;
+  z-index:2;
+  width:min(48vw,500px);
+  height:min(48vw,500px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 28%,rgba(255,255,255,.08),transparent 25%),
+    radial-gradient(circle,#0e2219 0%,#050b08 58%,#020506 100%);
+  border:1px solid rgba(104,240,211,.42);
+  box-shadow:
+    0 0 0 12px rgba(88,229,200,.025),
+    0 0 0 28px rgba(181,243,74,.018),
+    inset 0 0 65px rgba(0,0,0,.92),
+    0 0 100px rgba(0,220,185,.16);
+  transform:scale(.05);
+  opacity:0;
+  animation:introLogoPop 1.35s cubic-bezier(.16,1,.3,1) .15s forwards;
+}
+
+.intro-logo::before{
+  content:"";
+  position:absolute;
+  inset:-18px;
+  border-radius:50%;
+  border:1px solid rgba(99,221,255,.12);
+  animation:introPulse 1.8s ease-in-out infinite alternate;
+}
+
+.intro-logo img{
+  width:78%;
+  height:78%;
+  object-fit:contain;
+  display:block;
+  filter:none !important;
+  mix-blend-mode:normal !important;
+}
+
+.intro-scan{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:min(58vw,580px);
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(99,221,255,.8),transparent);
+  box-shadow:0 0 18px rgba(99,221,255,.6);
+  transform:translate(-50%,-50%) rotate(0deg);
+  opacity:0;
+  animation:introScan 2.4s ease-in-out .75s forwards;
+}
+
+.intro-corners{
+  position:absolute;
+  inset:7%;
+  pointer-events:none;
+  opacity:0;
+  animation:introCorners .8s ease .8s forwards;
+}
+.intro-corners span{
+  position:absolute;width:42px;height:42px;
+  border-color:rgba(181,243,74,.35);
+}
+.intro-corners span:nth-child(1){top:0;left:0;border-top:1px solid;border-left:1px solid}
+.intro-corners span:nth-child(2){top:0;right:0;border-top:1px solid;border-right:1px solid}
+.intro-corners span:nth-child(3){bottom:0;left:0;border-bottom:1px solid;border-left:1px solid}
+.intro-corners span:nth-child(4){bottom:0;right:0;border-bottom:1px solid;border-right:1px solid}
+
+@keyframes introLogoPop{
+  0%{opacity:0;transform:scale(.05)}
+  48%{opacity:1;transform:scale(1.08)}
+  70%{transform:scale(.96)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes introRingIn{
+  0%{opacity:0;transform:scale(.25)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes introOrbit{to{transform:rotate(360deg)}}
+@keyframes introPulse{
+  from{transform:scale(.98);opacity:.45}
+  to{transform:scale(1.035);opacity:1}
+}
+@keyframes introScan{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(0)}
+  20%{opacity:1}
+  80%{opacity:.55}
+  100%{opacity:0;transform:translate(-50%,-50%) rotate(360deg)}
+}
+@keyframes introCorners{
+  from{opacity:0;transform:scale(.92)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes introBootText{to{opacity:1}}
+
+#pranaIntro.intro-exit{
+  opacity:0;
+  pointer-events:none;
+}
+
+@media(max-width:600px){
+  .intro-logo{width:68vw;height:68vw}
+  #pranaIntro::before{width:82vw;height:82vw}
+  .intro-orbit{width:88vw;height:88vw}
+  .intro-scan{width:80vw}
+}
+@media(prefers-reduced-motion:reduce){
+  #pranaIntro,#pranaIntro *{animation-duration:.01ms !important}
+}
+</style>
+
+
+<style id="prana-setu-destination">
+.top-header .brand{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+}
+.top-header .brand-logo{
+  width:58px !important;
+  height:58px !important;
+  min-width:58px !important;
+  min-height:58px !important;
+  overflow:hidden !important;
+  border-radius:15px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+}
+.top-header .brand-logo .shield-logo{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+  display:block !important;
+  filter:none !important;
+  mix-blend-mode:normal !important;
+}
+</style>
+
+
+<style id="prana-setu-boot-sync">
+.prana-booting .top-header .brand-logo{
+  opacity:0 !important;
+}
+.prana-booting .top-header .brand > div:not(.brand-logo){
+  opacity:0 !important;
+}
+#pranaIntro.intro-exit{
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+</style>
+
 </head>
 
 
 <body>
+
+<!-- PRANA SETU AI — BOOT INTRO -->
+<div id="pranaIntro" aria-hidden="true">
+  <div class="intro-orbit"></div>
+  <div class="intro-corners">
+    <span></span><span></span><span></span><span></span>
+  </div>
+  <div class="intro-scan"></div>
+  <div class="intro-logo">
+    <img src="assets/pran-setu-logo.png" alt="Prana Setu">
+  </div>
+</div>
+
 <div id="jarvisVoiceUnlock"
      style="
         position:fixed;
@@ -11362,6 +11598,71 @@ intruderUrlCheckTimer =
 </script>
 
 <audio id="guardianAlertSiren" src="siren.mp3" preload="auto"></audio>
+
+
+<script id="prana-setu-intro-controller">
+(function(){
+  const intro = document.getElementById("pranaIntro");
+  const introLogo = intro && intro.querySelector(".intro-logo");
+  const destination = document.querySelector(".top-header .brand-logo");
+  const brandText = document.querySelector(".top-header .brand > div:not(.brand-logo)");
+
+  if(!intro || !introLogo || !destination) return;
+
+  document.documentElement.classList.add("prana-booting");
+
+  // Give the browser one frame to calculate the real header position.
+  requestAnimationFrame(function(){
+    const from = introLogo.getBoundingClientRect();
+    const to = destination.getBoundingClientRect();
+
+    const fromCX = from.left + from.width / 2;
+    const fromCY = from.top + from.height / 2;
+    const toCX = to.left + to.width / 2;
+    const toCY = to.top + to.height / 2;
+
+    const dx = toCX - fromCX;
+    const dy = toCY - fromCY;
+    const scale = Math.min(to.width / from.width, to.height / from.height);
+
+    // Pop first, then physically travel to the header slot.
+    setTimeout(function(){
+      introLogo.animate([
+        { transform:"scale(1)", opacity:1 },
+        { transform:"scale(1.045)", opacity:1, offset:.12 },
+        { transform:"translate("+dx+"px,"+dy+"px) scale("+scale+")", opacity:1 }
+      ],{
+        duration:1450,
+        easing:"cubic-bezier(.76,0,.16,1)",
+        fill:"forwards"
+      });
+
+      // Fade the surrounding full-screen HUD after the logo reaches the corner.
+      setTimeout(function(){
+        intro.classList.add("intro-exit");
+
+        // Reveal the existing header text exactly as it was.
+        if(brandText){
+          brandText.animate([
+            {opacity:0, transform:"translateX(-12px)"},
+            {opacity:1, transform:"translateX(0)"}
+          ],{
+            duration:650,
+            easing:"cubic-bezier(.16,1,.3,1)",
+            fill:"forwards"
+          });
+        }
+
+        document.documentElement.classList.remove("prana-booting");
+      },1150);
+
+      setTimeout(function(){
+        intro.remove();
+      },2050);
+    },1150);
+  });
+})();
+</script>
 
 </body>
 </html>
