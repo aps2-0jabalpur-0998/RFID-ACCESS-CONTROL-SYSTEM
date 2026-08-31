@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5067,6 +5068,18 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
     .rfid-icon::after{
         animation:none !important;
     }
+}
+</style>
+
+
+<style id="fire-x2-sensor-alert-ui">
+#guardianAlertMessage{
+    white-space:pre-line;
+}
+.fire-sensor-inline{
+    color:#ffd0d0;
+    font-weight:800;
+    letter-spacing:.5px;
 }
 </style>
 
@@ -12109,9 +12122,16 @@ intruderUrlCheckTimer =
 
 <script id="fire-cloudflare-integration">
 (() => {
-    const FIRE_WS_URL = 'wss://how-cards-documentation-adjust.trycloudflare.com';
+
+    /* =========================================================
+       FIRE URL SOURCE
+       fire_url.txt -> Cloudflare Quick Tunnel -> WebSocket /ws
+    ========================================================= */
+
+    let FIRE_WS_URL = "";
     let fireWS = null;
     let fireReconnectTimer = null;
+    let fireUrlRetryTimer = null;
 
     function fireLog(...args) {
         console.log("[FIRE/X2]", ...args);
@@ -12122,183 +12142,671 @@ intruderUrlCheckTimer =
         if (el) el.textContent = text;
     }
 
+    function normalizeFireSensor(data) {
+
+        const candidates = [
+            data && data.sensor,
+            data && data.message,
+            data && data.raw_message,
+            data && data.text,
+            data && data.detail
+        ];
+
+        const text = candidates
+            .filter(Boolean)
+            .map(v => String(v))
+            .join(" ")
+            .toUpperCase();
+
+        if (/\bIR[\s_-]*1\b/.test(text))
+            return "IR1";
+
+        if (/\bFLAME[\s_-]*1\b/.test(text))
+            return "FLAME1";
+
+        if (/\bFLAME[\s_-]*2\b/.test(text))
+            return "FLAME2";
+
+        /* Some bridges may already send a clean sensor name. */
+        const clean = String(
+            data && data.sensor || ""
+        ).trim();
+
+        return clean || "FIRE SENSOR";
+    }
+
+
+    async function loadFireURL() {
+
+        clearTimeout(fireUrlRetryTimer);
+
+        try {
+
+            fireLog("Loading fire_url.txt...");
+
+            const response =
+                await fetch(
+                    "fire_url.txt?t=" + Date.now(),
+                    {
+                        cache: "no-store"
+                    }
+                );
+
+            if (!response.ok) {
+                throw new Error(
+                    "fire_url.txt HTTP " +
+                    response.status
+                );
+            }
+
+            let url =
+                (await response.text()).trim();
+
+            if (!url) {
+                throw new Error(
+                    "fire_url.txt is empty"
+                );
+            }
+
+            /*
+             * Remove trailing slash.
+             */
+            url =
+                url.replace(/\/+$/, "");
+
+
+            /*
+             * Convert Cloudflare HTTP URL
+             * to secure WebSocket URL.
+             */
+            if (url.startsWith("https://")) {
+
+                url =
+                    "wss://" +
+                    url.substring(8);
+
+            } else if (url.startsWith("http://")) {
+
+                url =
+                    "ws://" +
+                    url.substring(7);
+
+            } else if (
+                !url.startsWith("wss://") &&
+                !url.startsWith("ws://")
+            ) {
+
+                url =
+                    "wss://" + url;
+            }
+
+
+            /*
+             * Fire MasterBridge WebSocket endpoint.
+             */
+            if (!url.endsWith("/ws")) {
+                url += "/ws";
+            }
+
+            /*
+             * If the Quick Tunnel changed,
+             * reconnect the Fire socket using the new URL.
+             */
+            const changed =
+                FIRE_WS_URL !== url;
+
+            FIRE_WS_URL = url;
+
+            fireLog(
+                "🔥 FIRE URL FROM fire_url.txt:",
+                FIRE_WS_URL
+            );
+
+            if (
+                changed ||
+                !fireWS ||
+                (
+                    fireWS.readyState !== WebSocket.OPEN &&
+                    fireWS.readyState !== WebSocket.CONNECTING
+                )
+            ) {
+                connectFire();
+            }
+
+        } catch (error) {
+
+            fireLog(
+                "❌ Could not load fire_url.txt:",
+                error
+            );
+
+            /*
+             * Keep retrying so a newly-created
+             * Cloudflare Quick Tunnel is picked up.
+             */
+            fireUrlRetryTimer =
+                setTimeout(
+                    loadFireURL,
+                    2000
+                );
+        }
+    }
+
+
     function fireShowAlert(data) {
-        // Use the dashboard's existing alert function when available.
-        if (typeof window.triggerAlert === "function") {
+
+        const sensor =
+            normalizeFireSensor(data);
+
+        /*
+         * Use the dashboard's existing alert function when available.
+         */
+        if (
+            typeof window.triggerAlert ===
+            "function"
+        ) {
+
             try {
-                window.triggerAlert(data.sensor || "FIRE SENSOR", "X2");
+
+                window.triggerAlert(
+                    sensor,
+                    "X2"
+                );
+
             } catch (e) {
-                fireLog("triggerAlert failed", e);
+
+                fireLog(
+                    "triggerAlert failed",
+                    e
+                );
             }
         }
 
-        // Existing X2 UI hooks, if present.
-        document.body.classList.add("fire-alert-active");
 
-        const banner =
-            document.getElementById("systemStatus") ||
-            document.querySelector(".status-banner");
-
-        if (banner) banner.classList.add("alert");
-
-        fireSetText("statusText", "FIRE DETECTED");
-        fireSetText("statusIcon", "⚠️");
-        fireSetText(
-            "statusSub",
-            "Emergency fire alert received — Zone X2"
+        /*
+         * Existing X2 UI hooks.
+         */
+        document.body.classList.add(
+            "fire-alert-active"
         );
 
-        const x2State =
-            document.getElementById("zoneStateX2") ||
-            document.querySelector("#zoneX2 .zone-state");
-
-        if (x2State) x2State.textContent = "ALERT";
-
-        const x2Box =
-            document.getElementById("boxX2") ||
-            document.getElementById("zoneX2");
-
-        if (x2Box) x2Box.classList.add("alert");
-
-        // If the existing dashboard has an alert/activity helper, use it.
-        if (typeof window.addRealAlert === "function") {
-            try {
-                window.addRealAlert(
-                    "fire",
-                    "FIRE DETECTED — X2",
-                    data.sensor || "Fire sensor",
-                    data.time || data.timestamp || new Date().toLocaleTimeString()
-                );
-            } catch (e) {}
-        }
-
-        if (typeof window.addRealActivity === "function") {
-            try {
-                window.addRealActivity(
-                    "🔥",
-                    "Fire detected — X2"
-                );
-            } catch (e) {}
-        }
-
-        if (typeof window.render === "function") {
-            try { window.render(); } catch (e) {}
-        }
-
-        fireLog("ALERT", data);
-    }
-
-    function fireClearAlert(data) {
-        document.body.classList.remove("fire-alert-active");
 
         const banner =
-            document.getElementById("systemStatus") ||
-            document.querySelector(".status-banner");
+            document.getElementById(
+                "systemStatus"
+            ) ||
+            document.querySelector(
+                ".status-banner"
+            );
 
-        if (banner) banner.classList.remove("alert");
 
-        if (typeof window.setSafe === "function") {
+        if (banner) {
+            banner.classList.add("alert");
+        }
+
+
+        fireSetText(
+            "statusText",
+            "FIRE DETECTED"
+        );
+
+
+        fireSetText(
+            "statusIcon",
+            "⚠️"
+        );
+
+
+        fireSetText(
+            "statusSub",
+            "FIRE DETECTED — ZONE X2 — BY " +
+            sensor
+        );
+
+
+        const x2State =
+            document.getElementById(
+                "zoneStateX2"
+            ) ||
+            document.querySelector(
+                "#zoneX2 .zone-state"
+            );
+
+
+        if (x2State) {
+
+            x2State.textContent =
+                "🔥 FIRE DETECTED — " +
+                sensor;
+        }
+
+
+        const x2Box =
+            document.getElementById(
+                "boxX2"
+            ) ||
+            document.getElementById(
+                "zoneX2"
+            );
+
+
+        if (x2Box) {
+            x2Box.classList.add("alert");
+        }
+
+
+        /*
+         * Existing dashboard activity/alert helpers.
+         */
+        if (
+            typeof window.addRealAlert ===
+            "function"
+        ) {
+
             try {
-                window.setSafe();
-                return;
+
+                window.addRealAlert(
+                    "fire",
+                    "FIRE DETECTED — ZONE X2",
+                    "SENSOR: " + sensor,
+                    data.time ||
+                    data.timestamp ||
+                    new Date().toLocaleTimeString(
+                        "en-IN"
+                    )
+                );
+
             } catch (e) {}
         }
 
-        fireSetText("statusText", "ALL SYSTEMS SAFE");
-        fireSetText("statusIcon", "🛡️");
+
+        if (
+            typeof window.addRealActivity ===
+            "function"
+        ) {
+
+            try {
+
+                window.addRealActivity(
+                    "🔥",
+                    "Fire detected — Zone X2 — " +
+                    sensor
+                );
+
+            } catch (e) {}
+        }
+
+
+        if (
+            typeof window.render ===
+            "function"
+        ) {
+
+            try {
+                window.render();
+            } catch (e) {}
+        }
+
+
+        fireLog(
+            "🔥 ALERT — ZONE X2 — SENSOR:",
+            sensor
+        );
+
+        fireLog(
+            "RAW FIRE PAYLOAD:",
+            data
+        );
+    }
+
+
+    function fireClearAlert(data) {
+
+        document.body.classList.remove(
+            "fire-alert-active"
+        );
+
+
+        const banner =
+            document.getElementById(
+                "systemStatus"
+            ) ||
+            document.querySelector(
+                ".status-banner"
+            );
+
+
+        if (banner) {
+            banner.classList.remove(
+                "alert"
+            );
+        }
+
+
+        if (
+            typeof window.setSafe ===
+            "function"
+        ) {
+
+            try {
+
+                window.setSafe();
+
+                return;
+
+            } catch (e) {}
+        }
+
+
+        fireSetText(
+            "statusText",
+            "ALL SYSTEMS SAFE"
+        );
+
+
+        fireSetText(
+            "statusIcon",
+            "🛡️"
+        );
+
+
         fireSetText(
             "statusSub",
             "No active fire detection across monitored zones"
         );
 
-        fireLog("SAFE", data);
+
+        fireLog(
+            "SAFE",
+            data
+        );
     }
 
+
     function connectFire() {
-        if (fireWS &&
-            (fireWS.readyState === WebSocket.OPEN ||
-             fireWS.readyState === WebSocket.CONNECTING)) {
+
+        if (!FIRE_WS_URL) {
+
+            fireLog(
+                "Waiting for fire_url.txt..."
+            );
+
             return;
         }
 
+
+        if (
+            fireWS &&
+            (
+                fireWS.readyState ===
+                    WebSocket.OPEN ||
+                fireWS.readyState ===
+                    WebSocket.CONNECTING
+            )
+        ) {
+            return;
+        }
+
+
         try {
-            fireWS = new WebSocket(FIRE_WS_URL);
+
+            fireWS =
+                new WebSocket(
+                    FIRE_WS_URL
+                );
+
 
             fireWS.onopen = () => {
-                fireLog("Cloudflare connected:", FIRE_WS_URL);
+
+                fireLog(
+                    "✅ Cloudflare Fire WebSocket connected:",
+                    FIRE_WS_URL
+                );
             };
 
+
             fireWS.onmessage = (event) => {
+
                 let data;
 
+
                 try {
-                    data = JSON.parse(event.data);
+
+                    data =
+                        JSON.parse(
+                            event.data
+                        );
+
                 } catch {
-                    fireLog("Non-JSON message:", event.data);
+
+                    fireLog(
+                        "Non-JSON Fire message:",
+                        event.data
+                    );
+
                     return;
                 }
 
-                // Only Fire/X2 events belong to this connection.
-                if (data.project && data.project !== "fire") return;
 
-                const type = String(data.type || "").toLowerCase();
-
+                /*
+                 * Only Fire/X2 events belong here.
+                 */
                 if (
+                    data.project &&
+                    data.project !== "fire"
+                ) {
+                    return;
+                }
+
+
+                const type =
+                    String(
+                        data.type ||
+                        ""
+                    ).toLowerCase();
+
+
+                const isAlert =
                     type === "alert" ||
                     data.alert === true ||
                     data.fire === true ||
-                    String(data.status || "").toLowerCase() === "danger"
-                ) {
-                    data.zone = "X2";
-                    fireShowAlert(data);
+                    String(
+                        data.status ||
+                        ""
+                    ).toLowerCase() ===
+                    "danger";
 
-                    // Send Fire through the same full-screen alert
-                    // + 5-second siren + JARVIS voice pipeline.
+
+                const isSafe =
+                    type === "safe" ||
+                    data.alert === false ||
+                    String(
+                        data.status ||
+                        ""
+                    ).toLowerCase() ===
+                    "safe";
+
+
+                if (isAlert) {
+
+                    data.zone = "X2";
+
+                    const sensor =
+                        normalizeFireSensor(
+                            data
+                        );
+
+
+                    /*
+                     * Show:
+                     * FIRE DETECTED
+                     * ZONE X2
+                     * BY IR1 / FLAME1 / FLAME2
+                     */
+                    fireShowAlert(
+                        data
+                    );
+
+
+                    /*
+                     * Same full-screen alert +
+                     * siren + JARVIS voice pipeline.
+                     */
                     showRealtimeAlert({
+
                         type: "FIRE",
+
                         zone: "X2",
-                        sensor: data.sensor || "Fire sensor",
-                        time: data.time || data.timestamp || new Date().toLocaleTimeString(),
-                        id: data.id || ("fire-x2-" + Date.now())
+
+                        sensor: sensor,
+
+                        time:
+                            data.time ||
+                            data.timestamp ||
+                            new Date()
+                                .toLocaleTimeString(
+                                    "en-IN"
+                                ),
+
+                        id:
+                            data.id ||
+                            (
+                                "fire-x2-" +
+                                Date.now()
+                            )
                     });
+
 
                     return;
                 }
 
-                if (
-                    type === "safe" ||
-                    data.alert === false ||
-                    String(data.status || "").toLowerCase() === "safe"
-                ) {
+
+                if (isSafe) {
+
                     data.zone = "X2";
-                    fireClearAlert(data);
+
+                    fireClearAlert(
+                        data
+                    );
                 }
             };
 
+
             fireWS.onerror = (err) => {
-                fireLog("WebSocket error", err);
+
+                fireLog(
+                    "❌ Fire WebSocket error:",
+                    err
+                );
             };
 
+
             fireWS.onclose = () => {
-                fireLog("Disconnected; retrying in 2 seconds...");
-                clearTimeout(fireReconnectTimer);
-                fireReconnectTimer = setTimeout(connectFire, 2000);
+
+                fireLog(
+                    "⚠️ Fire WebSocket disconnected."
+                );
+
+
+                clearTimeout(
+                    fireReconnectTimer
+                );
+
+
+                /*
+                 * First retry the current URL,
+                 * then keep rereading fire_url.txt
+                 * so Cloudflare URL rotation works.
+                 */
+                fireReconnectTimer =
+                    setTimeout(
+                        function(){
+
+                            connectFire();
+
+                            loadFireURL();
+
+                        },
+                        2000
+                    );
             };
+
+
         } catch (e) {
-            fireLog("Connection failed", e);
-            clearTimeout(fireReconnectTimer);
-            fireReconnectTimer = setTimeout(connectFire, 2000);
+
+            fireLog(
+                "❌ Fire connection failed:",
+                e
+            );
+
+
+            clearTimeout(
+                fireReconnectTimer
+            );
+
+
+            fireReconnectTimer =
+                setTimeout(
+                    function(){
+
+                        connectFire();
+
+                        loadFireURL();
+
+                    },
+                    2000
+                );
         }
     }
 
-    // Expose only the connector for debugging; existing dashboard logic remains.
-    window.connectFireCloudflare = connectFire;
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", connectFire);
-    } else {
-        connectFire();
+    /*
+     * Expose connector for debugging.
+     */
+    window.connectFireCloudflare =
+        connectFire;
+
+
+    /*
+     * START:
+     * 1. Read fire_url.txt
+     * 2. Build wss://.../ws
+     * 3. Connect
+     * 4. Re-read periodically so Cloudflare
+     *    Quick Tunnel URL changes are picked up.
+     */
+    function startFireBridge() {
+
+        loadFireURL();
+
+        clearInterval(
+            fireUrlRetryTimer
+        );
+
+        fireUrlRetryTimer =
+            setInterval(
+                loadFireURL,
+                5000
+            );
     }
+
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            startFireBridge,
+            { once:true }
+        );
+
+    } else {
+
+        startFireBridge();
+    }
+
 })();
 </script>
 
