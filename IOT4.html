@@ -1166,14 +1166,23 @@ function addIntruderLog(data){
     )
     .trim();
 
-  // LOG ONLY.
+  // X3 / X4 source
+  const source =
+    data.source ||
+    data.project ||
+    "GuardianEye";
+
+  // LOG ONLY
   addLog(
     "intruder",
     `INTRUDER LOG: ${cleanMessage}`,
-    `${date} ${t}`.trim()
+    `${date} ${t}`.trim(),
+    {
+      ...data,
+      source: source
+    }
   );
 }
-
 
 function addVehicleLog(data){
 
