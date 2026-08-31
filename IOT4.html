@@ -928,10 +928,179 @@ function processData(state, evidence, newFiles){
 // This page deliberately DOES NOT call updateBanner() for an
 // incoming intruder. Therefore it cannot create a second alert.
 
-const TELEGRAM_LOG_WS =
-  "wss://echo-silence-camcorder-main.trycloudflare.com/ws";
+let TELEGRAM_LOG_WS = "";
+
+let telegramLogSocket = null;
+let telegramReconnectTimer = null;
 
 const intruderSeenIds = new Set();
+
+
+/* ============================================================
+   LOAD INTRUDER CLOUDFLARE URL
+   ============================================================ */
+
+async function loadIntruderURL(){
+
+  const dot =
+    document.getElementById(
+      "wsDot"
+    );
+
+  const label =
+    document.getElementById(
+      "wsLabel"
+    );
+
+  try{
+
+    label.textContent =
+      "LOADING INTRUDER URL...";
+
+    dot.className =
+      "ws-dot";
+
+
+    // Always request latest URL.
+    // Cache-buster prevents old GitHub Pages copy.
+    const response =
+      await fetch(
+        "intruder_url.txt?t=" +
+        Date.now(),
+        {
+          cache: "no-store"
+        }
+      );
+
+
+    if(!response.ok){
+
+      throw new Error(
+        "intruder_url.txt HTTP " +
+        response.status
+      );
+    }
+
+
+    let url =
+      (
+        await response.text()
+      ).trim();
+
+
+    if(!url){
+
+      throw new Error(
+        "intruder_url.txt is empty"
+      );
+    }
+
+
+    // Remove trailing slash
+    url =
+      url.replace(
+        /\/+$/,
+        ""
+      );
+
+
+    // HTTPS Cloudflare URL -> WSS
+    if(
+      url.startsWith(
+        "https://"
+      )
+    ){
+
+      url =
+        "wss://" +
+        url.substring(8);
+
+    }
+
+    // HTTP -> WS
+    else if(
+      url.startsWith(
+        "http://"
+      )
+    ){
+
+      url =
+        "ws://" +
+        url.substring(7);
+
+    }
+
+    // If only hostname exists
+    else if(
+      !url.startsWith(
+        "wss://"
+      ) &&
+      !url.startsWith(
+        "ws://"
+      )
+    ){
+
+      url =
+        "wss://" +
+        url;
+    }
+
+
+    // WebSocket endpoint
+    if(
+      !url.endsWith(
+        "/ws"
+      )
+    ){
+
+      url += "/ws";
+    }
+
+
+    TELEGRAM_LOG_WS =
+      url;
+
+
+    console.log(
+      "🛡️ Intruder URL loaded:",
+      TELEGRAM_LOG_WS
+    );
+
+
+    label.textContent =
+      "CONNECTING...";
+
+
+    connectTelegramLog();
+
+
+  }catch(error){
+
+    console.error(
+      "❌ Could not load intruder_url.txt:",
+      error
+    );
+
+
+    dot.className =
+      "ws-dot";
+
+    label.textContent =
+      "URL ERROR — RETRYING";
+
+
+    clearTimeout(
+      telegramReconnectTimer
+    );
+
+
+    telegramReconnectTimer =
+      setTimeout(
+        loadIntruderURL,
+        3000
+      );
+  }
+}
 
 function getEventTime(data){
 
@@ -1070,28 +1239,77 @@ function addAnimalLog(data){
 
 function connectTelegramLog(){
 
+  clearTimeout(
+    telegramReconnectTimer
+  );
+
+
+  if(!TELEGRAM_LOG_WS){
+
+    console.warn(
+      "Intruder WebSocket URL not loaded yet"
+    );
+
+    loadIntruderURL();
+
+    return;
+  }
+
+
+  // Close previous connection
+  if(telegramLogSocket){
+
+    try{
+
+      telegramLogSocket.onclose =
+        null;
+
+      telegramLogSocket.close();
+
+    }catch(error){}
+
+    telegramLogSocket =
+      null;
+  }
+
+
   const ws =
     new WebSocket(
       TELEGRAM_LOG_WS
     );
+
+
+  telegramLogSocket =
+    ws;
+
 
   const dot =
     document.getElementById(
       "wsDot"
     );
 
+
   const label =
     document.getElementById(
       "wsLabel"
     );
 
+
   ws.onopen = function(){
+
+    console.log(
+      "✅ Intruder Cloudflare connected:",
+      TELEGRAM_LOG_WS
+    );
+
 
     dot.className =
       "ws-dot on";
 
+
     label.textContent =
       "LIVE — TELEGRAM LOG";
+
 
     addLog(
       "safe",
@@ -1110,13 +1328,21 @@ function connectTelegramLog(){
           event.data
         );
 
+
+      console.log(
+        "🛡️ INTRUDER DATA:",
+        data
+      );
+
+
       if(
         data.type === "SYSTEM"
       ){
         return;
       }
 
-      // Current Telegram realtime backend.
+
+      // Intruder
       if(
         data.type === "INTRUDER"
       ){
@@ -1128,8 +1354,11 @@ function connectTelegramLog(){
         return;
       }
 
+
+      // Vehicle
       if(
-        data.type === "UNKNOWN_VEHICLE"
+        data.type ===
+        "UNKNOWN_VEHICLE"
       ){
 
         addVehicleLog(
@@ -1139,8 +1368,11 @@ function connectTelegramLog(){
         return;
       }
 
+
+      // Dangerous animal
       if(
-        data.type === "DANGEROUS"
+        data.type ===
+        "DANGEROUS"
       ){
 
         addAnimalLog(
@@ -1150,21 +1382,27 @@ function connectTelegramLog(){
         return;
       }
 
-      // Backward compatibility for older packet format.
+
+      // Backward compatibility
       if(
-        data.project === "intruder" &&
-        data.source === "combined_test1" &&
-        data.type === "intruder"
+        data.project ===
+          "intruder" &&
+        data.source ===
+          "combined_test1" &&
+        data.type ===
+          "intruder"
       ){
 
-        addIntruderLog(
-          {
-            ...data,
-            type:
-              "INTRUDER"
-          }
-        );
+        addIntruderLog({
+
+          ...data,
+
+          type:
+            "INTRUDER"
+
+        });
       }
+
 
     }catch(error){
 
@@ -1178,29 +1416,67 @@ function connectTelegramLog(){
 
   ws.onclose = function(){
 
+    console.warn(
+      "⚠️ Intruder WebSocket disconnected"
+    );
+
+
     dot.className =
       "ws-dot";
 
-    label.textContent =
-      "DISCONNECTED — RETRYING";
 
-    setTimeout(
-      connectTelegramLog,
-      2500
+    label.textContent =
+      "DISCONNECTED — RELOADING URL";
+
+
+    telegramLogSocket =
+      null;
+
+
+    /*
+       IMPORTANT:
+       Cloudflare Quick Tunnel may have
+       changed.
+
+       So DON'T reconnect using old URL.
+
+       Read intruder_url.txt again.
+    */
+
+    clearTimeout(
+      telegramReconnectTimer
     );
+
+
+    telegramReconnectTimer =
+      setTimeout(
+        loadIntruderURL,
+        2000
+      );
   };
 
 
-  ws.onerror = function(){
+  ws.onerror = function(error){
+
+    console.error(
+      "❌ Intruder WebSocket error:",
+      error
+    );
+
+
+    label.textContent =
+      "CONNECTION ERROR";
+
 
     try{
+
       ws.close();
+
     }catch(error){}
   };
 }
 
-
-connectTelegramLog();
+loadIntruderURL();
 </script>
 </body>
 </html>
