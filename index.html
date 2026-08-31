@@ -3400,86 +3400,101 @@ body::after{
         drop-shadow(0 0 16px rgba(66,223,108,.35));
 }
 </style>\n
-<style id="tagda-upgrade-css-v2">
+<style id="tagda-upgrade-css-v3">
 /* =========================================================================
-   ECOGUARDIAN — "TAGDA MODE v2" — FULL VISUAL OVERHAUL
-   Pure CSS layer. Zero HTML/JS/ID/class changes. Same selectors only.
-   Fixes: voice-assistant now TRUE fixed-to-viewport (no filter-on-body bug).
+   ECOGUARDIAN — "TAGDA MODE v3" — NEXT LEVEL FUSION OVERHAUL
+   Aurora/mesh gradients + Neumorphism + Skeuomorphism + Neo-Brutalism
+   Pure CSS layer. Zero HTML/JS/ID/class renames. Same selectors only.
+   .voice-assistant stays true position:fixed regardless of scroll.
    ========================================================================= */
 
 :root{
-    --bg:#010306;
+    --bg:#000103;
 
     --panel:#081726;
     --panel2:#0a1c2e;
     --panel3:#0e2436;
 
     --border:rgba(90,210,255,.30);
-    --border-bright:rgba(80,235,255,.65);
+    --border-bright:rgba(80,235,255,.7);
 
-    --text:#f3fcff;
-    --muted:#82a4b6;
+    --text:#f4fdff;
+    --muted:#87a9bb;
 
-    --green:#2bffa8;
-    --cyan:#22e2ff;
+    --green:#1fffa3;
+    --cyan:#1fe4ff;
     --blue:#5b8fff;
 
-    --yellow:#ffd93d;
+    --yellow:#ffe23d;
     --orange:#ff9a3d;
-    --red:#ff2f5e;
-    --purple:#c264ff;
+    --red:#ff2255;
+    --purple:#c94dff;
+    --pink:#ff4dd8;
 
-    --green-soft:rgba(43,255,168,.10);
-    --cyan-soft:rgba(34,226,255,.10);
-    --red-soft:rgba(255,47,94,.10);
+    --green-soft:rgba(31,255,163,.10);
+    --cyan-soft:rgba(31,228,255,.10);
+    --red-soft:rgba(255,34,85,.10);
 
-    --shadow:0 25px 60px rgba(0,0,0,.6);
+    --shadow:0 30px 70px rgba(0,0,0,.65);
 
-    --glass-blur:20px;
-    --glow-cyan:0 0 26px rgba(34,226,255,.40);
-    --glow-green:0 0 26px rgba(43,255,168,.35);
-    --glow-red:0 0 28px rgba(255,47,94,.45);
-    --glow-purple:0 0 26px rgba(194,100,255,.38);
-    --edge-light:inset 0 1px rgba(255,255,255,.07);
-    --ease-snap:cubic-bezier(.19,1,.22,1);
+    --glass-blur:22px;
+    --glow-cyan:0 0 30px rgba(31,228,255,.45);
+    --glow-green:0 0 30px rgba(31,255,163,.4);
+    --glow-red:0 0 32px rgba(255,34,85,.5);
+    --glow-purple:0 0 30px rgba(201,77,255,.42);
+    --edge-light:inset 0 1px rgba(255,255,255,.08);
+    --ease-snap:cubic-bezier(.16,1,.2,1.05);
+
+    /* NEO-BRUTALIST tokens */
+    --brut-border:#0a1520;
+    --brut-shadow-cyan:5px 5px 0 rgba(31,228,255,.85);
+    --brut-shadow-green:5px 5px 0 rgba(31,255,163,.85);
+    --brut-shadow-red:5px 5px 0 rgba(255,34,85,.85);
+    --brut-shadow-purple:5px 5px 0 rgba(201,77,255,.85);
+
+    /* NEUMORPHIC tokens (dark-mode soft UI) */
+    --neu-dark:rgba(0,0,0,.65);
+    --neu-light:rgba(80,150,180,.10);
 }
 
-/* ---------------------------------------------------------------------
-   AMBIENT BACKGROUND
-   NOTE: uses background-position animation only (NOT filter/transform on
-   body) — filter/transform on <body> breaks position:fixed descendants
-   like .voice-assistant, which is why it drifted with scroll before.
---------------------------------------------------------------------- */
+*{ transition-timing-function:var(--ease-snap); }
+
+::selection{ background:rgba(31,228,255,.34); color:#001018; }
+
+/* =========================================================================
+   1. AURORA / MESH GRADIENT BACKDROP
+   Animated via background-position ONLY (never filter/transform on body —
+   that breaks position:fixed children like the voice assistant).
+   ========================================================================= */
 
 body{
     background:
-        radial-gradient(circle at 15% 10%, rgba(34,226,255,.16), transparent 40%),
-        radial-gradient(circle at 88% 8%,  rgba(194,100,255,.13), transparent 36%),
-        radial-gradient(circle at 10% 90%, rgba(43,255,168,.11), transparent 38%),
-        radial-gradient(circle at 92% 88%, rgba(255,47,94,.07), transparent 34%),
-        linear-gradient(180deg, #02060a, var(--bg) 45%, #010203);
-    background-size:220% 220%, 220% 220%, 220% 220%, 220% 220%, 100% 100%;
+        radial-gradient(circle at 10% 5%,  rgba(31,228,255,.20), transparent 42%),
+        radial-gradient(circle at 92% 8%,  rgba(201,77,255,.17), transparent 38%),
+        radial-gradient(circle at 6% 92%,  rgba(31,255,163,.15), transparent 40%),
+        radial-gradient(circle at 95% 90%, rgba(255,77,216,.10), transparent 36%),
+        radial-gradient(circle at 50% 50%, rgba(255,34,85,.05), transparent 60%),
+        linear-gradient(180deg, #010509, var(--bg) 45%, #000102);
+    background-size:240% 240%,240% 240%,240% 240%,240% 240%,180% 180%,100% 100%;
     background-attachment:fixed;
-    animation:auroraDrift 26s ease-in-out infinite alternate;
+    animation:auroraMesh 28s ease-in-out infinite alternate;
 }
 
-@keyframes auroraDrift{
-    0%{ background-position:0% 0%, 100% 0%, 0% 100%, 100% 100%, 0 0; }
-    100%{ background-position:12% 8%, 88% 12%, 8% 88%, 88% 92%, 0 0; }
+@keyframes auroraMesh{
+    0%{   background-position:0% 0%, 100% 0%, 0% 100%, 100% 100%, 50% 50%, 0 0; }
+    50%{  background-position:18% 12%, 82% 18%, 12% 82%, 88% 84%, 46% 54%, 0 0; }
+    100%{ background-position:6% 20%, 94% 6%, 4% 90%, 92% 92%, 54% 48%, 0 0; }
 }
 
-body::before{
-    opacity:.30;
-    mix-blend-mode:overlay;
-}
-
+body::before{ opacity:.32; mix-blend-mode:overlay; }
 body::after{
     box-shadow:
-        inset 0 0 70px rgba(0,0,0,.6),
-        inset 0 0 240px rgba(0,0,0,.7);
+        inset 0 0 80px rgba(0,0,0,.62),
+        inset 0 0 260px rgba(0,0,0,.72);
 }
 
-/* full-bleed animated HUD grid, purely decorative, sits behind content */
+/* decorative animated grid, fixed behind everything, doesn't touch body's
+   own transform/filter so position:fixed elsewhere stays correct */
 .command-center::before{
     content:"";
     position:fixed;
@@ -3487,114 +3502,270 @@ body::after{
     z-index:0;
     pointer-events:none;
     background-image:
-        linear-gradient(rgba(34,226,255,.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(34,226,255,.05) 1px, transparent 1px);
-    background-size:46px 46px;
-    -webkit-mask-image:radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
-    mask-image:radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+        linear-gradient(rgba(31,228,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(31,228,255,.06) 1px, transparent 1px);
+    background-size:48px 48px;
+    -webkit-mask-image:radial-gradient(ellipse at 50% 0%, #000 0%, transparent 72%);
+    mask-image:radial-gradient(ellipse at 50% 0%, #000 0%, transparent 72%);
+    animation:gridDrift 40s linear infinite;
 }
 
-.command-center > *{
-    position:relative;
-    z-index:1;
+@keyframes gridDrift{
+    from{ background-position:0 0, 0 0; }
+    to{ background-position:48px 48px, 48px 48px; }
 }
 
-*{
-    transition-timing-function:var(--ease-snap);
-}
+.command-center > *{ position:relative; z-index:1; }
 
-::selection{
-    background:rgba(34,226,255,.32);
-    color:#fff;
-}
-
-/* ---------------------------------------------------------------------
-   GLASS BASE
---------------------------------------------------------------------- */
+/* =========================================================================
+   2. GLASS BASE (kept from v2, deepened)
+   ========================================================================= */
 
 .top-header, .navbar, .panel, .kpi, .hardware-grid, .hardware,
 .footer, .dashboard-btn, .voice-status, .voice-response, .system-status,
 .hub-status, .alert-icon, .ai-btn, .weather-item{
-    backdrop-filter:blur(var(--glass-blur)) saturate(1.4);
-    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.4);
+    backdrop-filter:blur(var(--glass-blur)) saturate(1.5);
+    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.5);
 }
 
-/* ---------------------------------------------------------------------
-   HUD CORNER BRACKETS — sci-fi frame accents on major panels
---------------------------------------------------------------------- */
-
-.top-header, .panel, .control-hub, .kpi, .hardware-grid{
-    position:relative;
-}
-
-.top-header::after, .panel::after, .control-hub::after{
-    content:"";
-    position:absolute;
-    top:6px; left:6px; right:6px; bottom:6px;
-    border-radius:12px;
-    pointer-events:none;
-    background:
-        linear-gradient(90deg, var(--cyan) 0 14px, transparent 14px) top left / 100% 2px no-repeat,
-        linear-gradient(90deg, var(--cyan) 0 14px, transparent 14px) top right / 100% 2px no-repeat,
-        linear-gradient(0deg, var(--cyan) 0 14px, transparent 14px) top left / 2px 100% no-repeat,
-        linear-gradient(0deg, var(--cyan) 0 14px, transparent 14px) top right / 2px 100% no-repeat;
-    opacity:.55;
-    filter:drop-shadow(0 0 6px rgba(34,226,255,.6));
-}
-
-/* ---------------------------------------------------------------------
-   TOP HEADER
---------------------------------------------------------------------- */
+/* =========================================================================
+   3. NEO-BRUTALISM — thick borders + hard offset shadows on key surfaces
+   ========================================================================= */
 
 .top-header{
-    border-radius:18px;
-    border:1px solid var(--border);
-    box-shadow:var(--shadow), var(--edge-light), 0 0 50px rgba(34,226,255,.08);
-    overflow:visible;
+    border-radius:4px;
+    border:2px solid var(--brut-border);
+    outline:1px solid rgba(31,228,255,.4);
+    outline-offset:3px;
+    box-shadow:var(--brut-shadow-cyan), var(--edge-light);
 }
 
-.top-header::before{
-    content:"";
-    position:absolute;
-    inset:-1.5px;
-    border-radius:18px;
-    padding:1.5px;
-    background:conic-gradient(from var(--ang,0deg),
-        rgba(34,226,255,.9), rgba(194,100,255,.7), rgba(43,255,168,.7), rgba(34,226,255,.9));
-    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite:xor;
-    mask-composite:exclude;
-    animation:rotateBorder 5s linear infinite;
-    opacity:.65;
-    pointer-events:none;
+.kpi{
+    border-radius:6px;
+    border:2px solid var(--brut-border);
+    box-shadow:4px 4px 0 rgba(31,228,255,.55);
+    transition:.28s var(--ease-snap);
 }
 
-@property --ang{
-    syntax:'<angle>';
-    inherits:false;
-    initial-value:0deg;
+.kpi:nth-child(2){ box-shadow:4px 4px 0 rgba(201,77,255,.5); }
+.kpi:nth-child(3){ box-shadow:4px 4px 0 rgba(31,255,163,.5); }
+.kpi:nth-child(4){ box-shadow:4px 4px 0 rgba(255,154,61,.5); }
+.kpi:nth-child(5){ box-shadow:4px 4px 0 rgba(91,143,255,.5); }
+.kpi:nth-child(6){ box-shadow:4px 4px 0 rgba(255,34,85,.5); }
+.kpi:nth-child(7){ box-shadow:4px 4px 0 rgba(255,77,216,.5); }
+
+.kpi:hover{
+    transform:translate(-2px,-2px);
+    box-shadow:7px 7px 0 rgba(31,228,255,.7);
+    border-color:var(--border-bright);
 }
 
-@keyframes rotateBorder{
-    from{ --ang:0deg; }
-    to{ --ang:360deg; }
+.dashboard-btn{
+    border-radius:6px;
+    border:2px solid var(--brut-border);
+    box-shadow:5px 5px 0 rgba(31,228,255,.4);
 }
+
+.dashboard-btn.fire{ box-shadow:5px 5px 0 rgba(255,34,85,.5); }
+.dashboard-btn.dust{ box-shadow:5px 5px 0 rgba(31,255,163,.5); }
+.dashboard-btn.security{ box-shadow:5px 5px 0 rgba(255,154,61,.5); }
+.dashboard-btn.sensor{ box-shadow:5px 5px 0 rgba(91,143,255,.5); }
+.dashboard-btn.drone{ box-shadow:5px 5px 0 rgba(201,77,255,.5); }
+
+.dashboard-btn:hover{
+    transform:translate(-3px,-3px);
+    box-shadow:9px 9px 0 rgba(31,228,255,.55);
+}
+
+.dashboard-btn.fire:hover{ box-shadow:9px 9px 0 rgba(255,34,85,.6); }
+.dashboard-btn.dust:hover{ box-shadow:9px 9px 0 rgba(31,255,163,.6); }
+.dashboard-btn.security:hover{ box-shadow:9px 9px 0 rgba(255,154,61,.6); }
+.dashboard-btn.sensor:hover{ box-shadow:9px 9px 0 rgba(91,143,255,.6); }
+.dashboard-btn.drone:hover{ box-shadow:9px 9px 0 rgba(201,77,255,.6); }
+
+.threat{
+    border-radius:2px;
+    border:1.5px solid var(--red);
+    box-shadow:2px 2px 0 rgba(255,34,85,.7);
+    font-weight:800;
+}
+
+.live-tag{
+    border-radius:2px;
+    border:1.5px solid #fff;
+    box-shadow:2px 2px 0 rgba(0,0,0,.6);
+}
+
+.alert-icon{
+    border-radius:6px;
+    box-shadow:3px 3px 0 rgba(255,34,85,.4);
+}
+.alert.warning .alert-icon{ box-shadow:3px 3px 0 rgba(255,226,61,.4); }
+.alert.ok .alert-icon{ box-shadow:3px 3px 0 rgba(31,255,163,.4); }
+
+/* =========================================================================
+   4. NEUMORPHISM — soft dual-shadow raised/pressed surfaces on round UI
+   ========================================================================= */
+
+.jarvis-mini-button{
+    border-radius:50%;
+    box-shadow:
+        8px 8px 18px var(--neu-dark),
+        -6px -6px 16px var(--neu-light),
+        0 0 24px rgba(31,228,255,.25);
+    border:none;
+}
+
+.jarvis-mini-button:hover{
+    box-shadow:
+        10px 10px 22px var(--neu-dark),
+        -7px -7px 18px var(--neu-light),
+        0 0 34px rgba(31,228,255,.4);
+}
+
+.voice-button{
+    border-radius:50%;
+    box-shadow:
+        9px 9px 20px var(--neu-dark),
+        -7px -7px 18px var(--neu-light),
+        0 0 28px rgba(31,228,255,.3);
+    border:none;
+}
+
+.voice-button:hover{
+    box-shadow:
+        11px 11px 24px var(--neu-dark),
+        -8px -8px 20px var(--neu-light),
+        0 0 44px rgba(31,228,255,.5);
+}
+
+.voice-button.listening{
+    box-shadow:
+        inset 6px 6px 14px rgba(0,0,0,.6),
+        inset -5px -5px 12px rgba(255,34,85,.12),
+        0 0 30px rgba(255,34,85,.5);
+}
+
+.air-circle{
+    border-width:6px;
+    box-shadow:
+        7px 7px 16px var(--neu-dark),
+        -5px -5px 14px var(--neu-light),
+        0 0 30px rgba(31,255,163,.28),
+        inset 0 0 18px rgba(31,255,163,.12);
+    animation:airPulse 3.2s ease-in-out infinite;
+}
+
+@keyframes airPulse{
+    0%,100%{ box-shadow:7px 7px 16px var(--neu-dark), -5px -5px 14px var(--neu-light), 0 0 26px rgba(31,255,163,.22), inset 0 0 16px rgba(31,255,163,.1); }
+    50%{     box-shadow:7px 7px 16px var(--neu-dark), -5px -5px 14px var(--neu-light), 0 0 42px rgba(31,255,163,.42), inset 0 0 22px rgba(31,255,163,.18); }
+}
+
+.donut{
+    box-shadow:
+        6px 6px 14px var(--neu-dark),
+        -5px -5px 12px var(--neu-light),
+        0 0 26px rgba(31,255,163,.2);
+}
+
+.health-gauge{
+    box-shadow:
+        10px 10px 22px var(--neu-dark),
+        -8px -8px 20px var(--neu-light),
+        0 0 32px rgba(31,228,255,.14),
+        inset 0 0 26px rgba(31,228,255,.06);
+}
+
+.system-status, .hub-status, .voice-status{
+    border-radius:10px;
+    box-shadow:
+        5px 5px 12px var(--neu-dark),
+        -4px -4px 10px var(--neu-light);
+}
+
+/* =========================================================================
+   5. SKEUOMORPHISM — brushed metal, glossy highlight, riveted hardware
+   ========================================================================= */
 
 .brand-logo{
-    border-radius:18px;
-    box-shadow:var(--glow-cyan), var(--edge-light);
-    animation:logoPulse 3.2s ease-in-out infinite;
+    border-radius:14px;
+    background:
+        linear-gradient(160deg, rgba(255,255,255,.10), transparent 40%),
+        repeating-linear-gradient(115deg, rgba(255,255,255,.025) 0 2px, transparent 2px 5px),
+        radial-gradient(circle, rgba(31,228,255,.22), rgba(4,10,15,.9) 72%);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:
+        0 2px 0 rgba(255,255,255,.08) inset,
+        0 -6px 14px rgba(0,0,0,.5) inset,
+        0 0 22px rgba(31,228,255,.35);
+    animation:logoPulse 3.4s ease-in-out infinite;
 }
 
 @keyframes logoPulse{
-    0%,100%{ box-shadow:0 0 20px rgba(34,226,255,.32), var(--edge-light); }
-    50%{ box-shadow:0 0 38px rgba(34,226,255,.6), var(--edge-light); }
+    0%,100%{ box-shadow:0 2px 0 rgba(255,255,255,.08) inset, 0 -6px 14px rgba(0,0,0,.5) inset, 0 0 20px rgba(31,228,255,.3); }
+    50%{     box-shadow:0 2px 0 rgba(255,255,255,.1) inset, 0 -6px 14px rgba(0,0,0,.5) inset, 0 0 38px rgba(31,228,255,.55); }
 }
 
+.hardware{
+    border-radius:10px;
+    position:relative;
+    background:
+        linear-gradient(160deg, rgba(255,255,255,.05), transparent 35%),
+        linear-gradient(180deg, rgba(12,34,48,.98), rgba(4,16,24,.98));
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:
+        0 1px 0 rgba(255,255,255,.06) inset,
+        0 -8px 16px rgba(0,0,0,.45) inset,
+        4px 4px 0 rgba(31,228,255,.28);
+}
+
+/* rivets — 4 corner dots, pure decoration via pseudo-elements */
+.hardware::before, .hardware::after{
+    content:"";
+    position:absolute;
+    width:3px; height:3px;
+    border-radius:50%;
+    background:rgba(255,255,255,.18);
+    box-shadow:
+        0 0 2px rgba(0,0,0,.8),
+        60px 0 rgba(255,255,255,.18);
+    top:6px; left:6px;
+}
+
+.hardware::after{ top:auto; bottom:6px; }
+
+.hardware:hover{
+    transform:translateY(-4px) scale(1.03);
+    box-shadow:
+        0 1px 0 rgba(255,255,255,.08) inset,
+        0 -8px 16px rgba(0,0,0,.45) inset,
+        7px 7px 0 rgba(31,228,255,.4);
+}
+
+.hardware-icon{ filter:drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
+.hardware:hover .hardware-icon{ transform:scale(1.15); }
+
+.voice-response, .ai-panel, .panel{
+    background:
+        linear-gradient(160deg, rgba(255,255,255,.035), transparent 30%),
+        linear-gradient(145deg, rgba(9,29,42,.98), rgba(3,13,20,.98));
+}
+
+/* =========================================================================
+   6. TYPOGRAPHY / HEADER FLAIR
+   ========================================================================= */
+
 .brand-name{
-    background:linear-gradient(90deg,#f3fcff,#bdf3ff 55%,#7fe6ff);
+    background:linear-gradient(90deg,#ffffff,#bdf3ff 40%,#7fe6ff 70%,#c94dff);
+    background-size:200% auto;
     -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
-    text-shadow:0 0 22px rgba(34,226,255,.5);
+    text-shadow:0 0 24px rgba(31,228,255,.5);
+    animation:hueSlide 8s linear infinite;
+}
+
+@keyframes hueSlide{
+    0%{ background-position:0% 50%; }
+    100%{ background-position:200% 50%; }
 }
 
 .brand-name span{ -webkit-text-fill-color:var(--cyan); color:var(--cyan); }
@@ -3602,40 +3773,35 @@ body::after{
 .command-title h1{
     background:linear-gradient(180deg,#ffffff,#c7f1ff);
     -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
-    text-shadow:0 0 16px rgba(255,255,255,.4), 0 0 36px rgba(34,226,255,.4);
+    text-shadow:0 0 18px rgba(255,255,255,.4), 0 0 40px rgba(31,228,255,.45);
     animation:titleFlicker 6s ease-in-out infinite;
 }
 
 @keyframes titleFlicker{
     0%,96%,100%{ opacity:1; }
-    97%{ opacity:.82; }
+    97%{ opacity:.8; }
     98%{ opacity:1; }
 }
 
-.system-status{
-    border-radius:12px;
-    box-shadow:var(--glow-green), var(--edge-light);
-    transition:.3s;
-}
+.clock-time{ text-shadow:0 0 14px rgba(31,228,255,.45); }
 
-.system-status:hover{ transform:translateY(-2px); }
+.hub-title{ text-shadow:0 0 24px rgba(31,228,255,.42); }
 
-.clock-time{
-    text-shadow:0 0 12px rgba(34,226,255,.4);
-}
+.ai-header{ text-shadow:0 0 16px rgba(201,77,255,.6); }
 
-/* ---------------------------------------------------------------------
-   NAVBAR
---------------------------------------------------------------------- */
+/* =========================================================================
+   7. NAVBAR + PANELS (structural polish, HUD brackets)
+   ========================================================================= */
 
 .navbar{
-    border-radius:14px;
+    border-radius:8px;
     gap:6px;
-    border:1px solid var(--border);
+    border:2px solid var(--brut-border);
+    box-shadow:3px 3px 0 rgba(31,228,255,.35);
 }
 
 .nav-btn{
-    border-radius:10px;
+    border-radius:5px;
     position:relative;
     overflow:hidden;
 }
@@ -3644,7 +3810,7 @@ body::after{
     content:"";
     position:absolute;
     inset:0;
-    background:linear-gradient(180deg, rgba(34,226,255,.14), transparent);
+    background:linear-gradient(180deg, rgba(31,228,255,.16), transparent);
     opacity:0;
     transition:.25s;
 }
@@ -3667,66 +3833,25 @@ body::after{
 
 .nav-btn.active{
     box-shadow:var(--glow-cyan), var(--edge-light);
-    border-radius:10px;
+    border-radius:5px;
 }
 
 .nav-btn.active::after{ width:75%; }
 
-/* ---------------------------------------------------------------------
-   KPI STRIP
---------------------------------------------------------------------- */
-
-.kpi{
-    border-radius:16px;
-    transition:.35s var(--ease-snap);
-}
-
-.kpi::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    border-radius:16px;
-    padding:1px;
-    background:linear-gradient(135deg, rgba(34,226,255,.4), transparent 55%, rgba(194,100,255,.25));
-    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite:xor; mask-composite:exclude;
-    opacity:.8;
-    pointer-events:none;
-}
-
-.kpi:hover{
-    transform:translateY(-6px) scale(1.02);
-    border-color:var(--border-bright);
-    box-shadow:0 20px 38px rgba(0,0,0,.5), var(--glow-cyan);
-}
-
-.kpi-icon{
-    filter:drop-shadow(0 0 10px rgba(34,226,255,.5));
-    transition:.35s var(--ease-snap);
-    display:inline-block;
-}
-
-.kpi:hover .kpi-icon{ transform:scale(1.2) rotate(-6deg); }
-
-.kpi-value{ text-shadow:0 0 16px rgba(255,255,255,.3); }
-
-/* ---------------------------------------------------------------------
-   PANELS
---------------------------------------------------------------------- */
-
 .panel{
-    border-radius:16px;
-    box-shadow:var(--shadow), var(--edge-light);
+    border-radius:8px;
+    border:2px solid var(--brut-border);
+    box-shadow:5px 5px 0 rgba(31,228,255,.28), var(--edge-light);
     animation:panelRise .55s var(--ease-snap) both;
 }
 
 @keyframes panelRise{
-    from{ opacity:0; transform:translateY(14px) scale(.985); }
+    from{ opacity:0; transform:translateY(16px) scale(.98); }
     to{ opacity:1; transform:translateY(0) scale(1); }
 }
 
 .panel-title{
-    border-radius:16px 16px 0 0;
+    border-radius:6px 6px 0 0;
     letter-spacing:1.4px;
     position:relative;
 }
@@ -3742,117 +3867,74 @@ body::after{
 
 .panel-title .live{ text-shadow:0 0 10px var(--green); }
 
-/* ---------------------------------------------------------------------
-   CONTROL HUB / DASHBOARD BUTTONS
---------------------------------------------------------------------- */
+/* HUD corner brackets on hero surfaces only (kept subtle, decorative) */
+.control-hub{ position:relative; border-radius:10px; }
 
-.control-hub{ border-radius:18px; }
-
-.hub-title{ text-shadow:0 0 22px rgba(34,226,255,.4); }
-
-.hub-status{ border-radius:10px; box-shadow:var(--glow-green); }
-
-.dashboard-btn{
-    border-radius:16px;
-    box-shadow:var(--edge-light);
+.control-hub::after{
+    content:"";
+    position:absolute;
+    top:8px; left:8px; right:8px; bottom:8px;
+    pointer-events:none;
+    background:
+        linear-gradient(90deg, var(--cyan) 0 16px, transparent 16px) top left / 100% 2px no-repeat,
+        linear-gradient(90deg, var(--cyan) 0 16px, transparent 16px) top right / 100% 2px no-repeat,
+        linear-gradient(0deg, var(--cyan) 0 16px, transparent 16px) top left / 2px 100% no-repeat,
+        linear-gradient(0deg, var(--cyan) 0 16px, transparent 16px) top right / 2px 100% no-repeat;
+    opacity:.5;
+    filter:drop-shadow(0 0 6px rgba(31,228,255,.6));
 }
 
-.dashboard-btn::before{
-    width:4px;
-    border-radius:0 4px 4px 0;
+/* =========================================================================
+   8. KPI / DASHBOARD / DONUT DETAIL POLISH
+   ========================================================================= */
+
+.kpi-icon{
+    filter:drop-shadow(0 0 10px rgba(31,228,255,.5));
+    transition:.35s var(--ease-snap);
+    display:inline-block;
 }
 
-.dashboard-btn:hover{
-    transform:translateY(-7px) scale(1.015);
-    box-shadow:0 20px 40px rgba(0,0,0,.5), inset 0 0 34px rgba(34,226,255,.07), var(--edge-light);
-}
+.kpi:hover .kpi-icon{ transform:scale(1.2) rotate(-6deg); }
 
-.dashboard-icon{ border-radius:16px; transition:.35s var(--ease-snap); }
+.kpi-value{ text-shadow:0 0 16px rgba(255,255,255,.3); }
+
+.dashboard-icon{ border-radius:12px; transition:.35s var(--ease-snap); }
 .dashboard-btn:hover .dashboard-icon{ transform:scale(1.12) rotate(-4deg); }
 
 .hub-footer .green-dot{ animation:blink 1.5s infinite, dotGlow 1.5s infinite; }
 @keyframes dotGlow{ 50%{ box-shadow:0 0 16px var(--green); } }
 
-/* ---------------------------------------------------------------------
-   ALERTS / AI PANEL
---------------------------------------------------------------------- */
-
-.alert{ border-radius:10px; margin:6px; transition:.25s; }
-.alert:hover{ background:rgba(255,255,255,.035); transform:translateX(4px); }
-
-.alert-icon{ box-shadow:0 0 16px rgba(255,47,94,.4); }
-.alert.warning .alert-icon{ box-shadow:0 0 16px rgba(255,217,61,.4); }
-.alert.ok .alert-icon{ box-shadow:0 0 16px rgba(43,255,168,.4); }
-
-.ai-header{ border-radius:16px 16px 0 0; text-shadow:0 0 14px rgba(194,100,255,.55); }
-
-.ai-btn{
-    border-radius:10px;
-    transition:.25s var(--ease-snap);
-    box-shadow:var(--glow-purple);
-}
-
-.ai-btn:hover{ transform:translateY(-2px) scale(1.01); background:rgba(194,100,255,.18); }
-
-.threat{ border-radius:6px; box-shadow:0 0 12px rgba(255,47,94,.4); }
-
-/* ---------------------------------------------------------------------
-   DRONE FEED
---------------------------------------------------------------------- */
-
-.feed-screen{ border-radius:12px 12px 0 0; }
-.live-tag{ border-radius:5px; box-shadow:0 0 16px rgba(255,47,94,.65); animation:blink 1.6s infinite; }
-.feed-control:hover{ text-shadow:0 0 10px var(--cyan); }
-
-/* ---------------------------------------------------------------------
-   WEATHER / AIR / HEALTH
---------------------------------------------------------------------- */
-
-.weather-panel, .air-panel, .health-panel{ border-radius:16px; }
+.health-bar{ border-radius:6px; }
+.health-fill{ border-radius:6px; background:linear-gradient(90deg, var(--green), #a6ffdb); }
 
 .weather-item{ border-radius:8px; transition:.25s; }
-.weather-item:hover{ border-color:rgba(34,226,255,.35); background:rgba(34,226,255,.05); transform:translateY(-2px); }
-
-.air-circle{
-    box-shadow:0 0 28px rgba(43,255,168,.28), inset 0 0 20px rgba(43,255,168,.14);
-    animation:airPulse 3s ease-in-out infinite;
-}
-
-@keyframes airPulse{
-    0%,100%{ box-shadow:0 0 28px rgba(43,255,168,.22), inset 0 0 20px rgba(43,255,168,.12); }
-    50%{ box-shadow:0 0 42px rgba(43,255,168,.42), inset 0 0 24px rgba(43,255,168,.18); }
-}
-
-.health-bar{ border-radius:6px; }
-.health-fill{ border-radius:6px; background:linear-gradient(90deg, var(--green), #9dffd4); }
-
-/* ---------------------------------------------------------------------
-   ANALYTICS / HARDWARE / ACTIVITY
---------------------------------------------------------------------- */
-
-.donut{ box-shadow:0 0 28px rgba(43,255,168,.2); }
-
-.hardware-grid{ border-radius:16px; }
-.hardware{ border-radius:12px; transition:.25s var(--ease-snap); }
-.hardware:hover{ transform:translateY(-5px) scale(1.04); box-shadow:0 16px 28px rgba(0,0,0,.45), var(--glow-cyan); }
-.hardware-icon{ transition:.25s; }
-.hardware:hover .hardware-icon{ transform:scale(1.18); }
+.weather-item:hover{ border-color:rgba(31,228,255,.35); background:rgba(31,228,255,.05); transform:translateY(-2px); }
 
 .activity-row{ border-radius:6px; transition:.2s; }
 .activity-row:hover{ background:rgba(255,255,255,.03); padding-left:6px; }
 
-/* ---------------------------------------------------------------------
-   FOOTER
---------------------------------------------------------------------- */
-
-.footer{ border-radius:12px; }
+.footer{ border-radius:8px; border:2px solid var(--brut-border); box-shadow:3px 3px 0 rgba(31,228,255,.28); }
 .dot{ animation:blink 1.5s infinite, dotGlow 1.5s infinite; }
 
-/* ---------------------------------------------------------------------
-   VOICE ASSISTANT / JARVIS MINI
-   Forced true viewport-fixed positioning — always bottom-left, always
-   on top, independent of scroll (this is the fix for the reported bug).
---------------------------------------------------------------------- */
+.ai-btn{
+    border-radius:6px;
+    border:1.5px solid rgba(201,77,255,.5);
+    box-shadow:3px 3px 0 rgba(201,77,255,.5);
+    transition:.25s var(--ease-snap);
+}
+
+.ai-btn:hover{
+    transform:translate(-2px,-2px);
+    box-shadow:5px 5px 0 rgba(201,77,255,.65);
+    background:rgba(201,77,255,.18);
+}
+
+.feed-screen{ border-radius:8px 8px 0 0; }
+.feed-control:hover{ text-shadow:0 0 10px var(--cyan); }
+
+/* =========================================================================
+   9. VOICE ASSISTANT — GUARANTEED STABLE FIXED POSITION
+   ========================================================================= */
 
 .voice-assistant{
     position:fixed !important;
@@ -3863,42 +3945,25 @@ body::after{
     z-index:99999 !important;
 }
 
-.voice-button{
-    box-shadow:0 0 28px rgba(34,226,255,.3), var(--edge-light);
-}
-
-.voice-button:hover{
-    box-shadow:0 0 44px rgba(34,226,255,.55), var(--edge-light);
-}
-
-.voice-status{ border-radius:10px; }
-
 .voice-response{
-    border-radius:16px;
-    box-shadow:0 22px 48px rgba(0,0,0,.6), 0 0 34px rgba(34,226,255,.12), var(--edge-light);
+    box-shadow:0 24px 50px rgba(0,0,0,.65), 0 0 36px rgba(31,228,255,.14), var(--edge-light);
+    border-radius:10px;
+    border:2px solid var(--brut-border);
 }
 
-.jarvis-mini-button{
-    box-shadow:0 0 24px rgba(34,226,255,.25), var(--edge-light);
-}
-
-/* ---------------------------------------------------------------------
-   SCROLLBAR
---------------------------------------------------------------------- */
+/* =========================================================================
+   10. SCROLLBAR + FOCUS
+   ========================================================================= */
 
 ::-webkit-scrollbar-thumb{
-    background:linear-gradient(180deg, var(--cyan), #0d3d4d);
+    background:linear-gradient(180deg, var(--cyan), var(--purple));
     border-radius:10px;
-    box-shadow:0 0 10px rgba(34,226,255,.4);
+    box-shadow:0 0 10px rgba(31,228,255,.4);
 }
 
 ::-webkit-scrollbar-thumb:hover{
-    background:linear-gradient(180deg, #9df2ff, var(--cyan));
+    background:linear-gradient(180deg, #a6f4ff, var(--cyan));
 }
-
-/* ---------------------------------------------------------------------
-   ACCESSIBILITY FOCUS GLOW
---------------------------------------------------------------------- */
 
 button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .hardware:focus-visible{
     outline:2px solid var(--cyan);
@@ -3910,8 +3975,9 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
     .top-header, .navbar, .panel, .kpi, .dashboard-btn{
         backdrop-filter:blur(10px);
         -webkit-backdrop-filter:blur(10px);
+        box-shadow:3px 3px 0 rgba(31,228,255,.35);
     }
-    .top-header::after, .panel::after, .control-hub::after{ display:none; }
+    .control-hub::after{ display:none; }
 }
 </style>
 
