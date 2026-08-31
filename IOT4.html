@@ -1168,10 +1168,10 @@ function addIntruderLog(data){
 
   // X3 / X4 source
   const source =
-    data.source ||
-    data.project ||
-    "GuardianEye";
-
+  data.zone ||
+  data.source ||
+  data.project ||
+  "GuardianEye";
   // LOG ONLY
   addLog(
     "intruder",
