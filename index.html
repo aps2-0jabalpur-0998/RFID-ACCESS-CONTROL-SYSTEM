@@ -180,6 +180,142 @@ body::after{
     box-shadow:var(--shadow);
 }
 
+   /* =========================================================
+   MOVING VEHICLE / DRONE ICONS
+========================================================= */
+
+.vehicle-icon,
+.drone-icon {
+    display: inline-block;
+    will-change: transform;
+}
+
+
+/* 🚗 VEHICLE — moving forward */
+
+.vehicle-icon {
+    animation:
+        vehicleDrive 1.8s ease-in-out infinite;
+}
+
+@keyframes vehicleDrive {
+
+    0% {
+        transform: translateX(0) rotate(0deg);
+    }
+
+    20% {
+        transform: translateX(3px) rotate(-1deg);
+    }
+
+    45% {
+        transform: translateX(7px) rotate(1deg);
+    }
+
+    65% {
+        transform: translateX(10px) rotate(0deg);
+    }
+
+    80% {
+        transform: translateX(4px) rotate(-1deg);
+    }
+
+    100% {
+        transform: translateX(0) rotate(0deg);
+    }
+}
+
+
+/* 🛸 DRONE — forward + hover */
+
+.drone-icon {
+    animation:
+        droneFly 2.2s ease-in-out infinite;
+}
+
+@keyframes droneFly {
+
+    0% {
+        transform:
+            translate(0, 0)
+            rotate(0deg);
+    }
+
+    25% {
+        transform:
+            translate(5px, -3px)
+            rotate(-2deg);
+    }
+
+    50% {
+        transform:
+            translate(10px, -6px)
+            rotate(1deg);
+    }
+
+    75% {
+        transform:
+            translate(5px, -2px)
+            rotate(2deg);
+    }
+
+    100% {
+        transform:
+            translate(0, 0)
+            rotate(0deg);
+    }
+}
+
+
+.vehicle-icon::after,
+.drone-icon::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 2px;
+
+    left: -20px;
+    top: 50%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(57,202,255,.5)
+    );
+
+    opacity: 0;
+    pointer-events: none;
+}
+
+.vehicle-icon::after {
+    animation: vehicleTrail 1.8s ease-in-out infinite;
+}
+
+.drone-icon::after {
+    animation: droneTrail 2.2s ease-in-out infinite;
+}
+
+@keyframes vehicleTrail {
+    0%,70%,100% {
+        opacity:0;
+    }
+
+    35% {
+        opacity:.7;
+        transform:translateX(-5px);
+    }
+}
+
+@keyframes droneTrail {
+    0%,70%,100% {
+        opacity:0;
+    }
+
+    40% {
+        opacity:.6;
+        transform:translateX(-7px);
+    }
+}
 
 /* BRAND */
 
@@ -8592,7 +8728,8 @@ function render() {
     }
 }
 
-
+<span class="vehicle-icon">🚗</span>
+ <span class="drone-icon">🛸</span>
 /* =========================================================
    REAL RFID + SMART DUSTBIN
 ========================================================= */
