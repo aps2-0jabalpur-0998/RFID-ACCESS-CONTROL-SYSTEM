@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,11 +11,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<img
-    src="assets/pran-setu-logo.png"
-    alt="Pran Setu"
-    class="pran-setu-logo"
->
 <style>
 
 /* =========================================================
@@ -3993,6 +3989,103 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 }
 </style>
 
+
+<style id="prana-setu-header-logo-fix">
+/* Exact supplied Prana Setu lockup — no filters/recoloring */
+.top-header .brand{
+    min-width:0;
+    height:62px;
+    display:flex;
+    align-items:center;
+}
+
+.pran-setu-header-logo{
+    display:block;
+    width:255px;
+    height:62px;
+    object-fit:contain;
+    object-position:left center;
+    filter:none !important;
+    mix-blend-mode:normal !important;
+}
+
+@media(max-width:1000px){
+    .top-header .brand{
+        justify-content:center;
+    }
+    .pran-setu-header-logo{
+        width:250px;
+        max-width:100%;
+    }
+}
+
+@media(max-width:700px){
+    .pran-setu-header-logo{
+        width:235px;
+        height:58px;
+    }
+}
+</style>
+
+
+<style id="shield-logo-only">
+/* Exact supplied logo image replaces ONLY the shield mark.
+   Existing PRANA SETU AI text beside it remains untouched. */
+.top-header .brand-logo{
+    width:58px !important;
+    height:58px !important;
+    flex:0 0 58px;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:hidden;
+    border-radius:15px !important;
+    padding:0 !important;
+    background:transparent !important;
+    border:1px solid rgba(74,222,128,.18) !important;
+    box-shadow:none !important;
+}
+
+.top-header .shield-logo{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+    display:block !important;
+    filter:none !important;
+    mix-blend-mode:normal !important;
+}
+</style>
+
+
+<style id="shield-only-logo-final">
+.top-header .brand{
+    display:flex !important;
+    align-items:center !important;
+    gap:12px !important;
+}
+.top-header .brand-logo{
+    width:58px !important;
+    height:58px !important;
+    min-width:58px !important;
+    min-height:58px !important;
+    padding:0 !important;
+    margin:0 !important;
+    overflow:hidden !important;
+    border-radius:15px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+}
+.top-header .brand-logo .shield-logo{
+    width:100% !important;
+    height:100% !important;
+    object-fit:cover !important;
+    display:block !important;
+    filter:none !important;
+    mix-blend-mode:normal !important;
+}
+</style>
+
 </head>
 
 
@@ -4030,23 +4123,11 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 <header class="top-header">
 
     <div class="brand">
-
-        <div class="brand-logo">
-            🛡️
-        </div>
-
-        <div>
-
-            <div class="brand-name">
-                PRANA SETU <span>AI</span>
-            </div>
-
-            <div class="brand-sub">
-                POWERED ECO-DEFENCE & SMART IOT
-            </div>
-
-        </div>
-
+        <img
+            src="assets/pran-setu-logo.png"
+            alt="Prana Setu AI"
+            class="pran-setu-header-logo"
+        >
     </div>
 
 
