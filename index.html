@@ -4309,6 +4309,36 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 }
 </style>
 
+
+<style id="prana-intro-logo-fit">
+#pranaIntro .intro-logo{
+  width:min(48vw,500px) !important;
+  height:min(48vw,500px) !important;
+  border-radius:50% !important;
+  overflow:hidden !important;
+  padding:clamp(22px,4vw,54px) !important;
+  background:
+    radial-gradient(circle at 38% 28%,rgba(255,255,255,.075),transparent 22%),
+    radial-gradient(circle,#0c1a15 0%,#050a08 62%,#020506 100%) !important;
+}
+#pranaIntro .intro-logo img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  display:block !important;
+  filter:none !important;
+  mix-blend-mode:normal !important;
+}
+@media(max-width:600px){
+  #pranaIntro .intro-logo{
+    width:68vw !important;
+    height:68vw !important;
+    padding:8vw !important;
+  }
+}
+</style>
+
 </head>
 
 
@@ -4322,7 +4352,7 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
   </div>
   <div class="intro-scan"></div>
   <div class="intro-logo">
-    <img src="assets/pran-setu-logo.png" alt="Prana Setu">
+    <img src="assets/pran-setu-full-logo.png" alt="Prana Setu">
   </div>
 </div>
 
