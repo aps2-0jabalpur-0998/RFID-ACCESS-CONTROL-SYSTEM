@@ -7,7 +7,13 @@
 
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:#05080b;color:#eaf7ff}
+html,body{
+    margin:0;
+    min-height:100%;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#05080b;
+    color:#eaf7ff
+}
 body{overflow-x:hidden}
 
 .header{
@@ -15,10 +21,22 @@ body{overflow-x:hidden}
     border-bottom:1px solid #1b2a33;
     background:#081016;
 }
-.header h1{margin:0;font-size:25px;letter-spacing:1px}
-.header p{margin:7px 0 0;color:#7f98a5;font-size:13px}
+.header h1{
+    margin:0;
+    font-size:25px;
+    letter-spacing:1px
+}
+.header p{
+    margin:7px 0 0;
+    color:#7f98a5;
+    font-size:13px
+}
 
-.wrap{max-width:1200px;margin:0 auto;padding:25px}
+.wrap{
+    max-width:1200px;
+    margin:0 auto;
+    padding:25px
+}
 
 .status{
     border:1px solid #1e3540;
@@ -31,20 +49,36 @@ body{overflow-x:hidden}
     gap:20px;
     transition:.2s;
 }
+
 .status.alert{
     background:#ff0000;
     border-color:#ff3030;
     animation:flash .7s infinite alternate;
 }
+
 @keyframes flash{
     from{filter:brightness(1)}
     to{filter:brightness(.65)}
 }
 
-.status-left{display:flex;align-items:center;gap:18px}
+.status-left{
+    display:flex;
+    align-items:center;
+    gap:18px
+}
+
 .status-icon{font-size:48px}
-.status-title{font-size:30px;font-weight:800}
-.status-sub{margin-top:6px;color:#94aab5}
+
+.status-title{
+    font-size:30px;
+    font-weight:800
+}
+
+.status-sub{
+    margin-top:6px;
+    color:#94aab5
+}
+
 .alert .status-sub{color:#fff}
 
 .badge{
@@ -54,7 +88,11 @@ body{overflow-x:hidden}
     background:#0d1920;
     font-weight:700;
 }
-.alert .badge{background:#8d0000;border-color:#fff}
+
+.alert .badge{
+    background:#8d0000;
+    border-color:#fff
+}
 
 .grid{
     display:grid;
@@ -69,12 +107,17 @@ body{overflow-x:hidden}
     border-radius:18px;
     padding:24px;
 }
+
 .card.alert{
     border-color:#ff3030;
     box-shadow:0 0 25px rgba(255,0,0,.35);
 }
 
-.card h2{margin:0 0 18px;font-size:17px}
+.card h2{
+    margin:0 0 18px;
+    font-size:17px
+}
+
 .zone{
     min-height:210px;
     display:flex;
@@ -85,13 +128,30 @@ body{overflow-x:hidden}
     border-radius:15px;
     background:#071016;
 }
-.zone-name{font-size:52px;font-weight:900;letter-spacing:3px}
-.zone-state{margin-top:12px;font-size:18px;font-weight:700}
-.sensor{margin-top:9px;color:#78909c;font-size:13px;text-align:center}
+
+.zone-name{
+    font-size:52px;
+    font-weight:900;
+    letter-spacing:3px
+}
+
+.zone-state{
+    margin-top:12px;
+    font-size:18px;
+    font-weight:700
+}
+
+.sensor{
+    margin-top:9px;
+    color:#78909c;
+    font-size:13px;
+    text-align:center
+}
 
 .log{
     margin-top:22px;
 }
+
 .event{
     display:flex;
     align-items:flex-start;
@@ -99,30 +159,50 @@ body{overflow-x:hidden}
     padding:14px 0;
     border-bottom:1px solid #16252c;
 }
+
 .dot{
-    width:10px;height:10px;border-radius:50%;
-    margin-top:5px;background:#55d98a;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    margin-top:5px;
+    background:#55d98a;
     flex:none;
 }
-.event.alert .dot{background:#ff3030;box-shadow:0 0 10px #ff3030}
+
+.event.alert .dot{
+    background:#ff3030;
+    box-shadow:0 0 10px #ff3030
+}
+
 .event-title{font-weight:700}
-.event-meta{margin-top:5px;color:#718994;font-size:12px}
+
+.event-meta{
+    margin-top:5px;
+    color:#718994;
+    font-size:12px
+}
 
 .connection{
     margin-top:20px;
     color:#78909c;
     font-size:12px;
 }
+
 .online{color:#57e394}
 .offline{color:#ff5a5a}
 
 @media(max-width:700px){
     .grid{grid-template-columns:1fr}
-    .status{align-items:flex-start;flex-direction:column}
+    .status{
+        align-items:flex-start;
+        flex-direction:column
+    }
 }
 </style>
 
+
 <style id="fire-alert-overlay-css">
+
 #fireAlertOverlay{
     position:fixed;
     inset:0;
@@ -134,14 +214,17 @@ body{overflow-x:hidden}
     backdrop-filter:blur(8px);
     -webkit-backdrop-filter:blur(8px);
 }
+
 #fireAlertOverlay.show{
     display:flex;
     animation:fireOverlayIn .18s ease-out;
 }
+
 @keyframes fireOverlayIn{
     from{opacity:0}
     to{opacity:1}
 }
+
 .fire-alert-box{
     width:min(900px,86vw);
     min-height:340px;
@@ -151,6 +234,7 @@ body{overflow-x:hidden}
     box-shadow:0 0 45px rgba(255,0,0,.28);
     text-align:center;
 }
+
 .fire-alert-icon{
     width:86px;
     height:86px;
@@ -162,6 +246,7 @@ body{overflow-x:hidden}
     justify-content:center;
     font-size:42px;
 }
+
 .fire-alert-title{
     margin:0;
     font-size:clamp(38px,5vw,64px);
@@ -169,17 +254,20 @@ body{overflow-x:hidden}
     letter-spacing:2px;
     color:#fff;
 }
+
 .fire-alert-sub{
     margin:20px 0 0;
     font-size:clamp(18px,2vw,25px);
     color:#fff;
 }
+
 .fire-alert-meta{
     margin-top:24px;
     color:#ff9c9c;
     font-family:monospace;
     font-size:14px;
 }
+
 .fire-alert-zone{
     margin-top:12px;
     color:#ff6262;
@@ -187,17 +275,21 @@ body{overflow-x:hidden}
     letter-spacing:2px;
     font-size:17px;
 }
+
 #fireAlertOverlay.fire-pulse .fire-alert-box{
     animation:fireBoxPulse .65s infinite alternate;
 }
+
 @keyframes fireBoxPulse{
     from{box-shadow:0 0 25px rgba(255,0,0,.18)}
     to{box-shadow:0 0 60px rgba(255,0,0,.55)}
 }
+
 </style>
 
 
 <style id="alert-audio-css">
+
 #alertAudioControl{
     position:fixed;
     right:18px;
@@ -212,10 +304,12 @@ body{overflow-x:hidden}
     cursor:pointer;
     box-shadow:0 0 16px rgba(255,0,0,.2);
 }
+
 #alertAudioControl.enabled{
     border-color:#45e38a;
     background:#07160e;
 }
+
 </style>
 
 </head>
@@ -225,50 +319,92 @@ body{overflow-x:hidden}
 <button id="alertAudioControl" type="button">
     🔊 ENABLE ALERT AUDIO
 </button>
+
 <audio id="fireSirenAudio" preload="auto" src="siren.mp3"></audio>
 
 
 <div id="fireAlertOverlay" aria-live="assertive">
+
     <div class="fire-alert-box">
+
         <div class="fire-alert-icon">🚨</div>
-        <h1 class="fire-alert-title">FIRE DETECTED</h1>
+
+        <h1 class="fire-alert-title">
+            FIRE DETECTED
+        </h1>
+
         <div id="fireAlertSub" class="fire-alert-sub">
             ZONE X2 — आग का पता चला है।
         </div>
+
         <div id="fireAlertTime" class="fire-alert-meta"></div>
-        <div class="fire-alert-zone">ZONE X2</div>
+
+        <div class="fire-alert-zone">
+            ZONE X2
+        </div>
+
     </div>
+
 </div>
 
 
 <header class="header">
-    <h1>GUARDIANEYE — FIRE PROTECTION</h1>
-    <p>Dedicated Fire Monitoring · Zone X2</p>
+
+    <h1>
+        GUARDIANEYE — FIRE PROTECTION
+    </h1>
+
+    <p>
+        Dedicated Fire Monitoring · Zone X2
+    </p>
+
 </header>
+
 
 <main class="wrap">
 
     <section id="status" class="status">
+
         <div class="status-left">
-            <div id="statusIcon" class="status-icon">🛡️</div>
+
+            <div id="statusIcon" class="status-icon">
+                🛡️
+            </div>
+
             <div>
-                <div id="statusTitle" class="status-title">ALL SYSTEMS SAFE</div>
+
+                <div id="statusTitle" class="status-title">
+                    ALL SYSTEMS SAFE
+                </div>
+
                 <div id="statusSub" class="status-sub">
                     No active fire detection
                 </div>
+
             </div>
+
         </div>
 
-        <div id="statusBadge" class="badge">SAFE</div>
+        <div id="statusBadge" class="badge">
+            SAFE
+        </div>
+
     </section>
+
 
     <div class="grid">
 
         <section id="x2Card" class="card">
-            <h2>FIRE PROTECTION ZONE</h2>
+
+            <h2>
+                FIRE PROTECTION ZONE
+            </h2>
 
             <div class="zone">
-                <div class="zone-name">X2</div>
+
+                <div class="zone-name">
+                    X2
+                </div>
 
                 <div id="x2State" class="zone-state">
                     SAFE — NO DETECTION
@@ -277,42 +413,64 @@ body{overflow-x:hidden}
                 <div id="sensorName" class="sensor">
                     Waiting for fire sensor data...
                 </div>
+
             </div>
 
             <div id="connection" class="connection">
+
                 Fire Bridge:
+
                 <span id="connectionState" class="offline">
-                    CONNECTING...
+                    LOADING URL...
                 </span>
+
             </div>
+
         </section>
 
+
         <section class="card log">
-            <h2>LIVE FIRE ALERTS</h2>
+
+            <h2>
+                LIVE FIRE ALERTS
+            </h2>
+
             <div id="events">
+
                 <div class="event">
+
                     <div class="dot"></div>
+
                     <div>
-                        <div class="event-title">No fire alerts</div>
+
+                        <div class="event-title">
+                            No fire alerts
+                        </div>
+
                         <div class="event-meta">
                             Waiting for Zone X2 events
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
+
         </section>
 
     </div>
 
 </main>
 
+
 <script>
+
 /* =========================================================
-   FIRE CLOUDFLARE CONNECTION
+   FIRE CLOUDFLARE URL LOADER
    ========================================================= */
 
-const FIRE_WS_URL =
-    "wss://how-cards-documentation-adjust.trycloudflare.com";
+let FIRE_WS_URL = "";
 
 let fireWS = null;
 let reconnectTimer = null;
@@ -355,15 +513,159 @@ const connectionState =
 
 
 /* =========================================================
+   LOAD FIRE URL FROM fire_url.txt
+   ========================================================= */
+
+async function loadFireURL() {
+
+    try {
+
+        connectionState.textContent =
+            "LOADING FIRE URL...";
+
+        connectionState.className =
+            "offline";
+
+
+        const response =
+            await fetch(
+                "fire_url.txt?t=" + Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "fire_url.txt HTTP " +
+                response.status
+            );
+        }
+
+
+        let url =
+            (await response.text()).trim();
+
+
+        if (!url) {
+
+            throw new Error(
+                "fire_url.txt is empty"
+            );
+        }
+
+
+        /*
+         * Remove trailing slash
+         */
+
+        url =
+            url.replace(/\/+$/, "");
+
+
+        /*
+         * Convert Cloudflare HTTP URL
+         * to WebSocket URL.
+         */
+
+        if (url.startsWith("https://")) {
+
+            url =
+                "wss://" +
+                url.substring(8);
+
+        } else if (url.startsWith("http://")) {
+
+            url =
+                "ws://" +
+                url.substring(7);
+
+        } else if (
+            !url.startsWith("wss://") &&
+            !url.startsWith("ws://")
+        ) {
+
+            /*
+             * If fire_url.txt only contains
+             * the hostname.
+             */
+
+            url =
+                "wss://" + url;
+        }
+
+
+        /*
+         * MasterBridge WebSocket endpoint
+         */
+
+        if (!url.endsWith("/ws")) {
+
+            url += "/ws";
+        }
+
+
+        FIRE_WS_URL = url;
+
+
+        console.log(
+            "🔥 FIRE URL LOADED:",
+            FIRE_WS_URL
+        );
+
+
+        connectFire();
+
+
+    } catch (error) {
+
+        console.error(
+            "🔥 Could not load fire_url.txt:",
+            error
+        );
+
+
+        connectionState.textContent =
+            "URL FILE ERROR";
+
+        connectionState.className =
+            "offline";
+
+
+        /*
+         * Retry reading fire_url.txt.
+         */
+
+        clearTimeout(reconnectTimer);
+
+        reconnectTimer =
+            setTimeout(
+                loadFireURL,
+                3000
+            );
+    }
+}
+
+
+/* =========================================================
    SAFE STATE
    ========================================================= */
 
 function setSafe(data = {}) {
 
-    const overlay = document.getElementById("fireAlertOverlay");
+    const overlay =
+        document.getElementById(
+            "fireAlertOverlay"
+        );
 
     if (overlay) {
-        overlay.classList.remove("show", "fire-pulse");
+
+        overlay.classList.remove(
+            "show",
+            "fire-pulse"
+        );
     }
 
     document.body.classList.remove(
@@ -374,12 +676,15 @@ function setSafe(data = {}) {
     x2Card.classList.remove("alert");
 
     statusIcon.textContent = "🛡️";
-    statusTitle.textContent = "ALL SYSTEMS SAFE";
+
+    statusTitle.textContent =
+        "ALL SYSTEMS SAFE";
 
     statusSub.textContent =
         "No active fire detection in Zone X2";
 
-    statusBadge.textContent = "SAFE";
+    statusBadge.textContent =
+        "SAFE";
 
     x2State.textContent =
         "SAFE — NO DETECTION";
@@ -388,9 +693,8 @@ function setSafe(data = {}) {
         "Fire monitoring active";
 
 
-    if (
-        data.sensor
-    ) {
+    if (data.sensor) {
+
         sensorName.textContent =
             "Last sensor: " +
             data.sensor;
@@ -404,41 +708,72 @@ function setSafe(data = {}) {
 
 function fireAlert(data) {
 
-    const overlay = document.getElementById("fireAlertOverlay");
-    const sub = document.getElementById("fireAlertSub");
-    const timeEl = document.getElementById("fireAlertTime");
+    const overlay =
+        document.getElementById(
+            "fireAlertOverlay"
+        );
+
+    const sub =
+        document.getElementById(
+            "fireAlertSub"
+        );
+
+    const timeEl =
+        document.getElementById(
+            "fireAlertTime"
+        );
+
 
     const sensor =
         data.sensor ||
         data.message ||
         "FIRE SENSOR";
 
+
     const now =
         data.time ||
         data.timestamp ||
-        new Date().toLocaleString("en-IN", {
-            hour12:false
-        });
+        new Date().toLocaleString(
+            "en-IN",
+            {
+                hour12:false
+            }
+        );
+
 
     if (sub) {
+
         sub.textContent =
             "ZONE X2 — आग का पता चला है।";
     }
 
+
     if (timeEl) {
+
         timeEl.textContent =
-            String(now) + "  •  " + String(sensor);
+            String(now) +
+            "  •  " +
+            String(sensor);
     }
+
 
     if (overlay) {
-        overlay.classList.add("show", "fire-pulse");
+
+        overlay.classList.add(
+            "show",
+            "fire-pulse"
+        );
     }
 
+
     status.classList.add("alert");
+
     x2Card.classList.add("alert");
 
     statusIcon.textContent = "🔥";
-    statusTitle.textContent = "FIRE DETECTED";
+
+    statusTitle.textContent =
+        "FIRE DETECTED";
 
     statusSub.textContent =
         "Emergency fire alert received — investigate immediately";
@@ -452,13 +787,25 @@ function fireAlert(data) {
     sensorName.textContent =
         sensor;
 
+
     addEvent(data);
 
-    if (typeof window.playGuardianSiren === "function") {
+
+    if (
+        typeof window.playGuardianSiren ===
+        "function"
+    ) {
+
         try {
+
             window.playGuardianSiren();
+
         } catch (e) {
-            console.warn("Siren function failed:", e);
+
+            console.warn(
+                "Siren function failed:",
+                e
+            );
         }
     }
 }
@@ -475,13 +822,17 @@ function addEvent(data) {
         data.message ||
         "FIRE SENSOR";
 
+
     const time =
         data.time ||
         data.timestamp ||
         new Date().toLocaleTimeString(
             "en-IN",
-            {hour12:false}
+            {
+                hour12:false
+            }
         );
+
 
     const date =
         data.date ||
@@ -498,6 +849,7 @@ function addEvent(data) {
 
 
     if (events.length > 20) {
+
         events.pop();
     }
 
@@ -516,15 +868,21 @@ function renderEvents() {
 
         eventsBox.innerHTML = `
             <div class="event">
+
                 <div class="dot"></div>
+
                 <div>
+
                     <div class="event-title">
                         No fire alerts
                     </div>
+
                     <div class="event-meta">
                         Waiting for Zone X2 events
                     </div>
+
                 </div>
+
             </div>
         `;
 
@@ -585,6 +943,30 @@ function connectFire() {
     clearTimeout(reconnectTimer);
 
 
+    if (!FIRE_WS_URL) {
+
+        console.warn(
+            "🔥 FIRE_WS_URL not loaded yet"
+        );
+
+        return;
+    }
+
+
+    /*
+     * Close old connection if any.
+     */
+
+    if (fireWS) {
+
+        try {
+            fireWS.close();
+        } catch (e) {}
+
+        fireWS = null;
+    }
+
+
     try {
 
         fireWS =
@@ -601,8 +983,10 @@ function connectFire() {
             connectionState.className =
                 "online";
 
+
             console.log(
-                "🔥 Fire Cloudflare connected"
+                "🔥 Fire Cloudflare connected:",
+                FIRE_WS_URL
             );
         };
 
@@ -644,6 +1028,7 @@ function connectFire() {
                 data.project &&
                 data.project !== "fire"
             ) {
+
                 return;
             }
 
@@ -695,12 +1080,6 @@ function connectFire() {
             }
 
 
-            /*
-             * If the bridge sends an unknown
-             * Fire payload, keep it visible
-             * in console for debugging.
-             */
-
             console.log(
                 "Unknown Fire payload:",
                 data
@@ -714,21 +1093,35 @@ function connectFire() {
                 "🔥 Fire WebSocket error:",
                 error
             );
+
+            connectionState.textContent =
+                "CONNECTION ERROR";
+
+            connectionState.className =
+                "offline";
         };
 
 
         fireWS.onclose = () => {
 
             connectionState.textContent =
-                "DISCONNECTED — RETRYING";
+                "DISCONNECTED — RELOADING URL";
 
             connectionState.className =
                 "offline";
 
 
+            /*
+             * Re-read fire_url.txt.
+             *
+             * This is important because
+             * Cloudflare Quick Tunnel URL
+             * can change.
+             */
+
             reconnectTimer =
                 setTimeout(
-                    connectFire,
+                    loadFireURL,
                     2000
                 );
         };
@@ -751,7 +1144,7 @@ function connectFire() {
 
         reconnectTimer =
             setTimeout(
-                connectFire,
+                loadFireURL,
                 2000
             );
     }
@@ -764,7 +1157,14 @@ function connectFire() {
 
 setSafe();
 
-connectFire();
+/*
+ * IMPORTANT:
+ * Do NOT call connectFire() directly.
+ *
+ * First load fire_url.txt.
+ */
+
+loadFireURL();
 
 
 /* =========================================================
@@ -772,137 +1172,235 @@ connectFire();
    ========================================================= */
 
 const alertAudioControl =
-    document.getElementById("alertAudioControl");
+    document.getElementById(
+        "alertAudioControl"
+    );
 
 const fireSirenAudio =
-    document.getElementById("fireSirenAudio");
+    document.getElementById(
+        "fireSirenAudio"
+    );
 
 let alertAudioEnabled = false;
 let sirenStopTimer = null;
 let voiceTimer = null;
 
+
+/* =========================================================
+   ENABLE AUDIO
+   ========================================================= */
+
 function enableAlertAudio() {
+
     alertAudioEnabled = true;
 
+
     if (alertAudioControl) {
+
         alertAudioControl.textContent =
             "🔊 ALERT AUDIO ENABLED";
-        alertAudioControl.classList.add("enabled");
+
+        alertAudioControl.classList.add(
+            "enabled"
+        );
     }
 
-    /*
-     * Unlock browser audio/speech after a real user click.
-     */
-    try {
-        fireSirenAudio.volume = 0;
-        const p = fireSirenAudio.play();
 
-        if (p && typeof p.then === "function") {
+    /*
+     * Unlock browser audio/speech after
+     * a real user click.
+     */
+
+    try {
+
+        fireSirenAudio.volume = 0;
+
+        const p =
+            fireSirenAudio.play();
+
+
+        if (
+            p &&
+            typeof p.then ===
+            "function"
+        ) {
+
             p.then(() => {
+
                 fireSirenAudio.pause();
-                fireSirenAudio.currentTime = 0;
-                fireSirenAudio.volume = 1;
+
+                fireSirenAudio.currentTime =
+                    0;
+
+                fireSirenAudio.volume =
+                    1;
+
             }).catch(() => {});
         }
+
     } catch (e) {}
+
 
     try {
-        const u = new SpeechSynthesisUtterance("Alert audio enabled");
+
+        const u =
+            new SpeechSynthesisUtterance(
+                "Alert audio enabled"
+            );
+
         u.volume = 0.01;
         u.rate = 1;
+
         speechSynthesis.cancel();
+
         speechSynthesis.speak(u);
+
     } catch (e) {}
 
-    console.log("🔊 Alert audio enabled");
+
+    console.log(
+        "🔊 Alert audio enabled"
+    );
 }
 
+
 if (alertAudioControl) {
+
     alertAudioControl.addEventListener(
         "click",
         enableAlertAudio
     );
 }
 
+
+/* =========================================================
+   FIRE VOICE
+   ========================================================= */
+
 function speakFireAlert() {
 
     clearTimeout(voiceTimer);
 
-    voiceTimer = setTimeout(() => {
 
-        const message =
-            "Fire alert. Fire detected in zone X2. Please check the fire protection area.";
+    voiceTimer =
+        setTimeout(() => {
 
-        try {
-            if ("speechSynthesis" in window) {
+            const message =
+                "Fire alert. Fire detected in zone X2. Please check the fire protection area.";
 
-                speechSynthesis.cancel();
 
-                const utterance =
-                    new SpeechSynthesisUtterance(message);
+            try {
 
-                utterance.lang = "en-IN";
-                utterance.rate = 0.95;
-                utterance.pitch = 1;
-                utterance.volume = 1;
+                if (
+                    "speechSynthesis" in window
+                ) {
 
-                /*
-                 * Try to select an English/Indian voice
-                 * when the browser exposes voices.
-                 */
-                const voices =
-                    speechSynthesis.getVoices();
+                    speechSynthesis.cancel();
 
-                const voice =
-                    voices.find(v =>
-                        /^en-IN$/i.test(v.lang)
-                    ) ||
-                    voices.find(v =>
-                        /^en-/i.test(v.lang)
+
+                    const utterance =
+                        new SpeechSynthesisUtterance(
+                            message
+                        );
+
+
+                    utterance.lang =
+                        "en-IN";
+
+                    utterance.rate =
+                        0.95;
+
+                    utterance.pitch =
+                        1;
+
+                    utterance.volume =
+                        1;
+
+
+                    const voices =
+                        speechSynthesis
+                            .getVoices();
+
+
+                    const voice =
+                        voices.find(v =>
+                            /^en-IN$/i.test(
+                                v.lang
+                            )
+                        ) ||
+                        voices.find(v =>
+                            /^en-/i.test(
+                                v.lang
+                            )
+                        );
+
+
+                    if (voice) {
+
+                        utterance.voice =
+                            voice;
+                    }
+
+
+                    speechSynthesis.speak(
+                        utterance
                     );
 
-                if (voice) {
-                    utterance.voice = voice;
+
+                    console.log(
+                        "🔊 Speaking fire alert"
+                    );
                 }
 
-                speechSynthesis.speak(
-                    utterance
-                );
+            } catch (e) {
 
-                console.log(
-                    "🔊 Speaking fire alert"
+                console.error(
+                    "Speech failed:",
+                    e
                 );
             }
 
-        } catch (e) {
-            console.error(
-                "Speech failed:",
-                e
-            );
-        }
-
-    }, 5000);
+        }, 5000);
 }
+
+
+/* =========================================================
+   FIRE SIREN
+   ========================================================= */
 
 function playFireSiren() {
 
-    clearTimeout(sirenStopTimer);
+    clearTimeout(
+        sirenStopTimer
+    );
+
 
     try {
 
         /*
-         * siren.mp3 must be beside this HTML file.
-         * If the browser blocks autoplay, the user must
-         * press ENABLE ALERT AUDIO once.
+         * siren.mp3 must be beside
+         * this HTML file.
          */
-        fireSirenAudio.currentTime = 0;
-        fireSirenAudio.volume = 1;
+
+        fireSirenAudio.currentTime =
+            0;
+
+        fireSirenAudio.volume =
+            1;
+
 
         const p =
             fireSirenAudio.play();
 
-        if (p && typeof p.catch === "function") {
+
+        if (
+            p &&
+            typeof p.catch ===
+            "function"
+        ) {
+
             p.catch(err => {
+
                 console.warn(
                     "Siren autoplay blocked. Press ENABLE ALERT AUDIO.",
                     err
@@ -910,17 +1408,24 @@ function playFireSiren() {
             });
         }
 
+
         sirenStopTimer =
             setTimeout(() => {
 
                 try {
+
                     fireSirenAudio.pause();
-                    fireSirenAudio.currentTime = 0;
+
+                    fireSirenAudio.currentTime =
+                        0;
+
                 } catch (e) {}
 
             }, 5000);
 
+
     } catch (e) {
+
         console.error(
             "Siren failed:",
             e
@@ -928,18 +1433,19 @@ function playFireSiren() {
     }
 }
 
-/*
- * This is the function fireAlert() already calls.
- * It now performs:
- * 1. 5-second siren
- * 2. Fire voice announcement
- */
-window.playGuardianSiren = function () {
 
-    playFireSiren();
-    speakFireAlert();
+/* =========================================================
+   GUARDIAN SIREN
+   ========================================================= */
 
-};
+window.playGuardianSiren =
+    function () {
+
+        playFireSiren();
+
+        speakFireAlert();
+
+    };
 
 </script>
 
