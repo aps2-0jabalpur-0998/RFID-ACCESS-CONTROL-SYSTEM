@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>GuardianEye — Fire Protection X2</title>
-
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -199,8 +198,6 @@ body{overflow-x:hidden}
     }
 }
 </style>
-
-
 <style id="fire-alert-overlay-css">
 
 #fireAlertOverlay{
@@ -286,8 +283,6 @@ body{overflow-x:hidden}
 }
 
 </style>
-
-
 <style id="alert-audio-css">
 
 #alertAudioControl{
@@ -311,8 +306,6 @@ body{overflow-x:hidden}
 }
 
 </style>
-
-
 <style id="premium-fire-ui">
 /* =========================================================
    GUARDIANEYE FIRE X2 — PREMIUM COMMAND CENTER
@@ -676,159 +669,147 @@ body::after{
   .zone-name{font-size:42px !important}
 }
 </style>
-
 </head>
-
 <body>
-
 <button id="alertAudioControl" type="button">
     🔊 ENABLE ALERT AUDIO
 </button>
-
 <audio id="fireSirenAudio" preload="auto" src="siren.mp3"></audio>
-
-
 <div id="fireAlertOverlay" aria-live="assertive">
 
-    <div class="fire-alert-box">
+<div class="fire-alert-box">
 
-        <div class="fire-alert-icon">🚨</div>
+    <div class="fire-alert-icon">🚨</div>
 
-        <h1 class="fire-alert-title">
-            FIRE DETECTED
-        </h1>
+    <h1 class="fire-alert-title">
+        FIRE DETECTED
+    </h1>
 
-        <div id="fireAlertSub" class="fire-alert-sub">
-            ZONE X2 — आग का पता चला है।
-        </div>
+    <div id="fireAlertSub" class="fire-alert-sub">
+        ZONE X2 — आग का पता चला है।
+    </div>
 
-        <div id="fireAlertTime" class="fire-alert-meta"></div>
+    <div id="fireAlertTime" class="fire-alert-meta"></div>
 
-        <div class="fire-alert-zone">
-            ZONE X2
-        </div>
-
+    <div class="fire-alert-zone">
+        ZONE X2
     </div>
 
 </div>
 
-
+</div>
 <header class="header">
 
-    <h1>
-        GUARDIANEYE — FIRE PROTECTION
-    </h1>
+<h1>
+    GUARDIANEYE — FIRE PROTECTION
+</h1>
 
-    <p>
-        Dedicated Fire Monitoring · Zone X2
-    </p>
+<p>
+    Dedicated Fire Monitoring · Zone X2
+</p>
 
 </header>
-
-
 <main class="wrap">
 
-    <section id="status" class="status">
+<section id="status" class="status">
 
-        <div class="status-left">
+    <div class="status-left">
 
-            <div id="statusIcon" class="status-icon">
-                🛡️
+        <div id="statusIcon" class="status-icon">
+            🛡️
+        </div>
+
+        <div>
+
+            <div id="statusTitle" class="status-title">
+                ALL SYSTEMS SAFE
             </div>
 
-            <div>
-
-                <div id="statusTitle" class="status-title">
-                    ALL SYSTEMS SAFE
-                </div>
-
-                <div id="statusSub" class="status-sub">
-                    No active fire detection
-                </div>
-
+            <div id="statusSub" class="status-sub">
+                No active fire detection
             </div>
 
         </div>
 
-        <div id="statusBadge" class="badge">
-            SAFE
+    </div>
+
+    <div id="statusBadge" class="badge">
+        SAFE
+    </div>
+
+</section>
+
+
+<div class="grid">
+
+    <section id="x2Card" class="card">
+
+        <h2>
+            FIRE PROTECTION ZONE
+        </h2>
+
+        <div class="zone">
+
+            <div class="zone-name">
+                X2
+            </div>
+
+            <div id="x2State" class="zone-state">
+                SAFE — NO DETECTION
+            </div>
+
+            <div id="sensorName" class="sensor">
+                Waiting for fire sensor data...
+            </div>
+
+        </div>
+
+        <div id="connection" class="connection">
+
+            Fire Bridge:
+
+            <span id="connectionState" class="offline">
+                LOADING URL...
+            </span>
+
         </div>
 
     </section>
 
 
-    <div class="grid">
+    <section class="card log">
 
-        <section id="x2Card" class="card">
+        <h2>
+            LIVE FIRE ALERTS
+        </h2>
 
-            <h2>
-                FIRE PROTECTION ZONE
-            </h2>
+        <div id="events">
 
-            <div class="zone">
+            <div class="event">
 
-                <div class="zone-name">
-                    X2
-                </div>
+                <div class="dot"></div>
 
-                <div id="x2State" class="zone-state">
-                    SAFE — NO DETECTION
-                </div>
+                <div>
 
-                <div id="sensorName" class="sensor">
-                    Waiting for fire sensor data...
-                </div>
+                    <div class="event-title">
+                        No fire alerts
+                    </div>
 
-            </div>
-
-            <div id="connection" class="connection">
-
-                Fire Bridge:
-
-                <span id="connectionState" class="offline">
-                    LOADING URL...
-                </span>
-
-            </div>
-
-        </section>
-
-
-        <section class="card log">
-
-            <h2>
-                LIVE FIRE ALERTS
-            </h2>
-
-            <div id="events">
-
-                <div class="event">
-
-                    <div class="dot"></div>
-
-                    <div>
-
-                        <div class="event-title">
-                            No fire alerts
-                        </div>
-
-                        <div class="event-meta">
-                            Waiting for Zone X2 events
-                        </div>
-
+                    <div class="event-meta">
+                        Waiting for Zone X2 events
                     </div>
 
                 </div>
 
             </div>
 
-        </section>
+        </div>
 
-    </div>
+    </section>
+
+</div>
 
 </main>
-
-
 <script>
 
 /* =========================================================
@@ -840,7 +821,6 @@ let FIRE_WS_URL = "";
 let fireWS = null;
 let reconnectTimer = null;
 let events = [];
-let FIRE_URL_WATCH_TIMER = null;
 
 
 /* =========================================================
@@ -928,7 +908,7 @@ async function loadFireURL() {
          */
 
         url =
-            url.replace(/\/+$/, "");
+            url.replace(/\\/+$/, "");
 
 
         /*
@@ -1072,92 +1052,106 @@ function setSafe(data = {}) {
    FIRE ALERT
    ========================================================= */
 
-function normalizeFireSensor(data) {
-
-    const raw = [
-        data && data.sensor,
-        data && data.message,
-        data && data.raw_message
-    ]
-    .filter(Boolean)
-    .join(" ")
-    .toUpperCase();
-
-    if (/\bIR[\s_-]*1\b/.test(raw)) return "IR1";
-    if (/\bFLAME[\s_-]*1\b/.test(raw)) return "FLAME1";
-    if (/\bFLAME[\s_-]*2\b/.test(raw)) return "FLAME2";
-
-    return String(
-        data && data.sensor || "FIRE SENSOR"
-    ).trim();
-}
-
-
 function fireAlert(data) {
 
     const overlay =
-        document.getElementById("fireAlertOverlay");
+        document.getElementById(
+            "fireAlertOverlay"
+        );
 
     const sub =
-        document.getElementById("fireAlertSub");
+        document.getElementById(
+            "fireAlertSub"
+        );
 
     const timeEl =
-        document.getElementById("fireAlertTime");
+        document.getElementById(
+            "fireAlertTime"
+        );
+
 
     const sensor =
-        normalizeFireSensor(data);
+        data.sensor ||
+        data.message ||
+        "FIRE SENSOR";
+
 
     const now =
         data.time ||
         data.timestamp ||
-        new Date().toLocaleTimeString("en-IN", {
-            hour12:false
-        });
+        new Date().toLocaleString(
+            "en-IN",
+            {
+                hour12:false
+            }
+        );
+
 
     if (sub) {
+
         sub.textContent =
-            "ZONE X2 — FIRE DETECTED BY " + sensor;
+            "ZONE X2 — आग का पता चला है।";
     }
+
 
     if (timeEl) {
+
         timeEl.textContent =
-            "SENSOR: " + sensor + "  •  " + String(now);
+            String(now) +
+            "  •  " +
+            String(sensor);
     }
+
 
     if (overlay) {
-        overlay.classList.add("show", "fire-pulse");
+
+        overlay.classList.add(
+            "show",
+            "fire-pulse"
+        );
     }
 
+
     status.classList.add("alert");
+
     x2Card.classList.add("alert");
 
     statusIcon.textContent = "🔥";
-    statusTitle.textContent = "FIRE DETECTED";
+
+    statusTitle.textContent =
+        "FIRE DETECTED";
 
     statusSub.textContent =
-        "Emergency alert — Zone X2 — Sensor " + sensor;
+        "Emergency fire alert received — investigate immediately";
 
-    statusBadge.textContent = "ACTIVE ALERT";
+    statusBadge.textContent =
+        "ACTIVE ALERT";
 
     x2State.textContent =
-        "🔥 FIRE DETECTED — " + sensor;
+        "🔥 FIRE DETECTED";
 
     sensorName.textContent =
-        "Detected by " + sensor;
+        sensor;
 
-    addEvent({
-        sensor: sensor,
-        time: now,
-        date:
-            data.date ||
-            new Date().toLocaleDateString("en-IN")
-    });
 
-    if (typeof window.playGuardianSiren === "function") {
+    addEvent(data);
+
+
+    if (
+        typeof window.playGuardianSiren ===
+        "function"
+    ) {
+
         try {
+
             window.playGuardianSiren();
+
         } catch (e) {
-            console.warn("Siren function failed:", e);
+
+            console.warn(
+                "Siren function failed:",
+                e
+            );
         }
     }
 }
@@ -1252,7 +1246,7 @@ function renderEvents() {
                 <div>
 
                     <div class="event-title">
-                        🔥 FIRE DETECTED — ZONE X2
+                        🔥 FIRE DETECTED — X2
                     </div>
 
                     <div class="event-meta">
@@ -1278,11 +1272,11 @@ function renderEvents() {
 function escapeHTML(value) {
 
     return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+        .replace(/&/g,"&")
+        .replace(/</g,"<")
+        .replace(/>/g,">")
+        .replace(/"/g,""")
+        .replace(/'/g,"'");
 }
 
 
@@ -1294,84 +1288,125 @@ function connectFire() {
 
     clearTimeout(reconnectTimer);
 
+
     if (!FIRE_WS_URL) {
-        console.warn("🔥 FIRE_WS_URL not loaded yet");
+
+        console.warn(
+            "🔥 FIRE_WS_URL not loaded yet"
+        );
+
         return;
     }
 
-    if (
-        fireWS &&
-        (
-            fireWS.readyState === WebSocket.OPEN ||
-            fireWS.readyState === WebSocket.CONNECTING
-        )
-    ) {
-        return;
+
+    /*
+     * Close old connection if any.
+     */
+
+    if (fireWS) {
+
+        try {
+            fireWS.close();
+        } catch (e) {}
+
+        fireWS = null;
     }
+
 
     try {
 
-        fireWS = new WebSocket(FIRE_WS_URL);
+        fireWS =
+            new WebSocket(
+                FIRE_WS_URL
+            );
+
 
         fireWS.onopen = () => {
 
-            connectionState.textContent = "CONNECTED";
-            connectionState.className = "online";
+            connectionState.textContent =
+                "CONNECTED";
+
+            connectionState.className =
+                "online";
+
 
             console.log(
-                "🔥 FIRE WEBSOCKET CONNECTED:",
+                "🔥 Fire Cloudflare connected:",
                 FIRE_WS_URL
             );
         };
+
 
         fireWS.onmessage = event => {
 
             let data;
 
+
             try {
-                data = JSON.parse(event.data);
+
+                data =
+                    JSON.parse(
+                        event.data
+                    );
+
             } catch {
+
                 console.warn(
                     "Invalid Fire message:",
                     event.data
                 );
+
                 return;
             }
 
-            console.log("🔥 FIRE DATA:", data);
 
-            const type =
-                String(data.type || "").toLowerCase();
+            console.log(
+                "🔥 FIRE DATA:",
+                data
+            );
 
-            /* Initial connection packet — ignore it. */
-            if (type === "system") {
-                return;
-            }
 
-            /* Ignore unrelated project messages. */
+            /*
+             * Only accept Fire events.
+             */
+
             if (
                 data.project &&
-                String(data.project).toLowerCase() !== "fire"
+                data.project !== "fire"
             ) {
+
                 return;
             }
 
-            const status =
-                String(data.status || "").toLowerCase();
+
+            const type =
+                String(
+                    data.type || ""
+                ).toLowerCase();
+
 
             const isAlert =
                 type === "alert" ||
-                type === "continue" ||
                 data.alert === true ||
                 data.fire === true ||
-                status === "danger";
+                String(
+                    data.status || ""
+                ).toLowerCase() === "danger";
+
 
             const isSafe =
                 type === "safe" ||
                 data.alert === false ||
-                status === "safe";
+                String(
+                    data.status || ""
+                ).toLowerCase() === "safe";
+
 
             if (isAlert) {
+
+                /*
+                 * Force Fire → X2.
+                 */
 
                 data.zone = "X2";
 
@@ -1379,6 +1414,7 @@ function connectFire() {
 
                 return;
             }
+
 
             if (isSafe) {
 
@@ -1389,11 +1425,13 @@ function connectFire() {
                 return;
             }
 
+
             console.log(
                 "Unknown Fire payload:",
                 data
             );
         };
+
 
         fireWS.onerror = error => {
 
@@ -1409,6 +1447,7 @@ function connectFire() {
                 "offline";
         };
 
+
         fireWS.onclose = () => {
 
             connectionState.textContent =
@@ -1417,12 +1456,22 @@ function connectFire() {
             connectionState.className =
                 "offline";
 
+
+            /*
+             * Re-read fire_url.txt.
+             *
+             * This is important because
+             * Cloudflare Quick Tunnel URL
+             * can change.
+             */
+
             reconnectTimer =
                 setTimeout(
                     loadFireURL,
                     2000
                 );
         };
+
 
     } catch (error) {
 
@@ -1431,11 +1480,13 @@ function connectFire() {
             error
         );
 
+
         connectionState.textContent =
             "CONNECTION FAILED";
 
         connectionState.className =
             "offline";
+
 
         reconnectTimer =
             setTimeout(
@@ -1460,12 +1511,6 @@ setSafe();
  */
 
 loadFireURL();
-
-clearInterval(FIRE_URL_WATCH_TIMER);
-FIRE_URL_WATCH_TIMER = setInterval(
-    loadFireURL,
-    5000
-);
 
 
 /* =========================================================
@@ -1749,6 +1794,5 @@ window.playGuardianSiren =
     };
 
 </script>
-
 </body>
 </html>
