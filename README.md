@@ -1,4 +1,4 @@
-# PRANA SETU / GUARDIANEYE — LATEST RUNBOOK
+### PRANA SETU / GUARDIANEYE — LATEST RUNBOOK
 
 Updated: 01-09-2026
 Purpose: Master setup/run sheet for Arduino, Fire, Intruder/JARVIS, Cloudflare, dashboards, ports, and demo testing.
@@ -7,14 +7,14 @@ OFFICIAL ESP8266 BOARDS MANAGER URL:
 
 https://arduino.esp8266.com/stable/package_esp8266com_index.json
 
-# STEP 1 — OPEN PREFERENCES
+## STEP 1 — OPEN PREFERENCES
 
 Arduino IDE:
 
 File
-  -> Preferences
+-> Preferences
 
-# STEP 2 — ADD BOARD MANAGER URL
+## STEP 2 — ADD BOARD MANAGER URL
 
 Find:
 
@@ -28,21 +28,21 @@ Then press:
 
 OK
 
-# STEP 3 — OPEN BOARDS MANAGER
+## STEP 3 — OPEN BOARDS MANAGER
 
 Go to:
 
 Tools
-  -> Board
-  -> Boards Manager...
+-> Board
+-> Boards Manager...
 
-# STEP 4 — SEARCH
+## STEP 4 — SEARCH
 
 Search:
 
 esp8266
 
-# STEP 5 — INSTALL
+## STEP 5 — INSTALL
 
 Select:
 
@@ -55,13 +55,13 @@ Install
 Wait until Arduino IDE finishes downloading/installing the
 ESP8266 board package.
 
-# STEP 6 — SELECT THE BOARD
+STEP 6 — SELECT THE BOARD
 
 Go to:
 
 Tools
-  -> Board
-  -> esp8266
+-> Board
+-> esp8266
 
 For the board shown in the shared screenshot:
 
@@ -75,12 +75,12 @@ LOLIN D1 mini
 
 select the exact matching board instead of Generic ESP8266 Module.
 
-# STEP 7 — SELECT THE COM PORT
+## STEP 7 — SELECT THE COM PORT
 
 Go to:
 
 Tools
-  -> Port
+-> Port
 
 The shared screenshot showed:
 
@@ -90,7 +90,7 @@ BUT:
 COM4 is not guaranteed to remain the same after reconnecting.
 Always select the COM port currently assigned to the ESP8266.
 
-# STEP 8 — VERIFY INSTALLATION
+## STEP 8 — VERIFY INSTALLATION
 
 After installation, the Tools -> Board -> esp8266 list should
 contain ESP8266 boards such as:
@@ -105,29 +105,28 @@ The exact visible list depends on the installed ESP8266 package.
 ESP8266 QUICK CHECK:
 
 Preferences
-    ↓
+↓
 Additional boards manager URLs
-    ↓
+↓
 paste official ESP8266 URL
-    ↓
+↓
 Boards Manager
-    ↓
+↓
 search "esp8266"
-    ↓
+↓
 install "esp8266 by ESP8266 Community"
-    ↓
+↓
 Tools -> Board -> esp8266
-    ↓
+↓
 choose correct board
-    ↓
+↓
 Tools -> Port
-    ↓
+↓
 choose current COM port
 
-============================================================
+
 
 FINAL PORT ARCHITECTURE
-============================================================
 
 FIRE
 
@@ -180,13 +179,20 @@ cd "C:\Users\DELL\OneDrive\Pictures\IOTPROJECT"
 python masterbridge.py
 
 Current Fire MasterBridge behaviour:
-- Telegram Fire listener
-- listens to Fire chat
-- WebSocket endpoint /ws
-- sends Fire JSON payloads
-- zone forced to X2
-- sensor can be IR1 / FLAME1 / FLAME2
-- WebSocket client monitor prints every 5 seconds
+
+Telegram Fire listener
+
+listens to Fire chat
+
+WebSocket endpoint /ws
+
+sends Fire JSON payloads
+
+zone forced to X2
+
+sensor can be IR1 / FLAME1 / FLAME2
+
+WebSocket client monitor prints every 5 seconds
 
 EXPECTED START:
 
@@ -205,6 +211,7 @@ or:
 🔴 FIRE WEBSOCKET NOT CONNECTED | CLIENTS: 0
 
 CRITICAL TEST:
+
 When IOT2 is open, the Fire terminal MUST change from:
 
 CLIENTS: 0
@@ -258,6 +265,7 @@ cd "C:\Users\DELL\OneDrive\Pictures\IOTPROJECT"
 python start_intruder_cloudflare.py
 
 IMPORTANT:
+
 The Python file MUST expose:
 
 http://localhost:8001
@@ -302,6 +310,7 @@ If 8001 is empty:
 guardianeye_realtime_server.py is not running.
 
 FIRE DASHBOARD:
+
 IOT2.html
 
 Latest cleaned/syntax-fixed local version made in chat:
@@ -311,12 +320,14 @@ Latest cleaned version also created:
 IOT2_Fire_X2_indented_clean.html
 
 MAIN COMMAND CENTER:
+
 index.html
 
 Latest local final version made in chat:
 PranaSetu_Index_FINAL.html
 
 VERY IMPORTANT:
+
 After replacing the GitHub file:
 
 Ctrl + F5
@@ -346,14 +357,14 @@ IOT2.html / index.html
 EXPECTED FIRE PAYLOAD:
 
 {
-    "project": "fire",
-    "type": "alert",
-    "zone": "X2",
-    "sensor": "IR1",
-    "message": "...",
-    "raw_message": "...",
-    "time": "...",
-    "date": "..."
+"project": "fire",
+"type": "alert",
+"zone": "X2",
+"sensor": "IR1",
+"message": "...",
+"raw_message": "...",
+"time": "...",
+"date": "..."
 }
 
 SUPPORTED SENSOR NAMES FROM THE FIRE BRIDGE:
@@ -409,17 +420,20 @@ WHEN REAL FIRE ARRIVES:
 
 FIRE DATA:
 {
-  project: "fire",
-  type: "alert",
-  zone: "X2",
-  sensor: "IR1",
-  ...
+project: "fire",
+type: "alert",
+zone: "X2",
+sensor: "IR1",
+...
 }
 
 DO NOT WORRY ABOUT THESE UNRELATED ERRORS:
-- Chrome extension coupon errors
-- favicon 404
-- Browser extension errors
+
+Chrome extension coupon errors
+
+favicon 404
+
+Browser extension errors
 
 Those are not the Fire WebSocket payload.
 
@@ -438,11 +452,11 @@ Check Fire MasterBridge.
 Expected transition:
 
 🔴 CLIENTS: 0
-      |
-      v
+|
+v
 browser connects
-      |
-      v
+|
+v
 🟢 CLIENTS: 1
 
 If still 0:
@@ -486,18 +500,18 @@ https://arduino.esp8266.com/stable/package_esp8266com_index.json
 ARDUINO IDE STEPS:
 
 File
-  -> Preferences
-  -> Additional Boards Manager URLs
-  -> paste the URL above
+-> Preferences
+-> Additional Boards Manager URLs
+-> paste the URL above
 
 Then:
 
 Tools
-  -> Board
-  -> Boards Manager
-  -> search: esp8266
-  -> install:
-     esp8266 by ESP8266 Community
+-> Board
+-> Boards Manager
+-> search: esp8266
+-> install:
+esp8266 by ESP8266 Community
 
 BOARD SELECTION SEEN IN SCREENSHOT:
 
@@ -508,33 +522,40 @@ PORT SEEN IN SCREENSHOT:
 COM4
 
 CHECK THE PORT BEFORE UPLOAD:
+
 Tools -> Port -> current ESP port
 
 NOTE:
+
 If the physical board is actually NodeMCU / LOLIN D1 mini,
 selecting the exact board is preferable to Generic ESP8266 Module.
 
-============================================================
+
 
 CONFIRMED FROM SHARED ARDUINO CODE / CHAT HISTORY:
 
 BOARD PACKAGE:
+
 ESP8266 by ESP8266 Community
 
 STANDARD / BOARD-INCLUDED:
+
 Wire
 Servo
 
 EXPLICITLY SEEN IN AN OLDER SHARED OLED/SMART-DUSTBIN SKETCH:
+
 Adafruit GFX Library
 Adafruit SSD1306
 
 FIRE HARDWARE CODE SEEN IN CHAT:
+
 #include <Servo.h>
 
 Therefore Servo is required for that Fire sketch.
 
 IMPORTANT:
+
 I do NOT have a reliable record of every library ever installed
 on the PC. The list above contains libraries/packages explicitly
 visible in the shared code/history, not a claim about the complete
@@ -580,23 +601,29 @@ The 8001 server is:
 guardianeye_realtime_server.py
 
 TERMINAL 1:
+
 python masterbridge.py
 
 TERMINAL 2:
+
 python start_fire_cloudflare.py
 
 TERMINAL 3:
+
 python guardianeye_realtime_server.py
 
 TERMINAL 4:
+
 python start_intruder_cloudflare.py
 
 OPTIONAL / SEPARATE:
+
 run the dual-camera intruder launcher if X3/X4 camera
 processes are not already being started by the current
 intruder architecture.
 
 THEN:
+
 open GitHub Pages dashboard / IOT2 page
 Ctrl + F5
 
@@ -627,49 +654,58 @@ FIRE WEBSOCKET CONNECTED
 FIRE EVENT:
 
 Telegram:
-    IR1 FIRE DETECTED
+IR1 FIRE DETECTED
 
 MasterBridge:
-    WEBSOCKET CLIENTS: 1
-    FIRE DATA SENT TO WEBSOCKET
+WEBSOCKET CLIENTS: 1
+FIRE DATA SENT TO WEBSOCKET
 
 IOT2:
-    FIRE DETECTED
-    ZONE X2
-    IR1
+
+FIRE DETECTED
+ZONE X2
+IR1
 
 FIXED:
+
 Fire and Intruder were accidentally mixed across ports.
 Correct split is:
 Fire  = 8000
 Intruder/JARVIS = 8001
 
 FIXED:
+
 IOT2 markdown-paste damaged JavaScript regex.
 
 FIXED:
+
 IOT2 markdown-paste damaged escapeHTML().
 
 FIXED:
+
 Fire Cloudflare connector must point to 8000,
 not 8001.
 
 FIXED:
+
 Intruder Cloudflare connector must point to 8001,
 not 8000.
 
 FIXED:
+
 Fire dashboard reads the current URL from fire_url.txt.
 
 CURRENT BACKEND CONTRACT:
+
 Fire WebSocket:
 /ws
 
 Fire JSON:
-    project = "fire"
-    zone = "X2"
+project = "fire"
+zone = "X2"
 
 FIRE:
+
 masterbridge.py
 start_fire_cloudflare.py
 fire_url.txt
