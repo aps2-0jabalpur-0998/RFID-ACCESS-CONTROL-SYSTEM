@@ -1788,6 +1788,359 @@ function inferLogParts(
 
 
 
+
+function absoluteMediaUrl(
+  url
+){
+
+  if(!url){
+    return "";
+  }
+
+  if(
+    /^https?:\/\//i.test(
+      String(url)
+    )
+  ){
+    return String(url);
+  }
+
+  if(
+    !HTTP_BASE
+  ){
+    return String(url);
+  }
+
+  return (
+    HTTP_BASE.replace(
+      /\/+$/,
+      ""
+    ) +
+    "/" +
+    String(url).replace(
+      /^\/+/,
+      ""
+    )
+  );
+}
+
+
+
+function addLog(
+  type,
+  msg,
+  time,
+  extraData = {}
+){
+
+  const logBody =
+    document.getElementById(
+      "eventLog"
+    );
+
+  if(!logBody){
+    console.error(
+      "❌ #eventLog not found"
+    );
+    return;
+  }
+
+  const empty =
+    logBody.querySelector(
+      ".log-empty-row"
+    );
+
+  if(empty){
+    empty.remove();
+  }
+
+  const rawTime =
+    String(
+      time ||
+      ""
+    ).trim();
+
+  const parts =
+    rawTime.split(
+      /\s+/
+    );
+
+  let date = "";
+  let clock = "";
+
+  if(parts.length >= 2){
+    date = parts[0];
+    clock = parts.slice(1).join(" ");
+  }else{
+    clock =
+      rawTime ||
+      now();
+  }
+
+  const meta =
+    inferLogParts(
+      type,
+      extraData
+    );
+
+  const source =
+    extraData.zone ||
+    extraData.source ||
+    extraData.project ||
+    "GuardianEye";
+
+  const detailsMain =
+    msg ||
+    extraData.message ||
+    "Event recorded";
+
+  const detailsSub = [];
+
+  if(extraData.name){
+    detailsSub.push(
+      "Name: " +
+      extraData.name
+    );
+  }
+
+  if(extraData.animal){
+    detailsSub.push(
+      "Animal: " +
+      extraData.animal
+    );
+  }
+
+  if(extraData.vehicle_id){
+    detailsSub.push(
+      "Vehicle ID: " +
+      extraData.vehicle_id
+    );
+  }
+
+  if(extraData.vehicle_name){
+    detailsSub.push(
+      "Vehicle: " +
+      extraData.vehicle_name
+    );
+  }
+
+  if(extraData.vehicle_status){
+    detailsSub.push(
+      "Vehicle status: " +
+      extraData.vehicle_status
+    );
+  }
+
+  if(
+    extraData.confidence !== undefined &&
+    extraData.confidence !== null &&
+    extraData.confidence !== ""
+  ){
+
+    const c =
+      Number(
+        extraData.confidence
+      );
+
+    detailsSub.push(
+      "Confidence: " +
+      (
+        c <= 1
+          ? (c * 100).toFixed(1)
+          : c.toFixed(1)
+      ) +
+      "%"
+    );
+  }
+
+  const photoUrl =
+    absoluteMediaUrl(
+      extraData.photo_url ||
+      extraData.photo ||
+      ""
+    );
+
+  const knownFaceUrl =
+    absoluteMediaUrl(
+      extraData.known_face_url ||
+      ""
+    );
+
+  const row =
+    document.createElement(
+      "tr"
+    );
+
+  if(extraData.event_uid){
+    row.dataset.eventUid =
+      String(
+        extraData.event_uid
+      );
+  }
+
+  let mediaHtml = "";
+
+  if(
+    photoUrl ||
+    knownFaceUrl
+  ){
+
+    mediaHtml = `
+      <div class="log-media-row">
+
+        ${
+          photoUrl
+            ? `
+              <div>
+                <img
+                  class="log-media"
+                  src="${escapeHTML(photoUrl)}"
+                  alt="Telegram evidence"
+                  onclick='event.stopPropagation();openMedia("${escapeHTML(photoUrl)}","TELEGRAM EVIDENCE")'
+                  onerror="this.style.display='none'"
+                >
+                <div class="log-media-label">
+                  TELEGRAM PHOTO
+                </div>
+              </div>
+            `
+            : ""
+        }
+
+        ${
+          knownFaceUrl
+            ? `
+              <div>
+                <img
+                  class="log-media"
+                  src="${escapeHTML(knownFaceUrl)}"
+                  alt="Known face"
+                  onclick='event.stopPropagation();openMedia("${escapeHTML(knownFaceUrl)}","KNOWN FACE")'
+                  onerror="this.style.display='none'"
+                >
+                <div class="log-media-label">
+                  KNOWN FACE
+                </div>
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+    `;
+  }
+
+  row.innerHTML = `
+
+    <td>
+      ${escapeHTML(
+        date || "—"
+      )}
+    </td>
+
+    <td>
+
+      <span style="
+        font-family:'DM Mono',monospace;
+        font-size:.68rem;
+        color:#71869a;
+      ">
+        ${escapeHTML(
+          clock || "—"
+        )}
+      </span>
+
+    </td>
+
+    <td>
+
+      <span class="
+        log-type
+        ${escapeHTML(
+          meta.badgeClass
+        )}
+      ">
+
+        ${meta.icon}
+
+        ${escapeHTML(
+          meta.label
+        )}
+
+      </span>
+
+    </td>
+
+    <td>
+
+      <span style="
+        display:inline-flex;
+        padding:5px 8px;
+        border-radius:7px;
+        border:1px solid rgba(110,231,255,.16);
+        background:rgba(110,231,255,.035);
+        font-family:'DM Mono',monospace;
+        font-size:.64rem;
+        color:var(--cyan);
+        font-weight:700;
+      ">
+
+        ${escapeHTML(
+          source
+        )}
+
+      </span>
+
+    </td>
+
+    <td>
+
+      <div class="log-detail-main">
+        ${escapeHTML(
+          detailsMain
+        )}
+      </div>
+
+      ${
+        detailsSub.length
+          ? `
+            <div class="log-detail-sub">
+              ${detailsSub
+                .map(
+                  escapeHTML
+                )
+                .join(
+                  " • "
+                )}
+            </div>
+          `
+          : ""
+      }
+
+      ${mediaHtml}
+
+    </td>
+
+  `;
+
+  logBody.insertBefore(
+    row,
+    logBody.firstChild
+  );
+
+  while(
+    logBody.children.length >
+    100
+  ){
+    logBody.removeChild(
+      logBody.lastChild
+    );
+  }
+
+  hasLog = true;
+}
+
+
 function addMediaToExistingLog(
   data
 ){
@@ -1800,6 +2153,10 @@ function addMediaToExistingLog(
     );
 
   if(!photoUrl){
+    console.warn(
+      "⚠️ MEDIA event without photo_url:",
+      data
+    );
     return false;
   }
 
@@ -1820,13 +2177,9 @@ function addMediaToExistingLog(
       data.parent_type ||
         "INTRUDER",
       data.raw_message ||
-        data.message ||
         "Telegram evidence photo",
       `${data.date || ""} ${data.time || ""}`.trim(),
-      {
-        ...data,
-        event_uid: uid
-      }
+      data
     );
 
     row =
@@ -1848,10 +2201,10 @@ function addMediaToExistingLog(
 
   if(!holder){
 
-    const detail =
+    const cell =
       row.lastElementChild;
 
-    if(!detail){
+    if(!cell){
       return false;
     }
 
@@ -1863,12 +2216,12 @@ function addMediaToExistingLog(
     holder.className =
       "log-media-row";
 
-    detail.appendChild(
+    cell.appendChild(
       holder
     );
   }
 
-  const images =
+  const current =
     Array.from(
       holder.querySelectorAll(
         "img"
@@ -1876,7 +2229,7 @@ function addMediaToExistingLog(
     );
 
   if(
-    images.some(
+    current.some(
       img =>
         img.src === photoUrl
     )
@@ -1910,11 +2263,6 @@ function addMediaToExistingLog(
 
   return true;
 }
-
-
-/* =========================================================
-   LIGHTBOX
-========================================================= */
 
 function openLB(
   filename,
