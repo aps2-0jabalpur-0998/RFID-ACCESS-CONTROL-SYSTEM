@@ -839,36 +839,6 @@ header{
   .log-table{ min-width:700px; }
 }
 </style>
-
-<style id="realtime-media-log-ui">
-.log-media-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-top:10px;
-}
-.log-media{
-  width:88px;
-  height:64px;
-  object-fit:cover;
-  border-radius:10px;
-  border:1px solid rgba(110,231,255,.22);
-  background:#070910;
-  cursor:pointer;
-  box-shadow:0 6px 18px rgba(0,0,0,.35);
-}
-.log-media:hover{
-  transform:translateY(-2px);
-  border-color:rgba(110,231,255,.48);
-}
-.log-media-label{
-  font:8px 'DM Mono',monospace;
-  color:#8399ad;
-  letter-spacing:.08em;
-  margin-top:3px;
-}
-</style>
-
 </head>
 
 <body>
@@ -1818,76 +1788,101 @@ function inferLogParts(
 
 
 
-function absoluteMediaUrl(
-  relativeUrl
+function addMediaToExistingLog(
+  data
 ){
 
-  if(!relativeUrl){
-    return "";
-  }
+  const uid =
+    data.event_uid ||
+    "";
 
-  if(
-    /^https?:\/\//i.test(
-      relativeUrl
-    )
-  ){
-    return relativeUrl;
-  }
-
-  if(!HTTP_BASE){
-    return relativeUrl;
-  }
-
-  return (
-    HTTP_BASE.replace(/\/+$/,"") +
-    "/" +
-    String(relativeUrl).replace(/^\/+/,"")
-  );
-}
-
-
-function openMedia(
-  url,
-  label
-){
-
-  const absolute =
+  const photoUrl =
     absoluteMediaUrl(
-      url
+      data.photo_url ||
+      data.photo ||
+      ""
     );
 
-  const image =
-    document.getElementById(
-      "lbImg"
-    );
-
-  const info =
-    document.getElementById(
-      "lbInfo"
-    );
-
-  const lightbox =
-    document.getElementById(
-      "lightbox"
-    );
-
-  if(!image || !info || !lightbox){
-    return;
+  if(!photoUrl){
+    return false;
   }
 
-  image.src = absolute;
+  let row =
+    uid
+      ? document.querySelector(
+          `tr[data-event-uid="${CSS.escape(uid)}"]`
+        )
+      : null;
 
-  info.textContent =
-    String(label || "Evidence");
+  if(!row){
 
-  lightbox.style.display =
-    "flex";
+    // No parent text event yet: create a media-only row.
+    addLog(
+      data.type || "INTRUDER",
+      data.raw_message ||
+        "Telegram evidence photo",
+      `${data.date || ""} ${data.time || ""}`.trim(),
+      {
+        ...data,
+        event_uid: uid,
+      }
+    );
+
+    return true;
+  }
+
+  let holder =
+    row.querySelector(
+      ".log-media-row"
+    );
+
+  if(!holder){
+
+    const detailCell =
+      row.lastElementChild;
+
+    if(!detailCell){
+      return true;
+    }
+
+    holder =
+      document.createElement(
+        "div"
+      );
+
+    holder.className =
+      "log-media-row";
+
+    detailCell.appendChild(
+      holder
+    );
+  }
+
+  const wrapper =
+    document.createElement(
+      "div"
+    );
+
+  wrapper.innerHTML = `
+    <img
+      class="log-media"
+      src="${escapeHTML(photoUrl)}"
+      alt="Telegram evidence"
+      onclick='event.stopPropagation();openMedia("${escapeHTML(photoUrl)}","TELEGRAM EVIDENCE")'
+      onerror="this.style.display='none'"
+    >
+    <div class="log-media-label">
+      TELEGRAM
+    </div>
+  `;
+
+  holder.appendChild(
+    wrapper
+  );
+
+  return true;
 }
 
-
-/* =========================================================
-   ADD LOG
-========================================================= */
 
 function addLog(
   type,
@@ -2051,85 +2046,24 @@ function addLog(
   }
 
 
-  const photoUrl =
-    extraData.photo_url ||
-    extraData.photo ||
-    "";
-
-  const knownFaceUrl =
-    extraData.known_face_url ||
-    "";
-
-  let mediaHtml = "";
-
-  if(photoUrl || knownFaceUrl){
-
-    mediaHtml = `
-      <div class="log-media-row">
-
-        ${
-          photoUrl
-            ? `
-              <div>
-                <img
-                  class="log-media"
-                  src="${escapeHTML(
-                    absoluteMediaUrl(
-                      photoUrl
-                    )
-                  )}"
-                  alt="Intruder evidence"
-                  onclick='event.stopPropagation();openMedia("${escapeHTML(
-                    absoluteMediaUrl(
-                      photoUrl
-                    )
-                  )}","INTRUDER EVIDENCE")'
-                  onerror="this.style.display='none'"
-                >
-                <div class="log-media-label">
-                  INTRUDER
-                </div>
-              </div>
-            `
-            : ""
-        }
-
-        ${
-          knownFaceUrl
-            ? `
-              <div>
-                <img
-                  class="log-media"
-                  src="${escapeHTML(
-                    absoluteMediaUrl(
-                      knownFaceUrl
-                    )
-                  )}"
-                  alt="Known face"
-                  onclick='event.stopPropagation();openMedia("${escapeHTML(
-                    absoluteMediaUrl(
-                      knownFaceUrl
-                    )
-                  )}","KNOWN FACE")'
-                  onerror="this.style.display='none'"
-                >
-                <div class="log-media-label">
-                  KNOWN FACE
-                </div>
-              </div>
-            `
-            : ""
-        }
-
-      </div>
-    `;
-  }
-
+  const inlinePhotoUrl =
+    absoluteMediaUrl(
+      extraData.photo_url ||
+      extraData.photo ||
+      ""
+    );
 
   const row =
     document.createElement(
       "tr"
     );
+
+  if(extraData.event_uid){
+    row.dataset.eventUid =
+      String(
+        extraData.event_uid
+      );
+  }
 
 
   row.innerHTML = `
@@ -2225,7 +2159,26 @@ function addLog(
           : ""
       }
 
-      ${mediaHtml}
+      ${
+        inlinePhotoUrl
+          ? `
+            <div class="log-media-row">
+              <div>
+                <img
+                  class="log-media"
+                  src="${escapeHTML(inlinePhotoUrl)}"
+                  alt="Telegram evidence"
+                  onclick='event.stopPropagation();openMedia("${escapeHTML(inlinePhotoUrl)}","TELEGRAM EVIDENCE")'
+                  onerror="this.style.display='none'"
+                >
+                <div class="log-media-label">
+                  TELEGRAM
+                </div>
+              </div>
+            </div>
+          `
+          : ""
+      }
 
     </td>
 
@@ -2291,24 +2244,22 @@ function openLB(
   timestamp
 ){
 
-  const imageUrl =
-    filename.startsWith("http://") ||
-    filename.startsWith("https://") ||
-    filename.startsWith("/evidence/") ||
-    filename.startsWith("/known/")
-      ? absoluteMediaUrl(
-          filename
-        )
-      : (
-          HTTP_BASE +
-          "/evidence/" +
-          encodeURIComponent(filename)
-        );
+  document.getElementById(
+    'lbImg'
+  ).src =
+    `${HTTP_BASE}/evidence/${encodeURIComponent(filename)}`;
 
-  openMedia(
-    imageUrl,
-    `${String(type).toUpperCase()} — ${timestamp}`
-  );
+
+  document.getElementById(
+    'lbInfo'
+  ).textContent =
+    `${String(type).toUpperCase()} — ${timestamp}`;
+
+
+  document.getElementById(
+    'lightbox'
+  ).style.display =
+    'flex';
 }
 
 
@@ -2528,20 +2479,6 @@ async function loadIntruderURL(){
     TELEGRAM_LOG_WS =
       url;
 
-    HTTP_BASE =
-      url
-        .replace(
-          /^wss:\/\//i,
-          "https://"
-        )
-        .replace(
-          /^ws:\/\//i,
-          "http://"
-        )
-        .replace(
-          /\/ws$/,
-          ""
-        );
 
     console.log(
       "🛡️ Intruder URL loaded:",
@@ -2613,7 +2550,6 @@ function addIntruderLog(
   const messageId =
     data.telegram_message_id;
 
-
   if(
     messageId !==
       undefined &&
@@ -2626,51 +2562,42 @@ function addIntruderLog(
         messageId
       );
 
-
     if(
       intruderSeenIds.has(
         key
       )
     ){
 
+      // Media messages have different Telegram IDs,
+      // so don't return solely on the photo message ID.
+      if(
+        data.photo_url
+      ){
+        addMediaToExistingLog(
+          data
+        );
+      }
+
       return;
     }
 
-
-    intruderSeenIds.add(
-      key
-    );
-
-
     if(
-      intruderSeenIds.size >
-      300
+      !data.photo_url
     ){
-
-      const first =
-        intruderSeenIds
-          .values()
-          .next()
-          .value;
-
-
-      intruderSeenIds.delete(
-        first
+      intruderSeenIds.add(
+        key
       );
     }
   }
-
 
   const t =
     getEventTime(
       data
     );
 
-
   const date =
     data.date ||
     "";
-
 
   const cleanMessage =
     String(
@@ -2685,23 +2612,10 @@ function addIntruderLog(
     )
     .trim();
 
-
-  /*
-     X3 / X4 FIX
-     -------------------------
-     Backend already sends:
-         zone: "X3"
-         zone: "X4"
-  */
-
   addLog(
-
     "intruder",
-
     `INTRUDER LOG: ${cleanMessage}`,
-
     `${date} ${t}`.trim(),
-
     {
       ...data,
 
@@ -2711,15 +2625,21 @@ function addIntruderLog(
         data.project ||
         "GuardianEye"
     }
-
   );
 
+  if(data.photo_url){
+    addMediaToExistingLog(
+      data
+    );
+  }
 
   document.getElementById(
     "lastUpdate"
   ).textContent =
     `${data.zone || "SYSTEM"} · ${now()}`;
 }
+
+
 
 
 /* =========================================================
@@ -2778,13 +2698,12 @@ function addAnimalLog(
       data
     );
 
-
   const cleanMessage =
     String(
       data.raw_message ||
       data.speech ||
       data.message ||
-      "Dangerous animal event"
+      "Animal event"
     )
     .replace(
       /\s+/g,
@@ -2792,19 +2711,26 @@ function addAnimalLog(
     )
     .trim();
 
-
   addLog(
-
-    "emergency",
-
+    data.type || "DANGEROUS",
     `ANIMAL LOG: ${cleanMessage}`,
-
     `${data.date || ""} ${t}`.trim(),
-
     data
-
   );
+
+  if(data.photo_url){
+    addMediaToExistingLog(
+      data
+    );
+  }
+
+  document.getElementById(
+    "lastUpdate"
+  ).textContent =
+    `Animal log: ${now()}`;
 }
+
+
 
 
 /* =========================================================
@@ -2966,6 +2892,19 @@ function connectTelegramLog(){
         ){
 
           addAnimalLog(
+            data
+          );
+
+          return;
+        }
+
+
+        if(
+          data.type ===
+          "MEDIA"
+        ){
+
+          addMediaToExistingLog(
             data
           );
 
