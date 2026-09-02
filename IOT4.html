@@ -839,6 +839,36 @@ header{
   .log-table{ min-width:700px; }
 }
 </style>
+
+<style id="realtime-media-log-ui">
+.log-media-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:10px;
+}
+.log-media{
+  width:88px;
+  height:64px;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid rgba(110,231,255,.22);
+  background:#070910;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+}
+.log-media:hover{
+  transform:translateY(-2px);
+  border-color:rgba(110,231,255,.48);
+}
+.log-media-label{
+  font:8px 'DM Mono',monospace;
+  color:#8399ad;
+  letter-spacing:.08em;
+  margin-top:3px;
+}
+</style>
+
 </head>
 
 <body>
@@ -1788,6 +1818,78 @@ function inferLogParts(
 }
 
 
+
+function absoluteMediaUrl(
+  relativeUrl
+){
+
+  if(!relativeUrl){
+    return "";
+  }
+
+  if(
+    /^https?:\/\//i.test(
+      relativeUrl
+    )
+  ){
+    return relativeUrl;
+  }
+
+  if(!HTTP_BASE){
+    return relativeUrl;
+  }
+
+  return (
+    HTTP_BASE.replace(/\/+$/,"") +
+    "/" +
+    String(relativeUrl).replace(/^\/+/,"")
+  );
+}
+
+
+function openMedia(
+  url,
+  label
+){
+
+  const absolute =
+    absoluteMediaUrl(
+      url
+    );
+
+  const image =
+    document.getElementById(
+      "lbImg"
+    );
+
+  const info =
+    document.getElementById(
+      "lbInfo"
+    );
+
+  const lightbox =
+    document.getElementById(
+      "lightbox"
+    );
+
+  if(!image || !info || !lightbox){
+    return;
+  }
+
+  image.src = absolute;
+
+  info.textContent =
+    String(label || "Evidence");
+
+  lightbox.style.display =
+    "flex";
+}
+
+
+/* =========================================================
+   ADD LOG
+========================================================= */
+
 function addLog(
   type,
   msg,
@@ -1950,6 +2052,81 @@ function addLog(
   }
 
 
+  const photoUrl =
+    extraData.photo_url ||
+    extraData.photo ||
+    "";
+
+  const knownFaceUrl =
+    extraData.known_face_url ||
+    "";
+
+  let mediaHtml = "";
+
+  if(photoUrl || knownFaceUrl){
+
+    mediaHtml = `
+      <div class="log-media-row">
+
+        ${
+          photoUrl
+            ? `
+              <div>
+                <img
+                  class="log-media"
+                  src="${escapeHTML(
+                    absoluteMediaUrl(
+                      photoUrl
+                    )
+                  )}"
+                  alt="Intruder evidence"
+                  onclick='event.stopPropagation();openMedia("${escapeHTML(
+                    absoluteMediaUrl(
+                      photoUrl
+                    )
+                  )}","INTRUDER EVIDENCE")'
+                  onerror="this.style.display='none'"
+                >
+                <div class="log-media-label">
+                  INTRUDER
+                </div>
+              </div>
+            `
+            : ""
+        }
+
+        ${
+          knownFaceUrl
+            ? `
+              <div>
+                <img
+                  class="log-media"
+                  src="${escapeHTML(
+                    absoluteMediaUrl(
+                      knownFaceUrl
+                    )
+                  )}"
+                  alt="Known face"
+                  onclick='event.stopPropagation();openMedia("${escapeHTML(
+                    absoluteMediaUrl(
+                      knownFaceUrl
+                    )
+                  )}","KNOWN FACE")'
+                  onerror="this.style.display='none'"
+                >
+                <div class="log-media-label">
+                  KNOWN FACE
+                </div>
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+    `;
+  }
+
+
   const row =
     document.createElement(
       "tr"
@@ -2049,6 +2226,8 @@ function addLog(
           : ""
       }
 
+      ${mediaHtml}
+
     </td>
 
   `;
@@ -2113,22 +2292,24 @@ function openLB(
   timestamp
 ){
 
-  document.getElementById(
-    'lbImg'
-  ).src =
-    `${HTTP_BASE}/evidence/${encodeURIComponent(filename)}`;
+  const imageUrl =
+    filename.startsWith("http://") ||
+    filename.startsWith("https://") ||
+    filename.startsWith("/evidence/") ||
+    filename.startsWith("/known/")
+      ? absoluteMediaUrl(
+          filename
+        )
+      : (
+          HTTP_BASE +
+          "/evidence/" +
+          encodeURIComponent(filename)
+        );
 
-
-  document.getElementById(
-    'lbInfo'
-  ).textContent =
-    `${String(type).toUpperCase()} — ${timestamp}`;
-
-
-  document.getElementById(
-    'lightbox'
-  ).style.display =
-    'flex';
+  openMedia(
+    imageUrl,
+    `${String(type).toUpperCase()} — ${timestamp}`
+  );
 }
 
 
@@ -2348,6 +2529,20 @@ async function loadIntruderURL(){
     TELEGRAM_LOG_WS =
       url;
 
+    HTTP_BASE =
+      url
+        .replace(
+          /^wss:\/\//i,
+          "https://"
+        )
+        .replace(
+          /^ws:\/\//i,
+          "http://"
+        )
+        .replace(
+          /\/ws$/,
+          ""
+        );
 
     console.log(
       "🛡️ Intruder URL loaded:",
