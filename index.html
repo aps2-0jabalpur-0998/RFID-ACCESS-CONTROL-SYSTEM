@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3474,6 +3475,124 @@ body::after{
     font-family:'Space Mono',monospace;
     font-size:10px;
     letter-spacing:1px;
+}
+</style>
+
+
+<style id="guardian-alert-photo-css">
+.guardian-alert-box{
+    width:min(980px,94vw);
+    max-height:92vh;
+    overflow:auto;
+    gap:10px;
+}
+
+.guardian-alert-photo-wrap{
+    width:min(100%,560px);
+    margin:18px auto 0;
+    padding:10px;
+    border:1px solid rgba(255,110,110,.28);
+    background:rgba(0,0,0,.18);
+    box-shadow:
+        inset 0 0 22px rgba(255,72,72,.08),
+        0 10px 28px rgba(0,0,0,.28);
+}
+
+.guardian-alert-photo-wrap.hidden{
+    display:none;
+}
+
+.guardian-alert-photo{
+    display:block;
+    width:100%;
+    max-height:340px;
+    object-fit:contain;
+    background:#03070a;
+    border:1px solid rgba(255,255,255,.10);
+}
+
+.guardian-alert-photo-label{
+    margin-top:7px;
+    color:#ffb1b1;
+    font-family:'Space Mono',monospace;
+    font-size:8px;
+    letter-spacing:1.4px;
+    text-align:left;
+}
+
+.guardian-alert-box.has-photo{
+    display:grid;
+    grid-template-columns:minmax(240px,1fr) minmax(280px,560px);
+    grid-template-areas:
+        "icon photo"
+        "title photo"
+        "message photo"
+        "time photo"
+        "zone photo";
+    align-items:center;
+    column-gap:22px;
+    text-align:left;
+}
+
+.guardian-alert-box.has-photo .guardian-alert-icon{
+    grid-area:icon;
+    margin:0 0 12px 0;
+    justify-self:start;
+}
+
+.guardian-alert-box.has-photo .guardian-alert-title{
+    grid-area:title;
+    font-size:clamp(24px,3vw,42px);
+    letter-spacing:2px;
+}
+
+.guardian-alert-box.has-photo .guardian-alert-message{
+    grid-area:message;
+    max-width:none;
+    font-size:clamp(11px,1.3vw,16px);
+}
+
+.guardian-alert-box.has-photo .guardian-alert-time{
+    grid-area:time;
+}
+
+.guardian-alert-box.has-photo .guardian-alert-zone{
+    grid-area:zone;
+    margin-top:8px;
+}
+
+.guardian-alert-box.has-photo .guardian-alert-photo-wrap{
+    grid-area:photo;
+    width:100%;
+    margin:0;
+}
+
+@media(max-width:760px){
+    .guardian-alert-box.has-photo{
+        grid-template-columns:1fr;
+        grid-template-areas:
+            "icon"
+            "title"
+            "message"
+            "time"
+            "zone"
+            "photo";
+        text-align:center;
+    }
+
+    .guardian-alert-box.has-photo .guardian-alert-icon{
+        justify-self:center;
+        margin:0 auto 12px;
+    }
+
+    .guardian-alert-box.has-photo .guardian-alert-photo-wrap{
+        margin:8px auto 0;
+        max-width:100%;
+    }
+
+    .guardian-alert-photo{
+        max-height:260px;
+    }
 }
 </style>
 
@@ -11179,6 +11298,25 @@ setTimeout(sync,100);
             id="guardianAlertZone"
         ></div>
 
+        <div
+            class="guardian-alert-photo-wrap"
+            id="guardianAlertPhotoWrap"
+            aria-hidden="true"
+        >
+            <img
+                id="guardianAlertPhoto"
+                class="guardian-alert-photo"
+                src=""
+                alt="GuardianEye evidence"
+            >
+            <div
+                id="guardianAlertPhotoLabel"
+                class="guardian-alert-photo-label"
+            >
+                TELEGRAM EVIDENCE
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -11665,6 +11803,158 @@ function hideGuardianAlert(){
 
 
 
+    function makeGuardianMediaUrl(
+        url
+    ){
+
+        if(!url){
+            return "";
+        }
+
+        const raw =
+            String(url).trim();
+
+        if(
+            /^https?:\/\//i.test(
+                raw
+            )
+        ){
+            return raw;
+        }
+
+        // Prefer the same active WebSocket Cloudflare origin.
+        if(
+            window.guardianRealtimeWsUrl
+        ){
+
+            return window.guardianRealtimeWsUrl
+                .replace(
+                    /^wss:\/\//i,
+                    "https://"
+                )
+                .replace(
+                    /^ws:\/\//i,
+                    "http://"
+                )
+                .replace(
+                    /\/ws\/?$/i,
+                    ""
+                ) +
+                "/" +
+                raw.replace(
+                    /^\/+/,
+                    ""
+                );
+        }
+
+        return raw;
+    }
+
+
+    function updateGuardianAlertPhoto(
+        media
+    ){
+
+        if(
+            !media ||
+            !media.photo_url
+        ){
+            return;
+        }
+
+        const photoWrap =
+            document.getElementById(
+                "guardianAlertPhotoWrap"
+            );
+
+        const photo =
+            document.getElementById(
+                "guardianAlertPhoto"
+            );
+
+        const label =
+            document.getElementById(
+                "guardianAlertPhotoLabel"
+            );
+
+        const overlay =
+            document.getElementById(
+                "guardianEyeFullscreenAlert"
+            );
+
+        if(
+            !photoWrap ||
+            !photo ||
+            !overlay
+        ){
+            return;
+        }
+
+        const mediaEventUid =
+            String(
+                media.event_uid ||
+                ""
+            );
+
+        const currentUid =
+            String(
+                window.guardianCurrentEventUid ||
+                ""
+            );
+
+        // Accept exact event match. If no current UID exists yet,
+        // allow the latest photo to populate the popup.
+        if(
+            currentUid &&
+            mediaEventUid &&
+            currentUid !== mediaEventUid
+        ){
+            return;
+        }
+
+        photo.src =
+            makeGuardianMediaUrl(
+                media.photo_url
+            );
+
+        if(label){
+
+            label.textContent =
+                (
+                    media.zone
+                        ? "ZONE " + media.zone + " • "
+                        : ""
+                ) +
+                "TELEGRAM EVIDENCE";
+        }
+
+        photoWrap.classList.remove(
+            "hidden"
+        );
+
+        photoWrap.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        const box =
+            overlay.querySelector(
+                ".guardian-alert-box"
+            );
+
+        if(box){
+            box.classList.add(
+                "has-photo"
+            );
+        }
+
+        console.log(
+            "🖼️ Guardian alert photo attached:",
+            photo.src
+        );
+    }
+
+
     function showRealtimeAlert(
         alert
     ){
@@ -11681,6 +11971,18 @@ function hideGuardianAlert(){
                 alert.type ||
                 "ALERT"
             ).toUpperCase();
+
+        // MEDIA packets carry the Telegram photo for an already
+        // opened alert. They must NOT create a second popup/siren.
+        if(
+            type === "MEDIA" ||
+            alert.media === true
+        ){
+            updateGuardianAlertPhoto(
+                alert
+            );
+            return;
+        }
 
         // Prevent multiple WebSocket listeners / duplicated
         // Telegram packets from starting the voice twice.
@@ -11863,6 +12165,102 @@ function hideGuardianAlert(){
                     ? "ZONE " + alert.zone
                     : "";
         }
+
+        const alertBox =
+            overlay
+                ? overlay.querySelector(
+                    ".guardian-alert-box"
+                )
+                : null;
+
+        if(alertBox){
+            alertBox.classList.remove(
+                "has-photo"
+            );
+        }
+
+        const photoWrap =
+            document.getElementById(
+                "guardianAlertPhotoWrap"
+            );
+
+        const photo =
+            document.getElementById(
+                "guardianAlertPhoto"
+            );
+
+        const photoLabel =
+            document.getElementById(
+                "guardianAlertPhotoLabel"
+            );
+
+        if(photoWrap){
+            photoWrap.classList.add(
+                "hidden"
+            );
+            photoWrap.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+        }
+
+        if(photo){
+            photo.removeAttribute(
+                "src"
+            );
+        }
+
+        // The text alert may already contain the Telegram photo URL.
+        if(
+            alert.photo_url &&
+            photoWrap &&
+            photo
+        ){
+
+            photo.src =
+                makeGuardianMediaUrl(
+                    alert.photo_url
+                );
+
+            if(photoLabel){
+
+                photoLabel.textContent =
+                    (
+                        alert.zone
+                            ? "ZONE " + alert.zone + " • "
+                            : ""
+                    ) +
+                    "TELEGRAM EVIDENCE";
+            }
+
+            photoWrap.classList.remove(
+                "hidden"
+            );
+
+            photoWrap.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            if(alertBox){
+                alertBox.classList.add(
+                    "has-photo"
+                );
+            }
+        }
+
+        window.guardianCurrentEventUid =
+            String(
+                alert.event_uid ||
+                (
+                    type + "|" +
+                    (alert.zone || "") + "|" +
+                    (alert.telegram_message_id || alert.id || "")
+                )
+            );
+
+        window.guardianCurrentAlert =
+            alert;
 
         overlay.classList.add(
             "show"
