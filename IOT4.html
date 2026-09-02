@@ -1797,18 +1797,23 @@ function absoluteMediaUrl(
     return "";
   }
 
-  if(
-    /^https?:\/\//i.test(
-      String(url)
-    )
-  ){
-    return String(url);
-  }
+  const raw =
+    String(url);
 
   if(
-    !HTTP_BASE
+    /^https?:\/\//i.test(
+      raw
+    )
   ){
-    return String(url);
+    return raw;
+  }
+
+  if(!HTTP_BASE){
+    console.warn(
+      "⚠️ HTTP_BASE is empty; media URL remains relative:",
+      raw
+    );
+    return raw;
   }
 
   return (
@@ -1817,12 +1822,13 @@ function absoluteMediaUrl(
       ""
     ) +
     "/" +
-    String(url).replace(
+    raw.replace(
       /^\/+/,
       ""
     )
   );
 }
+
 
 
 
@@ -2151,6 +2157,11 @@ function addMediaToExistingLog(
       data.photo ||
       ""
     );
+
+  console.log(
+    "🖼️ TELEGRAM PHOTO URL:",
+    photoUrl
+  );
 
   if(!photoUrl){
     console.warn(
@@ -2505,10 +2516,33 @@ async function loadIntruderURL(){
     TELEGRAM_LOG_WS =
       url;
 
+    // IMPORTANT:
+    // The WebSocket tunnel and the media HTTP endpoint are the
+    // same Cloudflare origin. Convert wss:// -> https:// and
+    // remove the /ws path.
+    HTTP_BASE =
+      TELEGRAM_LOG_WS
+        .replace(
+          /^wss:\/\//i,
+          "https://"
+        )
+        .replace(
+          /^ws:\/\//i,
+          "http://"
+        )
+        .replace(
+          /\/ws$/,
+          ""
+        );
 
     console.log(
       "🛡️ Intruder URL loaded:",
       TELEGRAM_LOG_WS
+    );
+
+    console.log(
+      "🖼️ Media HTTP base:",
+      HTTP_BASE
     );
 
 
