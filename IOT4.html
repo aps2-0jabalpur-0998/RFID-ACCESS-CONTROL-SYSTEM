@@ -1792,10 +1792,6 @@ function addMediaToExistingLog(
   data
 ){
 
-  const uid =
-    data.event_uid ||
-    "";
-
   const photoUrl =
     absoluteMediaUrl(
       data.photo_url ||
@@ -1807,6 +1803,10 @@ function addMediaToExistingLog(
     return false;
   }
 
+  const uid =
+    data.event_uid ||
+    "";
+
   let row =
     uid
       ? document.querySelector(
@@ -1816,19 +1816,29 @@ function addMediaToExistingLog(
 
   if(!row){
 
-    // No parent text event yet: create a media-only row.
     addLog(
-      data.type || "INTRUDER",
+      data.parent_type ||
+        "INTRUDER",
       data.raw_message ||
+        data.message ||
         "Telegram evidence photo",
       `${data.date || ""} ${data.time || ""}`.trim(),
       {
         ...data,
-        event_uid: uid,
+        event_uid: uid
       }
     );
 
-    return true;
+    row =
+      uid
+        ? document.querySelector(
+            `tr[data-event-uid="${CSS.escape(uid)}"]`
+          )
+        : null;
+  }
+
+  if(!row){
+    return false;
   }
 
   let holder =
@@ -1838,11 +1848,11 @@ function addMediaToExistingLog(
 
   if(!holder){
 
-    const detailCell =
+    const detail =
       row.lastElementChild;
 
-    if(!detailCell){
-      return true;
+    if(!detail){
+      return false;
     }
 
     holder =
@@ -1853,9 +1863,25 @@ function addMediaToExistingLog(
     holder.className =
       "log-media-row";
 
-    detailCell.appendChild(
+    detail.appendChild(
       holder
     );
+  }
+
+  const images =
+    Array.from(
+      holder.querySelectorAll(
+        "img"
+      )
+    );
+
+  if(
+    images.some(
+      img =>
+        img.src === photoUrl
+    )
+  ){
+    return true;
   }
 
   const wrapper =
@@ -1864,15 +1890,17 @@ function addMediaToExistingLog(
     );
 
   wrapper.innerHTML = `
-    <img
-      class="log-media"
-      src="${escapeHTML(photoUrl)}"
-      alt="Telegram evidence"
-      onclick='event.stopPropagation();openMedia("${escapeHTML(photoUrl)}","TELEGRAM EVIDENCE")'
-      onerror="this.style.display='none'"
-    >
-    <div class="log-media-label">
-      TELEGRAM
+    <div>
+      <img
+        class="log-media"
+        src="${escapeHTML(photoUrl)}"
+        alt="Telegram evidence"
+        onclick='event.stopPropagation();openMedia("${escapeHTML(photoUrl)}","TELEGRAM EVIDENCE")'
+        onerror="this.style.display='none'"
+      >
+      <div class="log-media-label">
+        TELEGRAM PHOTO
+      </div>
     </div>
   `;
 
@@ -1881,356 +1909,6 @@ function addMediaToExistingLog(
   );
 
   return true;
-}
-
-
-function addLog(
-  type,
-  msg,
-  time,
-  extraData = {}
-){
-
-  const logBody =
-    document.getElementById(
-      "eventLog"
-    );
-
-
-  if(!logBody){
-    return;
-  }
-
-
-  const empty =
-    logBody.querySelector(
-      ".log-empty-row"
-    );
-
-
-  if(empty){
-    empty.remove();
-  }
-
-
-  const parts =
-    String(
-      time || ""
-    )
-    .trim()
-    .split(
-      /\s+/
-    );
-
-
-  let date = "";
-  let clock = "";
-
-
-  if(
-    parts.length >= 2
-  ){
-
-    date =
-      parts[0];
-
-    clock =
-      parts[1];
-
-  }
-
-  else{
-
-    clock =
-      time ||
-      now();
-  }
-
-
-  const meta =
-    inferLogParts(
-      type,
-      extraData
-    );
-
-
-  /*
-     IMPORTANT:
-     X3 / X4 comes from the real
-     backend zone field.
-  */
-
-  let source =
-    extraData.zone ||
-    extraData.source ||
-    extraData.project ||
-    "GuardianEye";
-
-
-  let detailsMain =
-    msg ||
-    extraData.message ||
-    "Event recorded";
-
-
-  let detailsSub = [];
-
-
-  if(extraData.name){
-
-    detailsSub.push(
-      "Name: " +
-      extraData.name
-    );
-  }
-
-
-  if(extraData.vehicle_id){
-
-    detailsSub.push(
-      "Vehicle ID: " +
-      extraData.vehicle_id
-    );
-  }
-
-
-  if(extraData.vehicle_name){
-
-    detailsSub.push(
-      "Vehicle: " +
-      extraData.vehicle_name
-    );
-  }
-
-
-  if(extraData.vehicle_status){
-
-    detailsSub.push(
-      "Vehicle status: " +
-      extraData.vehicle_status
-    );
-  }
-
-
-  if(extraData.animal){
-
-    detailsSub.push(
-      "Animal: " +
-      extraData.animal
-    );
-  }
-
-
-  if(
-    extraData.confidence !==
-      undefined &&
-    extraData.confidence !==
-      null
-  ){
-
-    const c =
-      Number(
-        extraData.confidence
-      );
-
-
-    detailsSub.push(
-      "Confidence: " +
-      (
-        c <= 1
-          ? (c * 100).toFixed(1)
-          : c.toFixed(1)
-      ) +
-      "%"
-    );
-  }
-
-
-  const inlinePhotoUrl =
-    absoluteMediaUrl(
-      extraData.photo_url ||
-      extraData.photo ||
-      ""
-    );
-
-  const row =
-    document.createElement(
-      "tr"
-    );
-
-  if(extraData.event_uid){
-    row.dataset.eventUid =
-      String(
-        extraData.event_uid
-      );
-  }
-
-
-  row.innerHTML = `
-
-    <td>
-      ${escapeHTML(
-        date || "—"
-      )}
-    </td>
-
-    <td>
-
-      <span style="
-        font-family:'DM Mono',monospace;
-        font-size:.68rem;
-        color:#71869a;
-      ">
-
-        ${escapeHTML(
-          clock || "—"
-        )}
-
-      </span>
-
-    </td>
-
-    <td>
-
-      <span class="
-        log-type
-        ${meta.badgeClass}
-      ">
-
-        ${meta.icon}
-
-        ${escapeHTML(
-          meta.label
-        )}
-
-      </span>
-
-    </td>
-
-    <td>
-
-      <span style="
-        display:inline-flex;
-        padding:5px 8px;
-        border-radius:7px;
-        border:1px solid rgba(110,231,255,.16);
-        background:rgba(110,231,255,.035);
-        font-family:'DM Mono',monospace;
-        font-size:.64rem;
-        color:var(--cyan);
-        font-weight:700;
-      ">
-
-        ${escapeHTML(
-          source
-        )}
-
-      </span>
-
-    </td>
-
-    <td>
-
-      <div class="log-detail-main">
-
-        ${escapeHTML(
-          detailsMain
-        )}
-
-      </div>
-
-      ${
-        detailsSub.length
-          ? `
-
-            <div class="log-detail-sub">
-
-              ${detailsSub
-                .map(
-                  escapeHTML
-                )
-                .join(
-                  " • "
-                )}
-
-            </div>
-
-          `
-          : ""
-      }
-
-      ${
-        inlinePhotoUrl
-          ? `
-            <div class="log-media-row">
-              <div>
-                <img
-                  class="log-media"
-                  src="${escapeHTML(inlinePhotoUrl)}"
-                  alt="Telegram evidence"
-                  onclick='event.stopPropagation();openMedia("${escapeHTML(inlinePhotoUrl)}","TELEGRAM EVIDENCE")'
-                  onerror="this.style.display='none'"
-                >
-                <div class="log-media-label">
-                  TELEGRAM
-                </div>
-              </div>
-            </div>
-          `
-          : ""
-      }
-
-    </td>
-
-  `;
-
-
-  logBody.insertBefore(
-    row,
-    logBody.firstChild
-  );
-
-
-  while(
-    logBody.children.length >
-    100
-  ){
-
-    logBody.removeChild(
-      logBody.lastChild
-    );
-  }
-
-
-  hasLog =
-    true;
-}
-
-
-function clearLog(){
-
-  const logBody =
-    document.getElementById(
-      "eventLog"
-    );
-
-
-  if(!logBody){
-    return;
-  }
-
-
-  logBody.innerHTML = `
-
-    <tr class="log-empty-row">
-
-      <td colspan="5">
-        No events yet
-      </td>
-
-    </tr>
-
-  `;
 }
 
 
@@ -2831,77 +2509,22 @@ function connectTelegramLog(){
             event.data
           );
 
-
         console.log(
-          "🛡️ INTRUDER DATA:",
+          "🛡️ IOT4 DATA:",
           data
         );
 
-
         if(
-          data.type ===
-          "SYSTEM"
+          data.type === "SYSTEM"
         ){
-
           return;
         }
 
-
+        // Telegram photo.
         if(
-          data.type ===
-          "INTRUDER"
-        ){
-
-          addIntruderLog(
-            data
-          );
-
-          return;
-        }
-
-
-        if(
-          data.type ===
-          "UNKNOWN_VEHICLE"
-        ){
-
-          addVehicleLog(
-            data
-          );
-
-          return;
-        }
-
-
-        if(
-          data.type ===
-          "KNOWN_VEHICLE"
-        ){
-
-          addVehicleLog(
-            data
-          );
-
-          return;
-        }
-
-
-        if(
-          data.type ===
-          "DANGEROUS"
-        ){
-
-          addAnimalLog(
-            data
-          );
-
-          return;
-        }
-
-
-        if(
-          data.type ===
-          "MEDIA"
+          data.type === "MEDIA" ||
+          data.media === true ||
+          data.photo_url
         ){
 
           addMediaToExistingLog(
@@ -2911,81 +2534,74 @@ function connectTelegramLog(){
           return;
         }
 
-
-        if(
-          data.type ===
-          "SAFE_ANIMAL"
-        ){
-
-          addLog(
-
-            "SAFE_ANIMAL",
-
-            data.raw_message ||
-              data.speech ||
-              "Safe animal detected",
-
-            `${data.date || ""} ${
-              getEventTime(data)
-            }`.trim(),
-
-            data
-
-          );
-
-          return;
-        }
-
-
-        if(
-          data.type ===
-          "KNOWN_PERSON"
-        ){
-
-          addLog(
-
-            "KNOWN_PERSON",
-
-            data.raw_message ||
-              data.speech ||
-              "Known person detected",
-
-            `${data.date || ""} ${
-              getEventTime(data)
-            }`.trim(),
-
-            data
-
-          );
-
-          return;
-        }
-
-
-        /* Backward compatibility */
-
-        if(
-          data.project ===
-            "intruder" &&
-          data.source ===
-            "combined_test1" &&
+        const type =
           String(
-            data.type || ""
-          ).toLowerCase()
-            ===
-            "intruder"
+            data.type ||
+            ""
+          ).toUpperCase();
+
+        if(
+          type === "INTRUDER" ||
+          type === "ALERT"
         ){
 
-          addIntruderLog({
+          addIntruderLog(
+            data
+          );
 
-            ...data,
-
-            type:
-              "INTRUDER"
-
-          });
+          return;
         }
 
+        if(
+          type === "KNOWN_PERSON"
+        ){
+
+          addLog(
+            "KNOWN_PERSON",
+            data.message ||
+              data.raw_message ||
+              "Known person detected",
+            `${data.date || ""} ${getEventTime(data)}`.trim(),
+            data
+          );
+
+          return;
+        }
+
+        if(
+          type === "UNKNOWN_VEHICLE" ||
+          type === "KNOWN_VEHICLE"
+        ){
+
+          addVehicleLog(
+            data
+          );
+
+          return;
+        }
+
+        if(
+          type === "DANGEROUS" ||
+          type === "SAFE_ANIMAL"
+        ){
+
+          addAnimalLog(
+            data
+          );
+
+          return;
+        }
+
+        // Absolute fallback so no valid Telegram event silently
+        // disappears from the log.
+        addLog(
+          type || "ALERT",
+          data.message ||
+            data.raw_message ||
+            "Telegram event received",
+          `${data.date || ""} ${getEventTime(data)}`.trim(),
+          data
+        );
 
       }catch(error){
 
