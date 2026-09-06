@@ -847,18 +847,6 @@ function setSafe(data = {}) {
             "Last sensor: " +
             data.sensor;
     }
-
-    // Log only real SAFE packets received from backend.
-    // Do not log the initial setSafe() call used at page startup.
-    if (
-        data &&
-        (
-            data.telegram_message_id ||
-            String(data.type || "").toLowerCase() === "safe"
-        )
-    ) {
-        addEvent(data);
-    }
 }
 
 
@@ -1004,9 +992,7 @@ function addEvent(data) {
     events.unshift({
         sensor,
         time,
-        date,
-        type: String(data.type || "alert").toLowerCase(),
-        message: data.message || ""
+        date
     });
 
 
@@ -1053,45 +1039,31 @@ function renderEvents() {
 
 
     eventsBox.innerHTML =
-        events.map(item => {
+        events.map(item => `
 
-            const safe =
-                String(item.type || "").toLowerCase() === "safe";
+            <div class="event alert">
 
-            const eventClass =
-                safe ? "event" : "event alert";
+                <div class="dot"></div>
 
-            const title =
-                safe
-                    ? "✅ FIRE SYSTEM SAFE — X2"
-                    : "🔥 FIRE DETECTED — X2";
+                <div>
 
-            return `
+                    <div class="event-title">
+                        🔥 FIRE DETECTED — X2
+                    </div>
 
-                <div class="${eventClass}">
-
-                    <div class="dot"></div>
-
-                    <div>
-
-                        <div class="event-title">
-                            ${title}
-                        </div>
-
-                        <div class="event-meta">
-                            ${escapeHTML(item.sensor)}
-                            ·
-                            ${escapeHTML(item.time)}
-                            ·
-                            ${escapeHTML(item.date)}
-                        </div>
-
+                    <div class="event-meta">
+                        ${escapeHTML(item.sensor)}
+                        ·
+                        ${escapeHTML(item.time)}
+                        ·
+                        ${escapeHTML(item.date)}
                     </div>
 
                 </div>
 
-            `;
-        }).join("");
+            </div>
+
+        `).join("");
 }
 
 
@@ -1217,7 +1189,6 @@ function connectFire() {
 
             const isAlert =
                 type === "alert" ||
-                type === "continue" ||
                 data.alert === true ||
                 data.fire === true ||
                 String(
