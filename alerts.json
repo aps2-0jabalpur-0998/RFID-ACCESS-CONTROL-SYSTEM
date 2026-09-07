@@ -1,7 +1,7 @@
 {
-  "id": 6859,
+  "id": 7032,
   "received_at": "",
-  "raw_message": "🚨 GUARDIANEYE AI ALERT\n\n🔴 INTRUDER DETECTED\n\n\n📅 Date: 06-09-2026\n🕐 Time: 12:12:45\n\n⚠️ GPS FIX NOT AVAILABLE",
-  "speech": "Alert. Intruder detected. 🚨 GUARDIANEYE AI ALERT 🔴 INTRUDER DETECTED 📅 Date: 06-09-2026 🕐 Time: 12:12:45 ⚠️ GPS FIX NOT AVAILABLE",
+  "raw_message": "🚨 GUARDIANEYE AI ALERT\n\n🔴 INTRUDER DETECTED\n\n\n📅 Date: 07-09-2026\n🕐 Time: 09:27:09\n\n⚠️ GPS FIX NOT AVAILABLE",
+  "speech": "Alert. Intruder detected. 🚨 GUARDIANEYE AI ALERT 🔴 INTRUDER DETECTED 📅 Date: 07-09-2026 🕐 Time: 09:27:09 ⚠️ GPS FIX NOT AVAILABLE",
   "type": "INTRUDER"
 }
