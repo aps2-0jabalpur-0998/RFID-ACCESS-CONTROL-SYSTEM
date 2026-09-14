@@ -1234,6 +1234,9 @@ function connectFire() {
                 statusText === "safe" ||
                 messageText.includes(
                     "FIRE SYSTEM SAFE"
+                ) ||
+                /(^|\s)SAFE($|\s)/.test(
+                    messageText
                 );
 
 
@@ -1309,6 +1312,15 @@ function connectFire() {
 
                         data.sensor =
                             "FLAME2";
+
+                    } else if (
+                        messageText.includes(
+                            "IR2"
+                        )
+                    ) {
+
+                        data.sensor =
+                            "IR2";
 
                     } else if (
                         messageText.includes(
