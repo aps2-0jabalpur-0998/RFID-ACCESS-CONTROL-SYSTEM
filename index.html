@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11904,12 +11905,40 @@ function hideGuardianAlert(){
                 ""
             );
 
-        // Accept exact event match. If no current UID exists yet,
-        // allow the latest photo to populate the popup.
+        // Normally require the MEDIA packet to match the current event.
+        // Telegram vehicle alerts are sent as TWO messages:
+        //   1) vehicle alert text
+        //   2) evidence photo
+        // Those two Telegram messages can have different IDs/event_uid values.
+        // Therefore, for a recently opened UNKNOWN_VEHICLE alert, allow the
+        // immediately-following photo to attach to the same popup.
+        const currentAlertType =
+            String(
+                (
+                    window.guardianCurrentAlert &&
+                    window.guardianCurrentAlert.type
+                ) ||
+                ""
+            )
+            .toUpperCase()
+            .replace(/[\\s-]+/g, "_");
+
+        const recentVehicleAlert =
+            currentAlertType === "UNKNOWN_VEHICLE" &&
+            (
+                Date.now() -
+                Number(
+                    window.guardianCurrentAlertAt ||
+                    guardianLastAlertAt ||
+                    0
+                )
+            ) < 30000;
+
         if(
             currentUid &&
             mediaEventUid &&
-            currentUid !== mediaEventUid
+            currentUid !== mediaEventUid &&
+            !recentVehicleAlert
         ){
             return;
         }
@@ -11927,7 +11956,19 @@ function hideGuardianAlert(){
                         ? "ZONE " + media.zone + " • "
                         : ""
                 ) +
-                "TELEGRAM EVIDENCE";
+                (
+                    String(
+                        (
+                            window.guardianCurrentAlert &&
+                            window.guardianCurrentAlert.type
+                        ) ||
+                        ""
+                    )
+                    .toUpperCase()
+                    .replace(/[\\s-]+/g, "_") === "UNKNOWN_VEHICLE"
+                        ? "VEHICLE EVIDENCE"
+                        : "TELEGRAM EVIDENCE"
+                );
         }
 
         photoWrap.classList.remove(
@@ -11968,16 +12009,71 @@ function hideGuardianAlert(){
             return;
         }
 
-        const type =
+        let type =
             String(
                 alert.type ||
+                alert.alert_type ||
                 "ALERT"
-            ).toUpperCase();
+            )
+            .toUpperCase()
+            .trim()
+            .replace(/[\\s-]+/g, "_");
+
+        const guardianRawText =
+            [
+                alert.raw_message,
+                alert.message,
+                alert.speech,
+                alert.title,
+                alert.status,
+                alert.vehicle_status,
+                alert.vehicle_name
+            ]
+            .filter(Boolean)
+            .join("\\n")
+            .toUpperCase();
+
+        // The bridge may send a generic ALERT/VEHICLE packet while the
+        // Telegram text itself says "UNKNOWN VEHICLE DETECTED".
+        // Normalize it here so the existing full-screen alert pipeline
+        // always recognizes the vehicle event.
+        if(
+            type === "UNKNOWN_VEHICLE_DETECTED" ||
+            guardianRawText.includes(
+                "UNKNOWN VEHICLE DETECTED"
+            ) ||
+            (
+                guardianRawText.includes(
+                    "UNKNOWN VEHICLE"
+                ) &&
+                (
+                    type === "ALERT" ||
+                    type === "VEHICLE" ||
+                    type === "SECURITY" ||
+                    type === "UNKNOWN"
+                )
+            )
+        ){
+            type = "UNKNOWN_VEHICLE";
+        }
+
+        // Be tolerant of the animal bridge naming too.
+        if(
+            type === "DANGEROUS_ANIMAL" ||
+            guardianRawText.includes(
+                "DANGEROUS ANIMAL DETECTED"
+            )
+        ){
+            type = "DANGEROUS";
+        }
 
         // MEDIA packets carry the Telegram photo for an already
         // opened alert. They must NOT create a second popup/siren.
         if(
             type === "MEDIA" ||
+            type === "PHOTO" ||
+            type === "IMAGE" ||
+            type === "EVIDENCE" ||
             alert.media === true
         ){
             updateGuardianAlertPhoto(
@@ -12119,33 +12215,111 @@ function hideGuardianAlert(){
                 "⚠️";
         }
 
+        const vehicleRaw =
+            String(
+                alert.raw_message ||
+                alert.message ||
+                ""
+            );
+
+        const vehicleLine = (label) => {
+            const lines =
+                vehicleRaw.split(/\\r?\\n/);
+
+            const wanted =
+                String(label)
+                    .toLowerCase();
+
+            for(const line of lines){
+                const clean =
+                    String(line)
+                        .replace(
+                            /^[^A-Za-z0-9]+/,
+                            ""
+                        )
+                        .trim();
+
+                if(
+                    clean
+                        .toLowerCase()
+                        .startsWith(
+                            wanted.toLowerCase() + ":"
+                        )
+                ){
+                    return clean
+                        .slice(
+                            clean.indexOf(":") + 1
+                        )
+                        .trim();
+                }
+            }
+
+            return "";
+        };
+
+        const vehicleId =
+            alert.vehicle_id ||
+            vehicleLine("Vehicle ID");
+
+        const vehicleName =
+            alert.vehicle_name ||
+            vehicleLine("Vehicle");
+
+        const vehicleStatus =
+            alert.vehicle_status ||
+            vehicleLine("Status");
+
+        const vehicleDetails =
+            [
+                vehicleId
+                    ? "Vehicle ID: " + vehicleId
+                    : "",
+                vehicleName
+                    ? "Vehicle: " + vehicleName
+                    : "",
+                vehicleStatus
+                    ? "Status: " + vehicleStatus
+                    : ""
+            ]
+            .filter(Boolean)
+            .join("  •  ");
+
         message.textContent =
-            alert.zone
+            type === "UNKNOWN_VEHICLE"
                 ? (
-                    "ZONE " +
-                    alert.zone +
-                    " — " +
-                    (
-                        type === "FIRE"
-                            ? "आग का पता चला है। तुरंत फायर प्रोटेक्शन एरिया की जांच करें।"
-                            : type === "INTRUDER"
-                                ? "घुसपैठिया detected हुआ है।"
-                                : type === "DANGEROUS"
-                                    ? "खतरनाक जानवर detected हुआ है।"
-                                    : "सुरक्षा चेतावनी प्राप्त हुई है।"
-                    )
+                    vehicleDetails ||
+                    alert.speech ||
+                    alert.raw_message ||
+                    alert.message ||
+                    "Unknown vehicle detected. Security verification required."
                 )
-                : (
-            type === "INTRUDER"
-                ? "घुसपैठिया detected हुआ है। तुरंत क्षेत्र खाली करें।"
-                : type === "DANGEROUS"
-                    ? "खतरनाक जानवर detected हुआ है। सुरक्षित दूरी बनाए रखें।"
-                    : (
-                        alert.speech ||
-                        alert.raw_message ||
-                        "सुरक्षा चेतावनी प्राप्त हुई है।"
+                : alert.zone
+                    ? (
+                        "ZONE " +
+                        alert.zone +
+                        " — " +
+                        (
+                            type === "FIRE"
+                                ? "आग का पता चला है। तुरंत फायर प्रोटेक्शन एरिया की जांच करें।"
+                                : type === "INTRUDER"
+                                    ? "घुसपैठिया detected हुआ है।"
+                                    : type === "DANGEROUS"
+                                        ? "खतरनाक जानवर detected हुआ है।"
+                                        : "सुरक्षा चेतावनी प्राप्त हुई है।"
+                        )
                     )
-                );
+                    : (
+                type === "INTRUDER"
+                    ? "घुसपैठिया detected हुआ है। तुरंत क्षेत्र खाली करें।"
+                    : type === "DANGEROUS"
+                        ? "खतरनाक जानवर detected हुआ है। सुरक्षित दूरी बनाए रखें।"
+                        : (
+                            alert.speech ||
+                            alert.raw_message ||
+                            alert.message ||
+                            "सुरक्षा चेतावनी प्राप्त हुई है।"
+                        )
+                    );
 
         time.textContent =
             alert.received_at ||
@@ -12232,7 +12406,11 @@ function hideGuardianAlert(){
                             ? "ZONE " + alert.zone + " • "
                             : ""
                     ) +
-                    "TELEGRAM EVIDENCE";
+                    (
+                        type === "UNKNOWN_VEHICLE"
+                            ? "VEHICLE EVIDENCE"
+                            : "TELEGRAM EVIDENCE"
+                    );
             }
 
             photoWrap.classList.remove(
@@ -12262,7 +12440,65 @@ function hideGuardianAlert(){
             );
 
         window.guardianCurrentAlert =
-            alert;
+            {
+                ...alert,
+                type: type
+            };
+
+        window.guardianCurrentAlertAt =
+            Date.now();
+
+        // Feed UNKNOWN VEHICLE into the same Command Center alert/activity
+        // logs used by the other GuardianEye events.
+        if(
+            type === "UNKNOWN_VEHICLE"
+        ){
+            try{
+                if(
+                    typeof window.addRealAlert ===
+                    "function"
+                ){
+                    window.addRealAlert(
+                        "intruder",
+                        "UNKNOWN VEHICLE DETECTED",
+                        vehicleDetails ||
+                        "Vehicle requires security verification",
+                        alert.time ||
+                        alert.received_at ||
+                        new Date().toLocaleTimeString(
+                            "en-IN"
+                        )
+                    );
+                }
+
+                if(
+                    typeof window.addRealActivity ===
+                    "function"
+                ){
+                    window.addRealActivity(
+                        "🚗",
+                        "Unknown vehicle detected" +
+                        (
+                            vehicleId
+                                ? " — " + vehicleId
+                                : ""
+                        )
+                    );
+                }
+
+                if(
+                    typeof window.render ===
+                    "function"
+                ){
+                    window.render();
+                }
+            }catch(vehicleLogError){
+                console.warn(
+                    "Vehicle log update failed:",
+                    vehicleLogError
+                );
+            }
+        }
 
         overlay.classList.add(
             "show"
