@@ -12147,6 +12147,42 @@ function hideGuardianAlert(){
             );
         }
 
+        // Important: a vehicle evidence photo may arrive after the
+        // text packet. If the popup has already been hidden, reopen the SAME
+        // alert instead of silently attaching the photo to a hidden overlay.
+        if(
+            currentAlertType === "UNKNOWN_VEHICLE"
+        ){
+            overlay.classList.add(
+                "show"
+            );
+
+            overlay.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            const title =
+                document.getElementById(
+                    "guardianAlertTitle"
+                );
+
+            const icon =
+                document.getElementById(
+                    "guardianAlertIcon"
+                );
+
+            if(title){
+                title.textContent =
+                    "UNKNOWN VEHICLE";
+            }
+
+            if(icon){
+                icon.textContent =
+                    "🚗";
+            }
+        }
+
         console.log(
             "🖼️ Guardian alert photo attached:",
             photo.src
@@ -12216,15 +12252,169 @@ function hideGuardianAlert(){
                 "DANGEROUS";
         }
 
-        // MEDIA packets carry the Telegram photo for an already
-        // opened alert. They must NOT create a second popup/siren.
+        // MEDIA packets carry Telegram evidence.
+        // For UNKNOWN VEHICLE the Telegram text and photo are separate
+        // messages. If the text alert was already recognized, force the
+        // same fullscreen popup back open before attaching the photo.
         if(
             type === "MEDIA" ||
             alert.media === true
         ){
+            const mediaText =
+                [
+                    alert.raw_message,
+                    alert.message,
+                    alert.caption,
+                    alert.title,
+                    alert.speech,
+                    alert.vehicle_name,
+                    alert.vehicle_status
+                ]
+                .filter(Boolean)
+                .join("\\n")
+                .toUpperCase();
+
+            const previousType =
+                String(
+                    alert.parent_type ||
+                    alert.event_type ||
+                    (
+                        window.guardianCurrentAlert &&
+                        window.guardianCurrentAlert.type
+                    ) ||
+                    window.guardianLastSecurityType ||
+                    ""
+                )
+                .toUpperCase()
+                .replace(/[\\s-]+/g, "_");
+
+            const mediaLooksVehicle =
+                mediaText.includes(
+                    "UNKNOWN VEHICLE"
+                ) ||
+                mediaText.includes(
+                    "VEHICLE DETECTED"
+                ) ||
+                previousType ===
+                    "UNKNOWN_VEHICLE";
+
+            if(mediaLooksVehicle){
+                const vehicleOverlay =
+                    document.getElementById(
+                        "guardianEyeFullscreenAlert"
+                    );
+
+                const vehicleTitle =
+                    document.getElementById(
+                        "guardianAlertTitle"
+                    );
+
+                const vehicleIcon =
+                    document.getElementById(
+                        "guardianAlertIcon"
+                    );
+
+                const vehicleMessage =
+                    document.getElementById(
+                        "guardianAlertMessage"
+                    );
+
+                const vehicleTime =
+                    document.getElementById(
+                        "guardianAlertTime"
+                    );
+
+                const vehicleZone =
+                    document.getElementById(
+                        "guardianAlertZone"
+                    );
+
+                if(vehicleTitle){
+                    vehicleTitle.textContent =
+                        "UNKNOWN VEHICLE";
+                }
+
+                if(vehicleIcon){
+                    vehicleIcon.textContent =
+                        "🚗";
+                }
+
+                if(vehicleMessage){
+                    const previous =
+                        window.guardianCurrentAlert ||
+                        {};
+
+                    vehicleMessage.textContent =
+                        previous.raw_message ||
+                        previous.message ||
+                        alert.raw_message ||
+                        alert.message ||
+                        "Unknown vehicle detected. Security verification required.";
+                }
+
+                if(vehicleTime){
+                    const previous =
+                        window.guardianCurrentAlert ||
+                        {};
+
+                    vehicleTime.textContent =
+                        previous.received_at ||
+                        (
+                            (previous.date || alert.date || "") +
+                            " " +
+                            (previous.time || alert.time || "")
+                        ).trim();
+                }
+
+                if(vehicleZone){
+                    vehicleZone.textContent =
+                        "ZONE " +
+                        (
+                            alert.zone ||
+                            (
+                                window.guardianCurrentAlert &&
+                                window.guardianCurrentAlert.zone
+                            ) ||
+                            "X3"
+                        );
+                }
+
+                if(vehicleOverlay){
+                    vehicleOverlay.classList.add(
+                        "show"
+                    );
+
+                    vehicleOverlay.setAttribute(
+                        "aria-hidden",
+                        "false"
+                    );
+                }
+
+                window.guardianLastSecurityType =
+                    "UNKNOWN_VEHICLE";
+            }
+
             updateGuardianAlertPhoto(
                 alert
             );
+
+            // If this MEDIA packet itself clearly identifies an unknown
+            // vehicle and no prior text packet reached the popup pipeline,
+            // still create a current vehicle alert so later evidence stays linked.
+            if(
+                mediaLooksVehicle &&
+                !window.guardianCurrentAlert
+            ){
+                window.guardianCurrentAlert = {
+                    ...alert,
+                    type:"UNKNOWN_VEHICLE",
+                    zone:alert.zone || "X3"
+                };
+
+                window.guardianCurrentAlertAt =
+                    Date.now();
+            }
+
             return;
         }
 
@@ -12512,6 +12702,15 @@ function hideGuardianAlert(){
         window.guardianCurrentAlertAt =
             Date.now();
 
+        if(
+            type === "INTRUDER" ||
+            type === "DANGEROUS" ||
+            type === "UNKNOWN_VEHICLE"
+        ){
+            window.guardianLastSecurityType =
+                type;
+        }
+
         overlay.classList.add(
             "show"
         );
@@ -12567,6 +12766,15 @@ function hideGuardianAlert(){
             voiceText
         );
     }
+
+    // Expose the SAME popup pipeline globally.
+    // Fire integration is in a separate script/IIFE, so it cannot otherwise
+    // see this local function.
+    window.showRealtimeAlert =
+        showRealtimeAlert;
+
+    window.updateGuardianAlertPhoto =
+        updateGuardianAlertPhoto;
 
 
 
@@ -13348,7 +13556,11 @@ intruderUrlCheckTimer =
                      * Same full-screen alert +
                      * siren + JARVIS voice pipeline.
                      */
-                    showRealtimeAlert({
+                    if(
+                        typeof window.showRealtimeAlert ===
+                        "function"
+                    ){
+                        window.showRealtimeAlert({
 
                         type: "FIRE",
 
@@ -13370,7 +13582,12 @@ intruderUrlCheckTimer =
                                 "fire-x2-" +
                                 Date.now()
                             )
-                    });
+                        });
+                    }else{
+                        fireLog(
+                            "❌ Global GuardianEye popup function missing"
+                        );
+                    }
 
 
                     return;
