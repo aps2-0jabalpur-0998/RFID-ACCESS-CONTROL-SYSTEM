@@ -3,6 +3,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12752,8 +12753,19 @@ function hideGuardianAlert(){
             type === "UNKNOWN_VEHICLE"
         ){
 
+            const vehicleZone =
+                String(
+                    alert.zone ||
+                    ""
+                ).trim();
+
             voiceText =
-                "सावधान! अनजान वाहन detected हुआ है। "
+                "अलर्ट! अलर्ट! अनजान वाहन डिटेक्ट हुआ है। "
+                + (
+                    vehicleZone
+                        ? "जोन " + vehicleZone + " में अनजान वाहन का पता चला है। "
+                        : ""
+                )
                 + "कृपया तुरंत सुरक्षा जांच करें।";
 
         }else{
