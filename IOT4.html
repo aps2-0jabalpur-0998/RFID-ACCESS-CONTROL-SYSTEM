@@ -1233,7 +1233,38 @@ let HTTP_BASE = "";
 
 let allEvidence = [];
 
+const INTRUDER_LOG_STORAGE_KEY =
+  "prana_setu_intruder_event_logs_v1";
+
 let eventLog = [];
+
+try{
+
+  const savedLogs =
+    JSON.parse(
+      localStorage.getItem(
+        INTRUDER_LOG_STORAGE_KEY
+      ) || "[]"
+    );
+
+  if(
+    Array.isArray(
+      savedLogs
+    )
+  ){
+    eventLog =
+      savedLogs;
+  }
+
+}catch(error){
+
+  console.warn(
+    "Could not load saved intruder logs:",
+    error
+  );
+
+  eventLog = [];
+}
 
 let currentFilter = 'all';
 
@@ -2134,16 +2165,106 @@ function addLog(
     logBody.firstChild
   );
 
-  while(
-    logBody.children.length >
-    100
-  ){
-    logBody.removeChild(
-      logBody.lastChild
+  /*
+   * KEEP ALL LOGS.
+   * No 100-row limit anymore.
+   *
+   * Also keep a persistent copy in localStorage so
+   * refresh/reopen does not erase the event history.
+   */
+  const storedEntry = {
+    type:
+      String(
+        type || "LOG"
+      ),
+
+    msg:
+      String(
+        detailsMain || "Event recorded"
+      ),
+
+    time:
+      String(
+        time || ""
+      ),
+
+    extraData:
+      {
+        ...extraData
+      },
+
+    savedAt:
+      Date.now()
+  };
+
+  eventLog.unshift(
+    storedEntry
+  );
+
+  try{
+
+    localStorage.setItem(
+      INTRUDER_LOG_STORAGE_KEY,
+      JSON.stringify(
+        eventLog
+      )
+    );
+
+  }catch(error){
+
+    console.warn(
+      "Could not save intruder logs:",
+      error
     );
   }
 
   hasLog = true;
+}
+
+
+function restoreSavedLogs(){
+
+  if(
+    !eventLog.length
+  ){
+    return;
+  }
+
+  const savedCopy =
+    [...eventLog];
+
+  /*
+   * Prevent addLog() from duplicating restored entries
+   * back into storage while rendering them.
+   */
+  eventLog = [];
+
+  for(
+    let i =
+      savedCopy.length - 1;
+    i >= 0;
+    i--
+  ){
+
+    const item =
+      savedCopy[i] || {};
+
+    addLog(
+      item.type ||
+        "LOG",
+      item.msg ||
+        "Event recorded",
+      item.time ||
+        "",
+      item.extraData ||
+        {}
+    );
+  }
+
+  /*
+   * addLog() rebuilt eventLog in the same newest-first
+   * order and wrote it back to localStorage.
+   */
 }
 
 
@@ -3050,6 +3171,9 @@ function connectTelegramLog(){
 ========================================================= */
 
 loadIntruderURL();
+
+
+restoreSavedLogs();
 
 </script>
 
