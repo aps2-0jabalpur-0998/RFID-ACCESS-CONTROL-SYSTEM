@@ -622,7 +622,29 @@ let FIRE_WS_URL = "";
 
 let fireWS = null;
 let reconnectTimer = null;
+const FIRE_LOG_STORAGE_KEY = "guardianeye_fire_logs_v1";
+
 let events = [];
+
+try {
+    const savedLogs =
+        JSON.parse(
+            localStorage.getItem(
+                FIRE_LOG_STORAGE_KEY
+            ) || "[]"
+        );
+
+    if (Array.isArray(savedLogs)) {
+        events = savedLogs;
+    }
+} catch (error) {
+    console.warn(
+        "Could not load saved fire logs:",
+        error
+    );
+
+    events = [];
+}
 
 
 /* =========================================================
@@ -992,15 +1014,35 @@ function addEvent(data) {
     events.unshift({
         sensor,
         time,
-        date
+        date,
+        message:
+            data.message ||
+            data.raw_message ||
+            "",
+        type:
+            data.type ||
+            "alert",
+        savedAt:
+            Date.now()
     });
 
-
-    if (events.length > 20) {
-
-        events.pop();
+    /*
+     * KEEP ALL FIRE LOGS.
+     * No 20-event limit anymore.
+     * Logs are also stored in localStorage,
+     * so page refresh/reopen does not erase them.
+     */
+    try {
+        localStorage.setItem(
+            FIRE_LOG_STORAGE_KEY,
+            JSON.stringify(events)
+        );
+    } catch (error) {
+        console.warn(
+            "Could not save fire logs:",
+            error
+        );
     }
-
 
     renderEvents();
 }
@@ -1432,6 +1474,7 @@ function connectFire() {
    ========================================================= */
 
 setSafe();
+renderEvents();
 
 /*
  * IMPORTANT:
