@@ -1,7 +1,7 @@
 {
-  "id": 7459,
+  "id": 7540,
   "received_at": "",
-  "raw_message": "🚨 GUARDIANEYE AI ALERT\n\n🔴 INTRUDER DETECTED\n\n\n📅 Date: 10-09-2026\n🕐 Time: 10:26:04\n\n⚠️ GPS FIX NOT AVAILABLE",
-  "speech": "Alert. Intruder detected. 🚨 GUARDIANEYE AI ALERT 🔴 INTRUDER DETECTED 📅 Date: 10-09-2026 🕐 Time: 10:26:04 ⚠️ GPS FIX NOT AVAILABLE",
-  "type": "INTRUDER"
+  "raw_message": "🚨 GUARDIANEYE AI ALERT\n\n🚗 UNKNOWN VEHICLE DETECTED\n\n🚗 Vehicle ID: http://en.m.wikipedia.org\n🚘 Vehicle: UNKNOWN VEHICLE\n🔐 Status: UNKNOWN\n\n📅 Date: 14-09-2026\n🕐 Time: 12:30:38\n\n⚠️ GPS FIX NOT AVAILABLE",
+  "speech": "Alert. Unknown vehicle detected. 🚨 GUARDIANEYE AI ALERT 🚗 UNKNOWN VEHICLE DETECTED 🚗 Vehicle ID: http://en.m.wikipedia.org 🚘 Vehicle: UNKNOWN VEHICLE 🔐 Status: UNKNOWN 📅 Date: 14-09-2026 🕐 Time: 12:30:38 ⚠️ GPS FIX NOT AVAILABLE",
+  "type": "UNKNOWN_VEHICLE"
 }
