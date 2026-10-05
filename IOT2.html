@@ -1112,31 +1112,65 @@ function renderEvents() {
 
 
     eventsBox.innerHTML =
-        events.map(item => `
+        events.map(item => {
 
-            <div class="event alert">
+            const sensor =
+                String(
+                    item.sensor || "FIRE SENSOR"
+                ).toUpperCase();
 
-                <div class="dot"></div>
+            let sensorIcon = "🔥";
 
-                <div>
+            if (
+                sensor.includes("FLAME")
+            ) {
 
-                    <div class="event-title">
-                        🔥 FIRE DETECTED — X2
-                    </div>
+                sensorIcon = "🔥";
 
-                    <div class="event-meta">
-                        ${escapeHTML(item.sensor)}
-                        ·
-                        ${escapeHTML(item.time)}
-                        ·
-                        ${escapeHTML(item.date)}
+            } else if (
+                sensor.includes("IR")
+            ) {
+
+                sensorIcon = "📡";
+            }
+
+            return `
+
+                <div class="event alert">
+
+                    <div class="dot"></div>
+
+                    <div>
+
+                        <div class="event-title">
+
+                            ${sensorIcon}
+                            FIRE DETECTED — X2
+
+                        </div>
+
+                        <div class="event-meta">
+
+                            SENSOR:
+                            ${escapeHTML(item.sensor)}
+
+                            ·
+
+                            ${escapeHTML(item.time)}
+
+                            ·
+
+                            ${escapeHTML(item.date)}
+
+                        </div>
+
                     </div>
 
                 </div>
 
-            </div>
+            `;
 
-        `).join("");
+        }).join("");
 }
 
 
@@ -1369,40 +1403,26 @@ function connectFire() {
                 if (!data.sensor) {
 
                     if (
-                        messageText.includes(
-                            "FLAME1"
-                        )
+                        messageText.includes("FLAME1") ||
+                        messageText.includes("FLAME SENSOR")
                     ) {
 
                         data.sensor =
                             "FLAME1";
 
                     } else if (
-                        messageText.includes(
-                            "FLAME2"
-                        )
-                    ) {
-
-                        data.sensor =
-                            "FLAME2";
-
-                    } else if (
-                        messageText.includes(
-                            "IR2"
-                        )
-                    ) {
-
-                        data.sensor =
-                            "IR2";
-
-                    } else if (
-                        messageText.includes(
-                            "IR1"
-                        )
+                        messageText.includes("IR1")
                     ) {
 
                         data.sensor =
                             "IR1";
+
+                    } else if (
+                        messageText.includes("IR2")
+                    ) {
+
+                        data.sensor =
+                            "IR2";
 
                     } else {
 
