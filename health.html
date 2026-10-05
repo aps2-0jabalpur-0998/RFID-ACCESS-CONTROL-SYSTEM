@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prana Setu — Animal Health</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg:#02070c;
+    --panel:#07131d;
+    --panel2:#0a1a25;
+    --panel3:#0d202c;
+    --border:rgba(83,174,214,.22);
+    --border-bright:rgba(83,174,214,.42);
+    --text:#eaf7ff;
+    --muted:#7f99a8;
+    --green:#42df6c;
+    --cyan:#39caff;
+    --blue:#328cff;
+    --yellow:#f4ca45;
+    --orange:#ff9d38;
+    --red:#ff4848;
+    --purple:#ad62ff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+    min-height:100vh;
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    background:
+        radial-gradient(circle at 50% 5%,rgba(20,100,140,.14),transparent 35%),
+        radial-gradient(circle at 15% 80%,rgba(20,130,80,.06),transparent 30%),
+        var(--bg);
+    overflow-x:hidden;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:999;
+    background:repeating-linear-gradient(to bottom,rgba(255,255,255,.012) 0 1px,transparent 1px 4px);
+    opacity:.2;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:998;
+    box-shadow:inset 0 0 100px rgba(0,0,0,.65);
+}
+
+.page{
+    position:relative;
+    z-index:2;
+    width:100%;
+    padding:12px;
+}
+
+.header{
+    min-height:88px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    padding:15px 20px;
+    background:linear-gradient(180deg,rgba(9,25,36,.98),rgba(3,13,20,.98));
+    border:1px solid var(--border);
+    box-shadow:0 15px 40px rgba(0,0,0,.45);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:13px;
+}
+
+.logo{
+    width:55px;
+    height:55px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:29px;
+    border:1px solid var(--border-bright);
+    background:radial-gradient(circle,rgba(57,202,255,.15),transparent 70%);
+}
+
+.brand-name{
+    font-family:'Orbitron',sans-serif;
+    font-size:19px;
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+.brand-name span{color:var(--cyan)}
+
+.brand-sub{
+    margin-top:5px;
+    color:var(--muted);
+    font-family:'Space Mono',monospace;
+    font-size:8px;
+    letter-spacing:1px;
+}
+
+.back{
+    padding:11px 16px;
+    color:#a9d8e9;
+    text-decoration:none;
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+    border:1px solid var(--border);
+    background:rgba(57,202,255,.05);
+    transition:.2s;
+}
+
+.back:hover{
+    color:white;
+    border-color:var(--cyan);
+    box-shadow:0 0 18px rgba(57,202,255,.12);
+}
+
+.title-panel{
+    margin-top:7px;
+    padding:25px;
+    border:1px solid var(--border);
+    background:
+        radial-gradient(circle at 50% 0,rgba(57,202,255,.09),transparent 42%),
+        linear-gradient(145deg,rgba(8,26,38,.98),rgba(3,13,20,.98));
+}
+
+.eyebrow{
+    color:var(--cyan);
+    font-family:'Space Mono',monospace;
+    font-size:8px;
+    letter-spacing:2px;
+}
+
+h1{
+    margin-top:9px;
+    font-family:'Orbitron',sans-serif;
+    font-size:30px;
+    letter-spacing:3px;
+}
+
+.subtitle{
+    margin-top:8px;
+    max-width:760px;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.7;
+}
+
+.status{
+    margin-top:18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.status-chip{
+    padding:8px 11px;
+    color:var(--green);
+    font-family:'Space Mono',monospace;
+    font-size:8px;
+    border:1px solid rgba(66,223,108,.22);
+    background:rgba(66,223,108,.04);
+}
+
+.status-chip .dot{
+    display:inline-block;
+    width:6px;
+    height:6px;
+    margin-right:6px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 8px var(--green);
+    animation:blink 1.5s infinite;
+}
+
+.grid{
+    margin-top:7px;
+    display:grid;
+    grid-template-columns:1.15fr 1fr 1fr;
+    gap:7px;
+}
+
+.card{
+    min-height:190px;
+    padding:18px;
+    border:1px solid var(--border);
+    background:linear-gradient(145deg,rgba(8,26,38,.98),rgba(3,13,20,.98));
+    position:relative;
+    overflow:hidden;
+}
+
+.card::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    width:3px;
+    height:100%;
+    background:var(--cyan);
+    box-shadow:0 0 15px rgba(57,202,255,.25);
+}
+
+.card-title{
+    color:#a9cbd8;
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+    letter-spacing:1px;
+}
+
+.metric{
+    margin-top:13px;
+    display:flex;
+    align-items:end;
+    gap:8px;
+}
+
+.metric strong{
+    font-family:'Orbitron',sans-serif;
+    font-size:34px;
+    color:var(--cyan);
+}
+
+.metric span{
+    margin-bottom:5px;
+    color:var(--muted);
+    font-size:9px;
+}
+
+.bar{
+    height:7px;
+    margin-top:14px;
+    background:#0d2935;
+    overflow:hidden;
+}
+
+.fill{
+    height:100%;
+    background:var(--green);
+    box-shadow:0 0 10px rgba(66,223,108,.55);
+}
+
+.small{
+    margin-top:10px;
+    color:var(--muted);
+    font-size:9px;
+    line-height:1.6;
+}
+
+.vitals{
+    margin-top:12px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+}
+
+.vital{
+    padding:11px;
+    background:rgba(255,255,255,.018);
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.vital label{
+    display:block;
+    color:#6f8996;
+    font-family:'Space Mono',monospace;
+    font-size:7px;
+}
+
+.vital strong{
+    display:block;
+    margin-top:6px;
+    color:#d9edf5;
+    font-family:'Orbitron',sans-serif;
+    font-size:14px;
+}
+
+.vital.ok strong{color:var(--green)}
+.vital.warn strong{color:var(--yellow)}
+
+.animal-card{
+    min-height:350px;
+    grid-row:span 2;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+.animal-orb{
+    width:175px;
+    height:175px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    background:
+        radial-gradient(circle,rgba(57,202,255,.12) 0 35%,transparent 36% 58%,rgba(57,202,255,.05) 59% 60%,transparent 61%),
+        rgba(4,18,27,.8);
+    border:1px solid rgba(57,202,255,.25);
+    box-shadow:0 0 35px rgba(57,202,255,.12),inset 0 0 30px rgba(57,202,255,.05);
+}
+
+.animal-orb::before{
+    content:"";
+    position:absolute;
+    inset:9px;
+    border-radius:50%;
+    border:1px solid rgba(57,202,255,.28);
+    border-top-color:var(--cyan);
+    animation:spin 6s linear infinite;
+}
+
+.animal-orb::after{
+    content:"";
+    position:absolute;
+    inset:23px;
+    border-radius:50%;
+    border:1px dashed rgba(66,223,108,.2);
+    animation:spinReverse 9s linear infinite;
+}
+
+.animal-emoji{
+    position:relative;
+    z-index:2;
+    font-size:76px;
+    filter:drop-shadow(0 0 12px rgba(57,202,255,.45));
+    animation:float 3s ease-in-out infinite;
+}
+
+.animal-name{
+    margin-top:15px;
+    font-family:'Orbitron',sans-serif;
+    font-size:14px;
+    letter-spacing:1px;
+}
+
+.animal-state{
+    margin-top:6px;
+    color:var(--green);
+    font-family:'Space Mono',monospace;
+    font-size:8px;
+}
+
+.alerts{
+    margin-top:7px;
+    padding:18px;
+    border:1px solid var(--border);
+    background:linear-gradient(145deg,rgba(8,26,38,.98),rgba(3,13,20,.98));
+}
+
+.alert-list{
+    margin-top:12px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:7px;
+}
+
+.alert{
+    padding:13px;
+    border:1px solid rgba(255,255,255,.05);
+    background:rgba(255,255,255,.018);
+}
+
+.alert strong{
+    display:block;
+    color:#dcecf2;
+    font-family:'Space Mono',monospace;
+    font-size:8px;
+}
+
+.alert span{
+    display:block;
+    margin-top:6px;
+    color:var(--muted);
+    font-size:8px;
+    line-height:1.5;
+}
+
+.alert.safe{border-color:rgba(66,223,108,.18)}
+.alert.safe strong{color:var(--green)}
+.alert.warning{border-color:rgba(244,202,69,.2)}
+.alert.warning strong{color:var(--yellow)}
+
+.footer{
+    margin-top:7px;
+    padding:14px 18px;
+    display:flex;
+    justify-content:space-between;
+    color:#607986;
+    font-family:'Space Mono',monospace;
+    font-size:8px;
+    border:1px solid var(--border);
+    background:#041019;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spinReverse{to{transform:rotate(-360deg)}}
+@keyframes float{50%{transform:translateY(-5px)}}
+@keyframes blink{50%{opacity:.25}}
+
+@media(max-width:900px){
+    .grid{grid-template-columns:1fr 1fr}
+    .animal-card{grid-row:auto}
+    .alert-list{grid-template-columns:1fr}
+}
+
+@media(max-width:600px){
+    .header{align-items:flex-start;flex-direction:column}
+    h1{font-size:21px}
+    .grid{grid-template-columns:1fr}
+    .animal-card{min-height:300px}
+    .footer{flex-direction:column;gap:8px}
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+    <header class="header">
+        <div class="brand">
+            <div class="logo">🐾</div>
+            <div>
+                <div class="brand-name">PRANA <span>SETU</span></div>
+                <div class="brand-sub">ANIMAL HEALTH MONITORING MODULE</div>
+            </div>
+        </div>
+
+        <a class="back" href="index.html">← COMMAND CENTER</a>
+    </header>
+
+    <section class="title-panel">
+        <div class="eyebrow">MODULE // ANIMAL-HEALTH-01</div>
+        <h1>ANIMAL HEALTH</h1>
+        <p class="subtitle">
+            Central monitoring interface for animal wellbeing, vital indicators,
+            activity status and health alerts. This page is ready for live sensor
+            data to be connected later.
+        </p>
+
+        <div class="status">
+            <div class="status-chip"><span class="dot"></span>SYSTEM READY</div>
+            <div class="status-chip">MONITORING: ACTIVE</div>
+            <div class="status-chip">DATA LINK: STANDBY</div>
+        </div>
+    </section>
+
+    <main class="grid">
+
+        <section class="card animal-card">
+            <div class="animal-orb">
+                <div class="animal-emoji">🐄</div>
+            </div>
+            <div class="animal-name">ANIMAL UNIT A-01</div>
+            <div class="animal-state">● HEALTH STATUS: STABLE</div>
+        </section>
+
+        <section class="card">
+            <div class="card-title">OVERALL HEALTH SCORE</div>
+            <div class="metric">
+                <strong id="healthScore">92</strong>
+                <span>/ 100</span>
+            </div>
+            <div class="bar">
+                <div class="fill" id="healthFill" style="width:92%"></div>
+            </div>
+            <div class="small">Composite indicator based on available health parameters.</div>
+        </section>
+
+        <section class="card">
+            <div class="card-title">ACTIVITY LEVEL</div>
+            <div class="metric">
+                <strong id="activityScore">78</strong>
+                <span>% NORMAL</span>
+            </div>
+            <div class="bar">
+                <div class="fill" style="width:78%"></div>
+            </div>
+            <div class="small">Movement/activity baseline is currently within the configured range.</div>
+        </section>
+
+        <section class="card">
+            <div class="card-title">VITAL PARAMETERS</div>
+            <div class="vitals">
+                <div class="vital ok">
+                    <label>TEMPERATURE</label>
+                    <strong id="temperature">38.5°C</strong>
+                </div>
+                <div class="vital ok">
+                    <label>HEART RATE</label>
+                    <strong id="heartRate">72 BPM</strong>
+                </div>
+                <div class="vital ok">
+                    <label>RESPIRATION</label>
+                    <strong id="respiration">18 RPM</strong>
+                </div>
+                <div class="vital ok">
+                    <label>HYDRATION</label>
+                    <strong id="hydration">GOOD</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-title">ENVIRONMENT</div>
+            <div class="vitals">
+                <div class="vital">
+                    <label>AMBIENT TEMP</label>
+                    <strong>27°C</strong>
+                </div>
+                <div class="vital">
+                    <label>HUMIDITY</label>
+                    <strong>61%</strong>
+                </div>
+                <div class="vital">
+                    <label>AIR QUALITY</label>
+                    <strong>GOOD</strong>
+                </div>
+                <div class="vital">
+                    <label>WATER</label>
+                    <strong>READY</strong>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <section class="alerts">
+        <div class="card-title">HEALTH EVENT MONITOR</div>
+
+        <div class="alert-list">
+            <div class="alert safe">
+                <strong>✓ NO CRITICAL EVENTS</strong>
+                <span>There are currently no critical health alerts.</span>
+            </div>
+
+            <div class="alert safe">
+                <strong>✓ VITALS STABLE</strong>
+                <span>Current displayed vital indicators are inside the configured normal range.</span>
+            </div>
+
+            <div class="alert warning">
+                <strong>! LIVE DATA STANDBY</strong>
+                <span>Connect the animal sensor backend to replace demo values with real readings.</span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <span>PRANA SETU // ANIMAL HEALTH</span>
+        <span>LAST SYNC: <strong id="syncTime">JUST NOW</strong></span>
+    </footer>
+
+</div>
+
+<script>
+function updateClock(){
+    const now = new Date();
+    document.getElementById("syncTime").textContent =
+        now.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+}
+
+updateClock();
+setInterval(updateClock,1000);
+
+// Demo telemetry animation.
+// Replace this section later with your ESP32/WebSocket/API data stream.
+setInterval(() => {
+    const score = 90 + Math.floor(Math.random() * 7);
+    document.getElementById("healthScore").textContent = score;
+    document.getElementById("healthFill").style.width = score + "%";
+}, 5000);
+</script>
+</body>
+</html>
