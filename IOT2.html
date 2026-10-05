@@ -893,12 +893,10 @@ function fireAlert(data) {
             "fireAlertTime"
         );
 
-
     const sensor =
         data.sensor ||
         data.message ||
         "FIRE SENSOR";
-
 
     const now =
         data.time ||
@@ -910,22 +908,50 @@ function fireAlert(data) {
             }
         );
 
+    /*
+     * Sensor-specific alert text
+     */
+
+    let sensorLabel =
+        String(sensor).toUpperCase();
+
+    if (
+        sensorLabel.includes("FLAME1")
+    ) {
+
+        sensorLabel =
+            "🔥 FLAME SENSOR";
+
+    } else if (
+        sensorLabel.includes("IR1")
+    ) {
+
+        sensorLabel =
+            "IR1 INFRARED SENSOR";
+
+    } else if (
+        sensorLabel.includes("IR2")
+    ) {
+
+        sensorLabel =
+            "IR2 INFRARED SENSOR";
+    }
 
     if (sub) {
 
         sub.textContent =
-            "ZONE X2 — आग का पता चला है।";
+            "ZONE X2 — " +
+            sensorLabel +
+            " DETECTED";
     }
-
 
     if (timeEl) {
 
         timeEl.textContent =
             String(now) +
             "  •  " +
-            String(sensor);
+            String(sensorLabel);
     }
-
 
     if (overlay) {
 
@@ -935,31 +961,36 @@ function fireAlert(data) {
         );
     }
 
+    status.classList.add(
+        "alert"
+    );
 
-    status.classList.add("alert");
+    x2Card.classList.add(
+        "alert"
+    );
 
-    x2Card.classList.add("alert");
-
-    statusIcon.textContent = "🔥";
+    statusIcon.textContent =
+        "🔥";
 
     statusTitle.textContent =
         "FIRE DETECTED";
 
     statusSub.textContent =
-        "Emergency fire alert received — investigate immediately";
+        sensorLabel +
+        " triggered in Zone X2 — investigate immediately";
 
     statusBadge.textContent =
         "ACTIVE ALERT";
 
     x2State.textContent =
-        "🔥 FIRE DETECTED";
+        "🔥 " +
+        sensorLabel;
 
     sensorName.textContent =
-        sensor;
-
+        "ACTIVE: " +
+        sensorLabel;
 
     addEvent(data);
-
 
     if (
         typeof window.playGuardianSiren ===
