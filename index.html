@@ -1886,6 +1886,24 @@ body::after{
     color:var(--purple);
 }
 
+.dashboard-btn.animal::before{
+    background:var(--cyan);
+}
+
+.dashboard-btn.animal .dashboard-icon{
+    background:rgba(57,202,255,.07);
+    border-color:rgba(57,202,255,.30);
+}
+
+.dashboard-btn.animal .dashboard-arrow{
+    color:var(--cyan);
+}
+
+.dashboard-btn.animal:hover{
+    box-shadow:9px 9px 0 rgba(57,202,255,.60);
+}
+
+
 
 /* HUB FOOTER */
 
@@ -3212,6 +3230,18 @@ body::after{
             font-size:12px;
             letter-spacing:2px;
         }
+
+
+/* ANIMAL HEALTH MODULE */
+.dashboard-btn.animal{
+    position:relative;
+}
+
+@media(min-width:701px){
+    .dashboard-grid .dashboard-btn.animal{
+        grid-column:1 / -1;
+    }
+}
 
 </style>
 
@@ -5979,6 +6009,38 @@ button:focus-visible, .nav-btn:focus-visible, .dashboard-btn:focus-visible, .har
 
 </button>
 
+<button
+    class="dashboard-btn animal"
+    onclick="openAnimalHealth()"
+>
+
+    <div class="dashboard-icon">
+        🐾
+    </div>
+
+    <div class="dashboard-info">
+
+        <strong>
+            ANIMAL HEALTH
+        </strong>
+
+        <span>
+            Livestock Health & Welfare Monitoring
+        </span>
+
+        <small>
+            VITALS • ACTIVITY • HEALTH ALERTS
+        </small>
+
+    </div>
+
+    <div class="dashboard-arrow">
+        →
+    </div>
+
+</button>
+
+
 
 
 
@@ -6778,6 +6840,11 @@ function openIntruder(){
         "_blank"
     );
 
+}
+
+
+function openAnimalHealth(){
+    window.location.href = "health.html";
 }
 
 
@@ -7834,6 +7901,25 @@ async function processVoiceCommand(originalText){
         voiceOpen(
             "security",
             openIntruder
+        );
+
+        return;
+    }
+
+
+    if(
+        hasAny(text, [
+            "open animal health",
+            "animal health dashboard",
+            "show animal health",
+            "open animal",
+            "livestock health dashboard"
+        ])
+    ){
+
+        voiceOpen(
+            "animal health",
+            openAnimalHealth
         );
 
         return;
